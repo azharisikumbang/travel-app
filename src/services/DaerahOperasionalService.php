@@ -1,0 +1,24 @@
+<?php
+
+require_once __DIR__ . '/../repositories/DaerahOperasionalRepository.php';
+require_once __DIR__ . '/../entities/DaerahOpersional.php';
+
+class DaerahOperasionalService
+{
+    private DaerahOperasionalRepository $daerahOperasionalRepository;
+
+    public function __construct()
+    {
+        $this->daerahOperasionalRepository = new DaerahOperasionalRepository();
+    }
+
+    public function listDaerahOpersional(int $length = 10, int $from = 0)
+    {
+        return $this->daerahOperasionalRepository->get($length, $from);
+    }
+
+    public function tambahkanDaerahOperasional(DaerahOpersional $daerah) : void
+    {
+        $this->daerahOperasionalRepository->save($daerah);
+    }
+}
