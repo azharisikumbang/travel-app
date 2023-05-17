@@ -1,0 +1,1 @@
+INSERT INTO users (nama_lengkap, username, password, level) VALUES ('Administrator', 'admin', '$2y$10$oKkCaUIHawIqdx33sxwE1O9vHlhXcbfsRVQ/m7uoOL9gnjNWe1cay', 'ADMIN');

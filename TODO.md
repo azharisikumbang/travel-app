@@ -1,0 +1,23 @@
+- [x] setup project
+- [x] merancang database dan koneksi ke database
+- [x] import assets (js, css, image)
+- [x] membuat administrator page
+- [x] management user and role
+- [ ] management data mobil
+- [ ] management data driver
+- [ ] management kategori penumpang
+- [ ] management daerah operasional
+- [ ] management tarif (harga tiket)
+- [ ] desain halaman index
+- [ ] desain halaman daftar dan login
+- [ ] desain halaman pesanan
+- [ ] desain halaman pembayaran
+- [ ] desain halaman daftar pesanan (admin)
+- [ ] desain halaman detail pesanan (admin)
+- [ ] desain halaman daftar pesanan (user) / web
+- [ ] desain halaman detail pesanan (user) / web
+- [ ] desain halaman daftar pesanan (user) / mobile
+- [ ] desain halaman detail pesanan (user) / mobile
+- [ ] desain jadwal keberangkatan (driver) / mobile
+- [ ] desain format tiket 
+- [ ] tiket pdf dan downloadable
