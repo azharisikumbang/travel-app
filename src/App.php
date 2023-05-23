@@ -91,9 +91,10 @@ final class App
     public function run(): void
     {
         $method = strtoupper($_SERVER['REQUEST_METHOD']);
+        $paths = explode("/", $this->getManager()->getRouterManager()->getPath());
 
-        if($method == 'GET') {
-            $sessionUserRole = $this->getManager()->getSessionManager()->get('role') ?? 'admin';
+        if(($method == 'GET') && (strtolower($paths[0]) != 'api')) {
+            $sessionUserRole = $this->getManager()->getSessionManager()->get('role') ?? 'public';
             $this->loadTemplateFor($sessionUserRole);
         } else {
             require_once $this->getContent();

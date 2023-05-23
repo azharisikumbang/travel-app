@@ -44,5 +44,11 @@ class DaerahOpersional implements EntityInterface
         return $this;
     }
 
-
+    public function toArray() : array
+    {
+        return [
+            'id' => $this->getId(),
+            'nama_kota' => $this->getNamaKota()
+        ];
+    }
 }

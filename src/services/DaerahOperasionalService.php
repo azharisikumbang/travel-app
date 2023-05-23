@@ -12,7 +12,7 @@ class DaerahOperasionalService
         $this->daerahOperasionalRepository = new DaerahOperasionalRepository();
     }
 
-    public function listDaerahOpersional(int $length = 10, int $from = 0)
+    public function listDaerahOperasional(int $length = 10, int $from = 0) : array
     {
         return $this->daerahOperasionalRepository->get($length, $from);
     }

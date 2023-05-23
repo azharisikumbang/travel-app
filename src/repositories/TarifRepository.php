@@ -25,6 +25,33 @@ class TarifRepository extends BaseRepository
         ]);
     }
 
+    public function findById(int $id) : null|Tarif
+    {
+        $query = "SELECT
+            t.id as tarif_id,
+            t.kota_asal as kota_asal_id,
+            t.kota_tujuan as kota_tujuan_id,
+            t.tipe_penumpang as tipe_penumpang_id,
+            t.tarif,
+            d.nama_kota as kota_asal,
+            o.nama_kota as kota_tujuan,
+            tp.tipe_penumpang as tipe_penumpang
+        FROM tarif t
+        JOIN daerah_operasional d on t.kota_asal = d.id
+        JOIN daerah_operasional o on o.id = t.kota_tujuan
+        JOIN tipe_penumpang tp on t.tipe_penumpang = tp.id
+        WHERE t.id = :id";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute(['id' => $id]);
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$data) return null;
+
+        return $this->newEntity($data);
+    }
+
     public function get(int $length = 10, int $from = 0) : array
     {
         $query = "SELECT
@@ -47,37 +74,7 @@ class TarifRepository extends BaseRepository
         $stmt->execute();
 
         $result = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if(!isset($result[$row['tipe_penumpang_id']])) $result[$row['tipe_penumpang_id']] = [
-                'tipe_penumpang_id' => $row['tipe_penumpang_id'],
-                'tipe_penumpang' => $row['tipe_penumpang']
-            ];
-
-            $asal = new DaerahOpersional();
-            $asal
-                ->setId($row['kota_asal_id'])
-                ->setNamaKota($row['kota_asal']);
-
-            $tujuan = new DaerahOpersional();
-            $tujuan
-                ->setId($row['kota_tujuan_id'])
-                ->setNamaKota($row['kota_tujuan']);
-
-            $tipe = new TipePenumpang();
-            $tipe
-                ->setId($row['tipe_penumpang_id'])
-                ->setTipePenumpang($row['tipe_penumpang']);
-
-            $tarif = new Tarif();
-            $tarif
-                ->setId($row['tarif_id'])
-                ->setTarif($row['tarif'])
-                ->setAsal($asal)
-                ->setTujuan($tujuan)
-                ->setTipePenumpang($tipe);
-
-            $result[$row['tipe_penumpang_id']]['list_tarif'][] = $tarif;
-        }
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
 
         return $result;
     }
@@ -85,5 +82,33 @@ class TarifRepository extends BaseRepository
     protected function getTable(): string
     {
         return $this->table;
+    }
+
+    protected function newEntity(array $row) : Tarif
+    {
+        $asal = new DaerahOpersional();
+        $asal
+            ->setId($row['kota_asal_id'])
+            ->setNamaKota($row['kota_asal']);
+
+        $tujuan = new DaerahOpersional();
+        $tujuan
+            ->setId($row['kota_tujuan_id'])
+            ->setNamaKota($row['kota_tujuan']);
+
+        $tipe = new TipePenumpang();
+        $tipe
+            ->setId($row['tipe_penumpang_id'])
+            ->setTipePenumpang($row['tipe_penumpang']);
+
+        $tarif = new Tarif();
+        $tarif
+            ->setId($row['tarif_id'])
+            ->setTarif($row['tarif'])
+            ->setAsal($asal)
+            ->setTujuan($tujuan)
+            ->setTipePenumpang($tipe);
+
+        return $tarif;
     }
 }

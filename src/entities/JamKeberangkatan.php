@@ -64,5 +64,14 @@ class JamKeberangkatan implements EntityInterface
         return $this;
     }
 
+    public function toArray() : array
+    {
+        return [
+            'id' => $this->getId(),
+            'jam' => $this->getJam(),
+            'full_jam' => $this->jam,
+            'alias' => $this->getAlias(),
+        ];
+    }
 
 }

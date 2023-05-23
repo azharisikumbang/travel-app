@@ -38,10 +38,10 @@ abstract class BaseRepository
 
     }
 
-    public function getDataFromTable(string $table, int $length = 10, int $from = 0): false|PDOStatement
+    public function getDataFromTable(string $table, int $length = 10, int $from = 0, string $order = 'id', string $by = 'DESC'): false|PDOStatement
     {
 //        $table = $this->getTable() ?? $table;
-        $stmt = $this->getDatabaseConnection()->prepare("SELECT * from $table ORDER BY id DESC LIMIT {$from}, {$length}");
+        $stmt = $this->getDatabaseConnection()->prepare("SELECT * from $table ORDER BY {$order} {$by} LIMIT {$from}, {$length}");
         $stmt->execute();
 
         return $stmt;

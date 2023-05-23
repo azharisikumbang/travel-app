@@ -21,3 +21,6 @@
 - [ ] desain jadwal keberangkatan (driver) / mobile
 - [ ] desain format tiket 
 - [ ] tiket pdf dan downloadable
+
+---------------------------------
+mobil untuk setiap rute diupdate setiap hari

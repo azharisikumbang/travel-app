@@ -50,6 +50,27 @@ class TarifService
 
     public function listTarifByKategori(int $length = 10, int $from = 0)
     {
-        return $this->tarifRepository->get($length, $from);
+        $listTarif = $this->tarifRepository->get($length, $from);
+
+        $result = [];
+        foreach ($listTarif as $tarif)
+        {
+            $idTipePenumpang = $tarif->getTipePenumpang()->getId();
+
+            if(!isset($result[$idTipePenumpang])) $result[$idTipePenumpang] = [
+                'tipe_penumpang_id' => $idTipePenumpang,
+                'tipe_penumpang' => $tarif->getTipePenumpang()->getTipePenumpang()
+            ];
+
+
+            $result[$idTipePenumpang]['list_tarif'][] = $tarif->toArray();
+        }
+
+        return $result;
+    }
+
+    public function lihatDetailTarif(int $tarif) : Tarif
+    {
+        return $this->tarifRepository->findById($tarif);
     }
 }

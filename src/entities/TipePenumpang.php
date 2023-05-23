@@ -43,4 +43,12 @@ class TipePenumpang implements EntityInterface
 
         return $this;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'tipe_penumpang' => $this->getTipePenumpang()
+        ];
+    }
 }

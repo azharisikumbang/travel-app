@@ -2,7 +2,7 @@
 
 $app = app()->getManager();
 $listKategoriPenumpang = $app->getService('TipePenumpangService')->listTipePenumpang();
-$listDaerah = $app->getService('DaerahOperasionalService')->listDaerahOpersional();
+$listDaerah = $app->getService('DaerahOperasionalService')->listDaerahOperasional();
 $listTarifByKategori = $app->getService('TarifService')->listTarifByKategori();
 
 ?>

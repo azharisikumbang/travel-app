@@ -103,4 +103,16 @@ class Tarif implements EntityInterface
 
         return $this;
     }
+
+
+    public function toArray() : array
+    {
+        return [
+            'id' => $this->getId(),
+            'kota_asal' => $this->getAsal()->toArray(),
+            'kota_tujuan' => $this->getTujuan()->toArray(),
+            'tipe_penumpang' => $this->getTipePenumpang()->toArray(),
+            'tarif' => $this->getTarif()
+        ];
+    }
 }

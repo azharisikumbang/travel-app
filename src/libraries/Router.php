@@ -48,4 +48,9 @@ class Router implements RouterInterface
 
         exit();
     }
+
+    public function getPath() : string
+    {
+        return $this->paths;
+    }
 }

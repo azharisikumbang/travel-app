@@ -18,5 +18,5 @@ $app = new App($manager);
 $app->addConfigFor('app', $appConfiguration);
 $app->setEnvironment('development');
 $app->loadFunction('functions', fn ($file) => require_once $file);
-$app->buildRoute($_GET['path']);
+$app->buildRoute($_GET['path'] ?? 'homepage');
 $app->run();

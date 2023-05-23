@@ -24,20 +24,19 @@ class JamKeberangkatanRepository extends BaseRepository
 
     public function get(int $length = 10, int $from = 0) : array
     {
-        $listData = $this->getDataFromTable($this->table, $length, $from);
+        $listData = $this->getDataFromTable($this->table, $length, $from, 'jam', 'ASC');
 
         $result = [];
-        while ($row = $listData->fetch(PDO::FETCH_ASSOC)) {
-            $jamKeberangkatan = new JamKeberangkatan();
-            $jamKeberangkatan
-                ->setId($row['id'])
-                ->setJam($row['jam'])
-                ->setAlias($row['alias']);
-
-            $result[] = $jamKeberangkatan;
-        }
+        while ($row = $listData->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
 
         return $result;
     }
 
+    protected function newEntity(array $row) : JamKeberangkatan
+    {
+        return (new JamKeberangkatan())
+            ->setId($row['id'])
+            ->setJam($row['jam'])
+            ->setAlias($row['alias']);
+    }
 }
