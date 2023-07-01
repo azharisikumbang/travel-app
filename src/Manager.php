@@ -9,6 +9,9 @@ class Manager implements ManagerInterface
 
     private ?RouterInterface $routerManager;
 
+    private ?Response $responseManager;
+
+
     public function setDatabaseManager(\DatabaseInterface $manager) : self
     {
         $this->databaseManager = $manager;
@@ -37,6 +40,21 @@ class Manager implements ManagerInterface
     public function getSessionManager(): ?SessionInterface
     {
         return $this->sessionManager;
+    }
+
+    /**
+     * @param Response|null $responseManager
+     */
+    public function setResponseManager(?Response $responseManager): self
+    {
+        $this->responseManager = $responseManager;
+
+        return $this;
+    }
+
+    public function getResponseManager(): ?Response
+    {
+        return $this->responseManager;
     }
 
     /**

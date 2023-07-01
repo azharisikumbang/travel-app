@@ -84,4 +84,14 @@ class Mobil implements EntityInterface
         return $this;
     }
 
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'merk' => $this->getMerk(),
+            'nomor_polisi' => $this->getNomorPolisi(),
+            'jumlah_kursi' => $this->getJumlahKursi()
+        ];
+    }
+
 }

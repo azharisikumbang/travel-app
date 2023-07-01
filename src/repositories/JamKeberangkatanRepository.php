@@ -12,6 +12,15 @@ class JamKeberangkatanRepository extends BaseRepository
         return $this->table;
     }
 
+    public function findById(int $id) : null|JamKeberangkatan
+    {
+        $data = $this->basicFindById($id);
+
+        if(!$data) return null;
+
+        return $this->newEntity($data);
+    }
+
     public function save(JamKeberangkatan $jamKeberangkatan) : bool
     {
         $bind = [

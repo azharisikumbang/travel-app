@@ -7,5 +7,5 @@
     </div>
 </nav>
 <div id="content" class="mt-8 w-full overflow-hidden">
-    <?php echo config('xxx') ?>
+    <?php echo config('app', 'config') ?>
 </div>

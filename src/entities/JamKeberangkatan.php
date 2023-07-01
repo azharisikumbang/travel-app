@@ -31,9 +31,9 @@ class JamKeberangkatan implements EntityInterface
     /**
      * @return string
      */
-    public function getJam(bool $second = false): string
+    public function getJam(bool $second = true): string
     {
-        return ($second) ? $this->jam : rtrim(rtrim($this->jam, "00"), ":");
+        return ($second) ? $this->jam : rtrim(rtrim($this->jam, ":00"), ":");
     }
 
     /**

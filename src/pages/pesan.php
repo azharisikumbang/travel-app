@@ -4,9 +4,9 @@
         <?php if(session('temp')):
             html_alert(session('temp')['message'], 'yellow');
         endif; ?>
-        <div x-if="errors.length > 1">
-            <template x-for="error in errors">
-                <?php html_alert("error.message", "red");  ?>
+        <div x-if="Object.keys(errors) > 0">
+            <template x-for="key in Object.keys(errors)">
+                <?php html_alert("errors[key].message", "errors[key].status"); ?>
             </template>
         </div>
         <form action="<?= site_url('pesan/pemesan') ?>" method="post">
@@ -19,11 +19,11 @@
                         <div class="w-full mb-4 grid grid-cols-3 gap-4">
                             <div class="col-span-2">
                                 <label for="" class="font-sans text-base text-gray-600 mb-2 block">Tanggal Keberangkatan</label>
-                                <input x-model="selected.tanggal" type="date" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
+                                <input x-model="selected.tanggal" type="date" class="w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                             </div>
                             <div>
                                 <label for="" class="font-sans text-base text-gray-600 mb-2 block">Jam Keberangkatan</label>
-                                <select x-model="selected.jam" name="jam_keberangkatan" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
+                                <select x-model="selected.jam" name="jam_keberangkatan" class="w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                                     <option value="_">-- Pilih Jam --</option>
                                     <template x-for="jam in data.listJamKeberangkatan">
                                         <option :value="jam.id" x-text="jam.jam + ' WIB / ' + jam.alias"></option>
@@ -34,19 +34,19 @@
                         <div class="w-full mb-4">
                             <label for="" class="font-sans text-base text-gray-600 mb-2 block">Keberangkatan</label>
                             <div class="w-full mb-4 grid grid-cols-3 gap-4">
-                                <select x-model="selected.asal" name="jam_keberangkatan" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
+                                <select x-model="selected.asal" name="jam_keberangkatan" class="w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                                     <option value="_">-- Pilih Asal --</option>
                                     <template x-for="daerah in data.listDaerahOperasional">
                                         <option :value="daerah.id" x-text="daerah.nama_kota" :selected="daerah.id == data.tarif.kota_asal.id"></option>
                                     </template>
                                 </select>
-                                <select x-model="selected.tujuan" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
+                                <select x-model="selected.tujuan" class="w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                                     <option value="_">-- Pilih Tujuan --</option>
                                     <template x-for="daerah in data.listDaerahOperasional">
                                         <option :value="daerah.id" x-text="daerah.nama_kota" :selected="daerah.id == data.tarif.kota_tujuan.id"></option>
                                     </template>
                                 </select>
-                                <select x-model="selected.tipePenumpang" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
+                                <select x-model="selected.tipePenumpang" class="w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                                     <option value="_">-- Pilih Kategori Penumpang --</option>
                                     <template x-for="tipe in data.listTipePenumpang">
                                         <option :value="tipe.id" x-text="tipe.tipe_penumpang" :selected="tipe.id == data.tarif.tipe_penumpang.id"></option>
@@ -55,19 +55,22 @@
                             </div>
                         </div>
                         <div class="w-full mt-8">
-                            <button type="button" @click="cekKetersediaanKursi" class="w-full text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-4 text-center mr-3 md:mr-0">Cek Mobil dan Kursi</button>
+                            <button type="button" @click="cekKetersediaanKursi" class="w-full text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-4 text-center mr-3 md:mr-0">Cek Tiket dan Ketersedian Kursi</button>
                         </div>
-                        <template x-if="data.listKursiTersedia.jumlah_kursi_tersedia > 0">
+                        <template x-if="data.listKursiTersedia.list_kursi.total > 0">
                             <div class="mt-8">
                                 <div class="mb-2">
-                                    Mobil : <span x-text="data.mobil.merk"></span> ( <span x-text="data.mobil.plat_nomor"></span> )
+                                    Silahkan Pilih Kursi Tersedia:
                                 </div>
-                                <div class="grid grid-cols-3 w-full gap-2">
-                                    <template x-for="kursi in data.listKursiTersedia.list_kursi">
-                                        <div class="py-8 text-center border-2 rounded"
+                                <div class="flex flex-row-reverse flex-wrap w-full">
+                                    <div class="w-1/3 py-8 text-center border border-gray-500 bg-gray-400 cursor-not-allowed">
+                                        <span>Supir</span>
+                                    </div>
+                                    <template x-for="(kursi, index) in data.listKursiTersedia.list_kursi.detail">
+                                        <div class="w-1/3 py-8 text-center border"
                                             :class="kursi.tersedia ? 'border-gray-400 hover:bg-gray-300 bg-white cursor-pointer ' : 'border-red-800 bg-red-800 hover:bg-red-800 text-white cursor-not-allowed'"
-                                            x-bind:style="kursi.dipilih && { borderColor: 'rgb(59 130 246)', backgroundColor: 'rgb(59 130 246)', color: 'white' }"
-                                            @click="addNomorKursi(kursi.nomor)">
+                                            x-bind:style="kursi.dipilih && { borderColor: 'rgb(255 255 255)', backgroundColor: 'rgb(59 130 246)', color: 'white' }"
+                                            @click="addNomorKursi(index, kursi.nomor)">
                                             <span x-text="kursi.nomor"></span>
                                         </div>
                                     </template>
@@ -82,7 +85,7 @@
                         <table class="w-full text-gray-600">
                             <tr class="bg-gray-100">
                                 <td class="p-4 w-1/2">Jadwal Keberangkatan</td>
-                                <td>: <span x-text="parseTanggalToIndo(selected.tanggal)"></span> <span x-text="parseJamKeberangkatan"></span></td>
+                                <td>: <span x-text.lazy="parseTanggalToIndo(selected.tanggal)"></span> <span x-text.lazy="parseJamKeberangkatan"></span></td>
                             </tr>
                             <tr>
                                 <td class="p-4 w-1/2">Rute Perjalanan</td>
@@ -116,7 +119,7 @@
             return ({
                 apiUrl: "<?= site_url() ?>",
                 currentTarif: <?= $_GET['tarif'] ?>,
-                errors: [],
+                errors: {},
                 data: {
                     listJamKeberangkatan: [],
                     listTipePenumpang: [],
@@ -137,7 +140,8 @@
                     tujuan: "",
                     tipePenumpang: "",
                     mobil: 1,
-                    kursi: []
+                    kursi: [],
+                    tarif: 0
                 },
                 init() {
                     axios.get(this.apiUrl + '/api/tarif', {
@@ -146,7 +150,6 @@
                         }
                     }).then(response => {
                         this.data.tarif = response.data;
-
                         this.selected.asal = this.data.tarif.kota_asal.id;
                         this.selected.tujuan = this.data.tarif.kota_tujuan.id;
                         this.selected.tipePenumpang = this.data.tarif.tipe_penumpang.id;
@@ -163,53 +166,62 @@
                         .then(response => this.data.listDaerahOperasional = response.data);
                 },
                 pesanSekarang() {
-                    axios.post(this.apiUrl + '/api/create-pesanan')
-                        .then(res => console.log(res))
+                    this.removeError('bad_request');
+
+                    let form = new FormData();
+                    form.append('tanggal_keberangkatan', this.selected.tanggal);
+                    form.append('jam_keberangkatan', this.selected.jam);
+                    form.append('asal_keberangkatan', this.selected.asal);
+                    form.append('tujuan_keberangkatan', this.selected.tujuan);
+                    form.append('kategori_penumpang', this.selected.tipePenumpang);
+                    form.append('mobil', this.selected.mobil);
+                    for (const kursi of this.selected.kursi) {
+                        form.append('kursi_dipesan[]', kursi);
+                    }
+                    // cek di sisi server
+                    // form.append('tarif_satuan', this.selected.tarif);
+                    // form.append('tarif_total', (this.selected.tarif * this.selected.kursi.length));
+
+                    axios
+                        .post(this.apiUrl + '/api/pesanan/create', form)
+                        .then(res => window.location.href = this.apiUrl + '/pesan/info-pemesan')
+                        .catch(err => this.addError('bad_request', err.response.data.errors[0], 'red'));
                 },
-                addError(message, status = 'yellow') {
-                    this.errors.push({ message: message, status: status });
+                addError(key, message, status = 'yellow') {
+                    this.removeError(key);
+                    this.errors[key] = { message: message, status: status }
                 },
-                cekKetersediaanKursi() {
-                    if (this.selected.tanggal == "") this.addError('Tanggal keberangkatan belum diisi, mohon isi terlebih dahulu');
-                    if (this.selected.jam == "") this.addError('Jam keberangkatan belum diisi, mohon isi terlebih dahulu');
-                    if (this.selected.asal == "") this.addError('Asal keberangkatan belum diisi, mohon isi terlebih dahulu');
-                    if (this.selected.tujuan == "") this.addError('Tujuan keberangkatan belum diisi, mohon isi terlebih dahulu');
-                    if (this.selected.tipePenumpang == "") this.addError('Kategori penumpang belum diisi, mohon isi terlebih dahulu');
-
-                    // if(this.errors.length > 0) return;
-
-                    // call api
-                    let listKursiTersedia = {
-                        id_mobil: 1,
-                        jumlah_kursi_penumpang: 8,
-                        jumlah_kursi_tersedia: 8,
-                        tanggal: new Date().toDateString(),
-                        asal: {
-                            id: 1,
-                            nama_kota: 'Pelalawan',
-                        },
-                        tujuan: {
-                            id: 2,
-                            nama_kota: 'Padang'
-                        },
-                        tipe_penumpang: {
-                            id: 1,
-                            tipe_penumpang: 'Umum'
-                        },
-                        list_kursi: [
-                            { nomor: 1, tersedia: true, dipilih: false },
-                            { nomor: 2, tersedia: true, dipilih: false },
-                            { nomor: 3, tersedia: true, dipilih: false },
-                            { nomor: 4, tersedia: true, dipilih: false },
-                            { nomor: 5, tersedia: true, dipilih: false },
-                            { nomor: 6, tersedia: false, dipilih: false },
-                            { nomor: 7, tersedia: true, dipilih: false },
-                            { nomor: 8, tersedia: false, dipilih: false },
-                        ]
-                    };
-
-                    this.data.listKursiTersedia = listKursiTersedia;
+                removeError(key) {
+                    if (this.errors.hasOwnProperty(key)) delete this.errors[key];
+                },
+                isInputFilled(name, errorKey, errorMessage) {
+                    if (this.selected[name] === "") this.addError(errorKey, errorMessage);
+                    else this.removeError(errorKey);
+                },
+                async cekKetersediaanKursi() {
+                    this.removeError('bad_request');
+                    this.data.listKursiTersedia = {};
                     this.selected.kursi = [];
+
+                    this.isInputFilled('tanggal', 'tanggal', 'Tanggal keberangkatan belum diisi, mohon isi terlebih dahulu');
+                    this.isInputFilled('jam', 'jam', 'Jam keberangkatan belum diisi, mohon isi terlebih dahulu');
+                    this.isInputFilled('asal', 'asal', 'Asal keberangkatan belum diisi, mohon isi terlebih dahulu');
+                    this.isInputFilled('tujuan', 'tujuan', 'Tujuan keberangkatan belum diisi, mohon isi terlebih dahulu');
+                    this.isInputFilled('tipePenumpang', 'tipePenumpang', 'Kategori penumpang belum diisi, mohon isi terlebih dahulu');
+                    await this.hitungUlangTiket();
+
+                    if(Object.keys(this.errors).length < 1) {
+
+                        axios
+                            .get(this.apiUrl + `/api/cek-tiket?asal=${this.selected.asal}&tujuan=${this.selected.tujuan}&kategori=${this.selected.tipePenumpang}&tanggal=${this.selected.tanggal}&jam=${this.selected.jam}`)
+                            .then(response => {
+                                this.data.listKursiTersedia = response.data.data;
+                                this.selected.kursi = [];
+                            })
+                            .catch(err => this.addError('bad_request', err.response.data.errors[0], 'red'))
+                        ;
+
+                    }
 
                 },
                 parseTanggalToIndo(tanggal) {
@@ -229,7 +241,7 @@
                     let indexAsal = listDaerah.findIndex(el => el.id == this.selected.asal);
                     let indexTujuan = listDaerah.findIndex(el => el.id == this.selected.tujuan);
 
-                    return listDaerah[indexAsal].nama_kota + ' - ' + listDaerah[indexTujuan].nama_kota
+                    return listDaerah[indexAsal].nama_kota + ' - ' + listDaerah[indexTujuan].nama_kota;
                 },
                 parseTipePenumpang() {
                     return this.data.listTipePenumpang[
@@ -239,21 +251,39 @@
                 toRupiah(number) {
                     return new Intl.NumberFormat('id-Id', { maximumSignificantDigits: 3 }).format(number);
                 },
-                addNomorKursi(nomor) {
-                    let indexKursi = this.data.listKursiTersedia.list_kursi.findIndex(el => el.nomor == nomor);
-                    let kursi = this.data.listKursiTersedia.list_kursi[indexKursi];
+                addNomorKursi(index, nomor) {
+                    let kursi = this.data.listKursiTersedia.list_kursi.detail[index];
 
-                    if(false == kursi.tersedia) return;
+                    if(false == kursi.tersedia || kursi.nomor != nomor) return;
 
-                    this.data.listKursiTersedia.list_kursi[indexKursi].dipilih = !this.data.listKursiTersedia.list_kursi[indexKursi].dipilih;
+                    if (false === kursi.hasOwnProperty('dipilih')) {
+                        this.data.listKursiTersedia.list_kursi.detail[index]['dipilih'] = true;
+                    } else {
+                        this.data.listKursiTersedia.list_kursi.detail[index].dipilih = !this.data.listKursiTersedia.list_kursi.detail[index].dipilih;
+                    }
 
                     let indexAddedArray = this.selected.kursi.indexOf(kursi.nomor);
-                    if(indexAddedArray == -1) {
+                    if(indexAddedArray === -1) {
                         this.selected.kursi.push(kursi.nomor);
                         return;
                     }
 
                     this.selected.kursi.splice(indexAddedArray, 1);
+                },
+                async hitungUlangTiket() {
+                    await this.removeError('rute');
+                    await axios.get(this.apiUrl + `/api/cari-tarif?asal=${this.selected.asal}&tujuan=${this.selected.tujuan}&kategori=${this.selected.tipePenumpang}`)
+                        .then(response => {
+                            this.data.tarif = response.data.data;
+                            this.selected.asal = this.data.tarif.kota_asal.id;
+                            this.selected.tujuan = this.data.tarif.kota_tujuan.id;
+                            this.selected.tipePenumpang = this.data.tarif.tipe_penumpang.id;
+                            this.selected.tarif = this.data.tarif.tarif;
+                        })
+                        .catch(error => {
+                            this.addError('rute', error.response.data.message);
+                            this.selected.tarif = 0;
+                        });
                 }
             });
         });

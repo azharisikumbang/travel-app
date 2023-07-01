@@ -73,4 +73,9 @@ class TarifService
     {
         return $this->tarifRepository->findById($tarif);
     }
+
+    public function cariTarif(int $asal, int $tujuan, int $kategori) 
+    {
+        return $this->tarifRepository->cariTarif($asal, $tujuan, $kategori);
+    }
 }

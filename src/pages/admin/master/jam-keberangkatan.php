@@ -49,7 +49,7 @@
                                         <p class="block antialiased font-sans text-sm leading-normal text-gray-600 text-center"><?= $no++; ?></p>
                                     </td>
                                     <td class="py-3 px-5 border-b border-gray-200">
-                                        <p class="block antialiased font-sans text-xs font-medium text-gray-900 font-bold" ><?= $jamKeberangkatan->getJam(); ?> / <?= strtoupper($jamKeberangkatan->getAlias()); ?></p>
+                                        <p class="block antialiased font-sans text-xs font-medium text-gray-900 font-bold" ><?= $jamKeberangkatan->getJam(true); ?> WIB / <?= strtoupper($jamKeberangkatan->getAlias()); ?></p>
                                     </td>
                                     <td class="py-3 px-5 border-b border-gray-200 flex justify-end">
                                         <button class="bg-orange-400 text-white rounded px-4 py-1 font-sans center">Edit</button>

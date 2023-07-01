@@ -59,11 +59,20 @@ if(!(function_exists('get_current_path'))) {
 }
 
 if (!function_exists('session')) {
-    function session(string $key) : mixed
+    function session(string $key = null) : mixed
     {
         $manager = app()->getManager()->getSessionManager();
 
+        if (is_null($key)) return $manager;
+
         return $manager->exists($key) ? $manager->get($key) : null;
+    }
+}
+
+if (!function_exists('response')) {
+    function response()
+    {
+        return app()->getManager()->getResponseManager();
     }
 }
 

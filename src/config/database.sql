@@ -7,20 +7,20 @@ CREATE TABLE users (
     kontak varchar(16) null,
     photo int,
     FOREIGN KEY (photo) REFERENCES files(id)
-)
+);
 
 CREATE TABLE files (
     id int primary key auto_increment,
     nama varchar(255) not null,
     lokasi varchar(255) not null,
     kategori varchar(255) null
-)
+);
 
 CREATE TABLE jadwal_keberangkatan (
     id int primary key auto_increment,
     jam varchar(16) not null,
     alias varchar(32) null
-)
+);
 
 CREATE TABLE mobil (
     id int primary key AUTO_INCREMENT,
@@ -29,19 +29,19 @@ CREATE TABLE mobil (
     plat_nomor varchar(16) null,
     gambar int,
     FOREIGN KEY (gambar) REFERENCES files(id)
-)
+);
 
 CREATE TABLE daerah_operasional (
     id int primary key auto_increment,
     nama_kota varchar(255) not null,
     gambar int,
     FOREIGN KEY (gambar) REFERENCES files(id)
-)
+);
 
 CREATE TABLE tipe_penumpang (
     id int primary key AUTO_INCREMENT,
     tipe_penumpang varchar(64) not null
-)
+);
 
 CREATE TABLE tarif (
     id int primary key AUTO_INCREMENT,
@@ -52,7 +52,7 @@ CREATE TABLE tarif (
     FOREIGN KEY (kota_asal) REFERENCES daerah_operasional(id),
     FOREIGN KEY (kota_tujuan) REFERENCES daerah_operasional(id),
     FOREIGN KEY (tipe_penumpang) REFERENCES tipe_penumpang(id)
-)
+);
 
 CREATE TABLE pesanan (
     id int primary key AUTO_INCREMENT,
@@ -75,4 +75,12 @@ CREATE TABLE pesanan (
     mobil_id int,
     FOREIGN KEY (pemesan_id) REFERENCES users(id),
     FOREIGN KEY (mobil_id) REFERENCES mobil(id)
-)
+);
+
+CREATE TABLE pesanan_detail(
+    id int primary key AUTO_INCREMENT,
+    pesanan_id int NOT NULL,
+    nomor_kursi int NOT NULL,
+    harga_tiket decimal(15,2) not null,
+    FOREIGN KEY (pesanan_id) REFERENCES pesanan(id),
+);

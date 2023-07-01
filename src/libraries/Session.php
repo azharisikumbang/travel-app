@@ -3,9 +3,9 @@
 require_once __DIR__ . '/../Contracts/SessionInterface.php';
 class Session implements SessionInterface
 {
-    public function __construct(private array $data = [])
+    public function __construct()
     {
-        session_start($data);
+        if(session_status() !== PHP_SESSION_ACTIVE) session_start();
     }
 
     public function all() : array

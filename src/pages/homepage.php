@@ -4,11 +4,12 @@
     <div class="bg-gray-100">
         <div class="max-w-screen-xl mx-auto py-20">
             <div class="text-center mb-8">
-                <h2 class="block antialiased tracking-normal font-sans text-xl font-bold leading-relaxed text-gray-900">Daftar Tiket Keberangkatan</h2>
+                <h2 class="block antialiased tracking-normal font-sans text-xl font-bold leading-relaxed text-gray-900">Tiket Keberangkatan</h2>
+                <p class="font-sans text-gray-600">Nikmati Perjalanan Dengan Tarif Sesuai Kantong.</p>
             </div>
             <div class="flex col-span-3 mx-auto justify-center mb-12">
                 <template x-for="tiket in listTiket">
-                    <div class="py-2 w-32 border-gray-800 border text-center cursor-pointer" x-text="tiket.tipe_penumpang" :class="{ 'bg-gray-800 text-white': active == tiket.tipe_penumpang_id }" @click="active = tiket.tipe_penumpang_id"></div>
+                    <div class="py-2 px-12 border-gray-800 border text-center cursor-pointer" x-text="tiket.tipe_penumpang" :class="{ 'bg-gray-800 text-white': active == tiket.tipe_penumpang_id }" @click="active = tiket.tipe_penumpang_id"></div>
                 </template>
             </div>
             <div>

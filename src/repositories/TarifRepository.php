@@ -79,6 +79,37 @@ class TarifRepository extends BaseRepository
         return $result;
     }
 
+    public function cariTarif(int $asal, int $tujuan, int $kategori) 
+    {
+        $query = "SELECT
+            t.id as tarif_id,
+            t.kota_asal as kota_asal_id,
+            t.kota_tujuan as kota_tujuan_id,
+            t.tipe_penumpang as tipe_penumpang_id,
+            t.tarif,
+            d.nama_kota as kota_asal,
+            o.nama_kota as kota_tujuan,
+            tp.tipe_penumpang as tipe_penumpang
+        FROM tarif t
+        JOIN daerah_operasional d on t.kota_asal = d.id
+        JOIN daerah_operasional o on o.id = t.kota_tujuan
+        JOIN tipe_penumpang tp on t.tipe_penumpang = tp.id
+        WHERE t.kota_asal = :asal AND t.kota_tujuan = :tujuan AND t.tipe_penumpang = :kategori";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            'asal' => $asal,
+            'tujuan' => $tujuan,
+            'kategori' => $kategori
+        ]);
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$data) return null;
+
+        return $this->newEntity($data);
+    }
+
     protected function getTable(): string
     {
         return $this->table;

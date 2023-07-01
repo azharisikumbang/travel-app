@@ -16,11 +16,6 @@
     <div class="mb-4 grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div class="xl:col-span-2">
             <div class="flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md overflow-hidden">
-<!--                <div class="relative bg-clip-border rounded-xl overflow-hidden bg-transparent text-gray-700 shadow-none m-0 flex items-center justify-between p-6">-->
-<!--                    <div>-->
-<!--                        <h6 class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-gray-900 mb-1">--><?php //= count($listMobil) ?><!-- Mobil Terdata.</h6>-->
-<!--                    </div>-->
-<!--                </div>-->
                 <div class="p-6 overflow-x-scroll px-0 pt-2 pb-0">
                     <table class="w-full min-w-[640px] table-auto">
                         <thead>
@@ -41,7 +36,16 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($listMobil as $mobil): ?>
+                        <?php
+                        if (count($listMobil) < 1) { ?>
+                            <tr>
+                                <td class="py-3 px-5 border-b border-gray-200 text-center" colspan="3">
+                                    <p class="block antialiased font-sans text-xs font-medium text-gray-900 font-bold" >Tidak ada data.</p>
+                                </td>
+                            </tr>
+                        <?php 
+                        } else {
+                            foreach ($listMobil as $mobil): ?>
                             <tr>
                                 <td class="py-3 px-5 border-b border-gray-200">
                                     <p class="block antialiased font-sans text-sm leading-normal text-gray-900 font-bold"><?= $mobil->getMerk(); ?></p>
@@ -62,7 +66,9 @@
                                     </div>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php 
+                                endforeach; 
+                            } ?>
                         </tbody>
                     </table>
                 </div>

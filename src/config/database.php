@@ -2,8 +2,8 @@
 
 return [
     'host' => 'localhost',
-    'username' => 'travel_db',
-    'password' => 'travel_db12345678',
-    'database' => 'travel_db',
+    'username' => 'root',
+    'password' => '',
+    'database' => 'travelapp',
     'port' => '3306'
 ];
