@@ -9,24 +9,20 @@
     </nav>
     <div id="content" class="mt-8 w-full overflow-hidden">
         <div class="mb-4 w-full flex justify-between">
-            <div class="w-4/12">
-                <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                    <input x-model="properties.form.filter_search" type="search" id="search" class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Ketik..." required>
-                    <button type="button" @click="loadListPesananByNomorPesanan" class="cursor-pointer text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2">Cari Nomor Pesanan..</button>
+            <div class="flex justify-start w-full">
+                <div class="p-2">Pencarian: </div>
+                <div class="flex justify-between">
+                    <input x-model="properties.form.filter_search" type="search" id="search" class="block w-72 p-2 px-4 mr-2 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Ketik nomor tiket..." required>
+                    <button type="button" @click="loadListPesananByNomorPesanan" class="px-4 cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm">Cari..</button>
                 </div>
             </div>
-            <div class="w-4/12">
-                <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                    <input x-model="properties.form.filter_tanggal" type="text" @change="console.log($event)" name="filter-tanggal" class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Search" required>
-                    <button type="button" @click="loadListPesananByDate" class="cursor-pointer text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2">Cari Tanggal Keberangkatan..</button>
+            <div class="flex justify-end w-full">
+                <div class="p-2">Tanggal Keberangkatan: </div>
+                <div class="mr-2">
+                    <input x-model="properties.form.filter_tanggal" type="date" id="search"  class="w-64 cursor-pointer p-2 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <button type="button" @click="loadListPesananByDate" class="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2">Cari..</button>
                 </div>
             </div>
         </div>
@@ -109,14 +105,8 @@
         const actions = {
             "loadListPesananByDate": async function() {
                 this.properties.sites.query_prefix = 'Tanggal Keberangkatan: ' + this.properties.form.filter_tanggal;
-
-                let filterTanggal = document.querySelector('input[name="filter-tanggal"]');
-                if (filterTanggal.value != '' ) {
-                    this.properties.form.filter_tanggal = document.querySelector('input[name="filter-tanggal"]').value;
-                }
-
                 let wanted = (new Date(this.properties.form.filter_tanggal)).toISOString().split('T')[0];
-
+                this.properties.data.pesanan = [];
                 this.properties.data.pesanan = await axios
                     .get(this.properties.sites.api_url + `/api/admin/pesanan?tanggal=${wanted}`)
                     .then(res => res.data.data)
@@ -145,7 +135,7 @@
                 "properties": {
                     "sites": {
                         "api_url": "<?= site_url() ?>",
-                        "page_title": "Keberangkatan",
+                        "page_title": "Daftar Tiket Masuk",
                         "query_title": "Tanggal Keberangkatan: "
                     },
                     "errors": {},
@@ -162,11 +152,11 @@
                     this.properties.form.filter_tanggal = this.dateToSupportedFormat('<?= date("Y-m-d") ?>');
                     this.loadListPesananByDate();
 
-                    const elem = document.querySelector('input[name="filter-tanggal"]');
-                    const datepicker = new Datepicker(elem, {
-                        autohide: true,
-                        format: "yyyy-mm-dd"
-                    });
+                    // const elem = document.querySelector('input[name="filter-tanggal"]');
+                    // const datepicker = new Datepicker(elem, {
+                    //     autohide: true,
+                    //     format: "yyyy-mm-dd"
+                    // });
                 }
             })
         );

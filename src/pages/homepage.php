@@ -24,7 +24,7 @@
                                     <p class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-gray-900">Rp <span x-text="t.tarif"></span></p>
                                 </div>
                                 <div class="basis-1/4">
-                                    <a x-bind:href="'<?= site_url('pesan?tarif=') ?>' + t.id" class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0">Pesan</a>
+                                    <a :href="'<?= site_url('pesan?tarif=') ?>' + t.id" class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0">Pesan</a>
                                 </div>
                             </div>
                         </template>

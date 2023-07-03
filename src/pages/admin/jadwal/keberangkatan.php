@@ -10,7 +10,7 @@
     <div id="content" class="mt-8 w-full overflow-hidden">
         <div class="mb-4 w-full flex justify-between">
             <div class="">
-                <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Cari..</label>
                 <div class="flex justify-between">
                     <input x-model="properties.form.filter_search" type="search" id="search" class="block w-72 p-2 px-4 mr-2 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Ketik..." required>
                     <button type="button" @click="loadListPesananByNomorPesanan" class="px-4 cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm">Cari Nomor Pesanan..</button>
