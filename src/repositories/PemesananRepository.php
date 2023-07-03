@@ -62,6 +62,16 @@ class PemesananRepository extends BaseRepository
         return $result;
     }
 
+    public function get(int $length = 10, int $from = 0, string $order = 'id', string $by = 'desc') : array
+    {
+        $listData = $this->getDataFromTable($this->table, $length, $from, $order, $by);
+
+        $result = [];
+        while ($row = $listData->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
+
+        return $result;
+    }
+
     public function getLatest() : ?Pesanan
     {
         $query = "SELECT * from {$this->getTable()} ORDER BY id DESC";
@@ -149,6 +159,7 @@ class PemesananRepository extends BaseRepository
         $stmt->execute(['nomor_pemesanan' => $nomor]);
 
         if($stmt->rowCount() < 1) return null;
+        if (!$detail) return $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC));
 
         $pesanan = null;
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -167,6 +178,73 @@ class PemesananRepository extends BaseRepository
         return $pesanan;
     }
 
+    public function findByTanggalKeberangkatan(DateTimeInterface $date, int $total = 10, int $from = 0, bool $withRelations = false) : array
+    {
+        $query = "SELECT * from {$this->getTable()} WHERE tanggal_keberangkatan LIKE :tanggal_keberangkatan ORDER BY tanggal_keberangkatan DESC LIMIT {$from}, {$total}";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            "tanggal_keberangkatan" => sprintf("%s%s", $date->format('Y-m-d'), "%")
+        ]);
+
+        if($stmt->rowCount() < 1) return [];
+
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
+
+        return $result;
+    }
+
+    public function filterPesanan(?DateTimeInterface $date, ?DaerahOpersional $asal, ?DaerahOpersional $tujuan, int $total = 10, int $from = 0, bool $withRelations = false): array
+    {
+        $where = [];
+        $whereString = "";
+
+        if ($date) $where['tanggal_keberangkatan'] = sprintf("%s%s", $date->format('Y-m-d'), "%");
+        if ($asal) $where['kota_asal'] = $asal->getNamaKota();
+        if ($tujuan) $where['kota_tujuan'] = $tujuan->getNamaKota();
+
+        if ($where) $whereString .= "WHERE";
+        foreach ($where as $key => $value) $whereString .= sprintf(" %s = :%s AND", $key, $key);
+
+        $query = sprintf("SELECT * from {$this->getTable()} %s ORDER BY tanggal_keberangkatan DESC LIMIT {$from}, {$total}", rtrim($whereString, "AND"));
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute($where);
+
+        if($stmt->rowCount() < 1) return [];
+
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
+
+        return $result;
+    }
+
+    public function filterJadwal(?DateTimeInterface $date, ?DaerahOpersional $asal, ?DaerahOpersional $tujuan, int $total = 10, int $from = 0, bool $withRelations = false): array
+    {
+        $where = ['status_bukti_pembayaran' => StatusBuktiPembayaran::VALID->value];
+        $whereString = "";
+
+        if ($date) $where['tanggal_keberangkatan'] = sprintf("%s%s", $date->format('Y-m-d'), "%");
+        if ($asal) $where['kota_asal'] = $asal->getNamaKota();
+        if ($tujuan) $where['kota_tujuan'] = $tujuan->getNamaKota();
+
+        if ($where) $whereString .= "WHERE";
+        foreach ($where as $key => $value) $whereString .= sprintf(" %s = :%s AND", $key, $key);
+
+        $query = sprintf("SELECT * from {$this->getTable()} %s ORDER BY tanggal_keberangkatan DESC LIMIT {$from}, {$total}", rtrim($whereString, "AND"));
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute($where);
+
+        if($stmt->rowCount() < 1) return [];
+
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
+
+        return $result;
+    }
+
     public function updateInformasiPemesanan(Pesanan $pesanan) : void
     {
         $query = "UPDATE {$this->getTable()} 
@@ -180,6 +258,19 @@ class PemesananRepository extends BaseRepository
             'nama_pemesan' => $pesanan->getNamaPemesan(),
             'kontak_pemesan' => $pesanan->getKontakPemesan(),
             'titik_jemput' => $pesanan->getTitikJemput(),
+            'nomor_pemesanan' => $pesanan->getNomorPesanan()
+        ]);
+    }
+
+    public function updateStatusPembayaran(Pesanan $pesanan, StatusBuktiPembayaran $status): void
+    {
+        $query = "UPDATE {$this->getTable()} 
+            SET status_bukti_pembayaran = :status_bukti_pembayaran
+            WHERE nomor_pemesanan = :nomor_pemesanan";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            'status_bukti_pembayaran' => $pesanan->getStatusBuktiPembayaran()->value,
             'nomor_pemesanan' => $pesanan->getNomorPesanan()
         ]);
     }
@@ -221,8 +312,8 @@ class PemesananRepository extends BaseRepository
             ->setTipePenumpang($row['tipe_penumpang'])
             ->setTitikJemput($row['titik_jemput'])
             ->setTotalTarif($row['total_tarif'])
-            ->setStatusBuktiPembayaran(StatusBuktiPembayaran::getLabel($row['status_bukti_pembayaran']))
-            ->setStatusPemesanan(StatusPemesanan::getLabel($row['status_pemesanan']))
+            ->setStatusBuktiPembayaran(StatusBuktiPembayaran::fromLabel($row['status_bukti_pembayaran']))
+            ->setStatusPemesanan(StatusPemesanan::fromLabel($row['status_pemesanan']))
             ->setTotalUangMuka($row['total_uang_muka'])
             ->setTotalDibayarkan($row['total_dibayarkan'])
             ->setBuktiPembayaran($row['bukti_pembayaran'])

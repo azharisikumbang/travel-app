@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../entities/User.php';
 require_once __DIR__ . '/BaseRepository.php';
+require_once __DIR__ . '/../enums/Role.php';
 
 class UserRepository extends BaseRepository
 {
@@ -22,7 +23,7 @@ class UserRepository extends BaseRepository
             'username' => $user->getUsername(),
             'password' => $user->getPassword(),
             'kontak' => $user->getKontak(),
-            'level' => $user->getRole()
+            'level' => $user->getRole()->value
         ]);
     }
 
@@ -31,20 +32,32 @@ class UserRepository extends BaseRepository
         $query = $this->getDataFromTable($this->table, $length, $from);
 
         $result = [];
-        while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
-            $user = new User();
-            $user
-                ->setId($row['id'])
-                ->setNamaLengkap($row['nama_lengkap'])
-                ->setKontak($row['kontak'])
-                ->setUsername($row['username'])
-                ->setPassword($row['password'])
-                ->setRole($row['level']);
-
-            $result[] = $user;
-        }
+        while ($row = $query->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row, true);
 
         return $result;
+    }
+
+    public function findByUsername(string $username) : ?User
+    {
+        $query = "SELECT * FROM {$this->getTable()} WHERE username = :username";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute(['username' => $username]);
+
+        if($stmt->rowCount() < 1) return null;
+
+        return $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC), true);
+    }
+
+    protected function newEntity(array $row, bool $hashed = false) : User
+    {
+        return (new User())
+            ->setId($row['id'])
+            ->setNamaLengkap($row['nama_lengkap'])
+            ->setKontak($row['kontak'])
+            ->setUsername($row['username'])
+            ->setPassword($row['password'], $hashed)
+            ->setRole(Role::fromLabel($row['level']));
     }
 
     protected function getTable(): string

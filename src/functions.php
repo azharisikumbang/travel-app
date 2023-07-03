@@ -136,3 +136,17 @@ if(!(function_exists('html_alert'))) {
         require __DIR__ . '/templates/components/alert.php';
     }
 }
+
+if(!(function_exists('html_temp_alert'))) {
+    function html_temp_alert(string $message, string $color = 'red') : void
+    {
+        require __DIR__ . '/templates/components/temp_alert.php';
+    }
+}
+
+if(!(function_exists('html_not_found'))) {
+    function html_not_found(string $message = 'Tidak Ditemukan.') : void
+    {
+        require __DIR__ . '/pages/static/404.php';
+    }
+}

@@ -13,6 +13,11 @@ final class App
         $this->manager = $manager;
     }
 
+    public function setTimeZone(string $zone): void
+    {
+        date_default_timezone_set($zone);
+    }
+
     public function getManager() : ManagerInterface
     {
         return $this->manager;
@@ -94,8 +99,12 @@ final class App
         $paths = explode("/", $this->getManager()->getRouterManager()->getPath());
 
         if(($method == 'GET') && (strtolower($paths[0]) != 'api')) {
-            $sessionUserRole = $this->getManager()->getSessionManager()->get('role') ?? 'public';
-            $this->loadTemplateFor($sessionUserRole);
+            $template = 'public';
+
+            $sessionUser = session()->auth();
+            if($sessionUser) $template = $sessionUser->getRole()->name;
+
+            $this->loadTemplateFor($template);
         } else {
             require_once $this->getContent();
         }

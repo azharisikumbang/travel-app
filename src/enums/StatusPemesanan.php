@@ -17,7 +17,7 @@ enum StatusPemesanan : string
         };
     }
 
-    public static function getLabel(string $label): StatusPemesanan
+    public static function fromLabel(string $label): StatusPemesanan
     {
         return match ($label) {
             'BATAL' => StatusPemesanan::BATAL,

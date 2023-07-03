@@ -87,7 +87,7 @@ class Manager implements ManagerInterface
         return null;
     }
 
-    public function getService(string $name) : mixed
+        public function getService(string $name) : mixed
     {
         $filename = sprintf("%s/services/%s.php", __DIR__, $name);
         if(file_exists($filename)) {

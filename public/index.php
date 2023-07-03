@@ -19,6 +19,7 @@ $manager->setResponseManager(new Response());
 $app = new App($manager);
 $app->addConfigFor('app', $appConfiguration);
 $app->setEnvironment('development');
+$app->setTimeZone('Asia/Jakarta');
 $app->loadFunction('functions', fn ($file) => require_once $file);
 $app->buildRoute($_GET['path'] ?? 'homepage');
 $app->run();

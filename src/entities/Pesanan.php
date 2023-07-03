@@ -130,6 +130,11 @@ class Pesanan implements EntityInterface
         return $this->jamKeberangkatan;
     }
 
+    public function getJadwalLengkap(): string
+    {
+        return sprintf("%s %s WIB", $this->getTanggalKeberangkatan()->format('d/m/Y'), $this->getJamKeberangkatan());
+    }
+
     /**
      * @return string
      */
@@ -144,6 +149,11 @@ class Pesanan implements EntityInterface
     public function getKotaTujuan(): string
     {
         return $this->kotaTujuan;
+    }
+
+    public function getRute(): string
+    {
+        return sprintf("%s - %s", $this->getKotaAsal(), $this->getKotaTujuan());
     }
 
     /**
@@ -491,7 +501,7 @@ class Pesanan implements EntityInterface
             'nomor_iterasi_pesanana' => $this->getNomorIterasiPesanan(),
             'nama_pemesanan' => $this->getNamaPemesan(),
             'kontak_pemesanan' => $this->getKontakPemesan(),
-            'tanggal_keberangkatan' => $this->getTanggalKeberangkatan(),
+            'tanggal_keberangkatan' => $this->getTanggalKeberangkatan()->format('Y-m-d'),
             'jam_keberangkatan' => $this->getJamKeberangkatan(),
             'kota_asal' => $this->getKotaAsal(),
             'kota_tujuan' => $this->getKotaTujuan(),
@@ -503,9 +513,14 @@ class Pesanan implements EntityInterface
             'total_uang_muka' => $this->getTotalUangMuka(),
             'total_dibayarkan' => $this->getTotalDibayarkan(),
             'bukti_pembayaran' => $this->getBuktiPembayaran(),
+            'nama_pembayaran' => $this->getNamaPembayaran(),
+            'bank_pembayaran' => $this->getBankPembayaran(),
             'pemesan_id' => $this->getPemesanId(),
             'mobil_id' => $this->getMobilId(),
-            'list_kursi_dipesan' => array_map(fn($item) => $item->toArray(), $this->getListKursi())
+            'list_kursi_dipesan' => array_map(fn($item) => $item->toArray(), $this->getListKursi()),
+            'rute' => $this->getRute(),
+            'jadwal' => $this->getJadwalLengkap(),
+            'tanggal_pemesanan' => $this->getTanggalPemesanan()->format('Y-m-d')
         ];
     }
 }

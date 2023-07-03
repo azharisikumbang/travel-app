@@ -1,19 +1,21 @@
 <?php
 
 require_once __DIR__ . '/../Contracts/EntityInterface.php';
+require_once __DIR__ . '/../enums/Role.php';
+
 class User implements EntityInterface
 {
     private int $id;
 
-    private string $namaLengkap;
+    private ?string $namaLengkap;
 
     private string $username;
 
     private string $password;
 
-    private string $kontak;
+    private ?string $kontak;
 
-    private string $role = 'PELANGGAN';
+    private Role $role;
 
     /**
      * @return int
@@ -36,7 +38,7 @@ class User implements EntityInterface
     /**
      * @return string
      */
-    public function getNamaLengkap(): string
+    public function getNamaLengkap(): ?string
     {
         return $this->namaLengkap;
     }
@@ -44,7 +46,7 @@ class User implements EntityInterface
     /**
      * @param string $namaLengkap
      */
-    public function setNamaLengkap(string $namaLengkap): self
+    public function setNamaLengkap(?string $namaLengkap): self
     {
         $this->namaLengkap = $namaLengkap;
 
@@ -80,9 +82,10 @@ class User implements EntityInterface
     /**
      * @param string $password
      */
-    public function setPassword(string $password): self
+    public function setPassword(string $password, bool $hashed = false): self
     {
-        $this->password = password_hash($password, PASSWORD_DEFAULT);
+        $this->password = $password;
+        if (!$hashed) $this->password = password_hash($password, PASSWORD_DEFAULT);
 
         return $this;
     }
@@ -90,7 +93,7 @@ class User implements EntityInterface
     /**
      * @return string
      */
-    public function getKontak(): string
+    public function getKontak(): ?string
     {
         return $this->kontak;
     }
@@ -98,7 +101,7 @@ class User implements EntityInterface
     /**
      * @param string $kontak
      */
-    public function setKontak(string $kontak): self
+    public function setKontak(?string $kontak): self
     {
         $this->kontak = $kontak;
 
@@ -108,7 +111,7 @@ class User implements EntityInterface
     /**
      * @return string
      */
-    public function getRole(): string
+    public function getRole(): Role
     {
         return $this->role;
     }
@@ -116,12 +119,21 @@ class User implements EntityInterface
     /**
      * @param string $role
      */
-    public function setRole(string $role): self
+    public function setRole(Role $role): self
     {
-        if(!in_array(strtoupper($role), ['PELANGGAN', 'DRIVER', 'ADMINISTRATOR'])) $role = 'PELANGGAN';
         $this->role = $role;
 
         return $this;
     }
 
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'role' => $this->getRole()->name,
+            'username' => $this->getUsername(),
+            'nama_lengkap' => $this->getNamaLengkap(),
+            'kontak' => $this->getKontak()
+        ];
+    }
 }

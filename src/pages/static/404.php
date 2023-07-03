@@ -1,3 +1,3 @@
 <?php
 
-echo "not-found";
+echo (isset($message)) ? $message : 'not-found';

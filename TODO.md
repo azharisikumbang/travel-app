@@ -3,17 +3,17 @@
 - [x] import assets (js, css, image)
 - [x] membuat administrator page
 - [x] management user and role
-- [ ] management data mobil
+- [x] management data mobil
 - [ ] management data driver
-- [ ] management kategori penumpang
-- [ ] management daerah operasional
-- [ ] management tarif (harga tiket)
+- [x] management kategori penumpang
+- [x] management daerah operasional
+- [x] management tarif (harga tiket)
 - [ ] desain halaman index
 - [ ] desain halaman daftar dan login
-- [ ] desain halaman pesanan
-- [ ] desain halaman pembayaran
-- [ ] desain halaman daftar pesanan (admin)
-- [ ] desain halaman detail pesanan (admin)
+- [x] desain halaman pesanan
+- [x] desain halaman pembayaran
+- [x] desain halaman daftar pesanan (admin)
+- [x] desain halaman detail pesanan (admin)
 - [ ] desain halaman daftar pesanan (user) / web
 - [ ] desain halaman detail pesanan (user) / web
 - [ ] desain halaman daftar pesanan (user) / mobile
