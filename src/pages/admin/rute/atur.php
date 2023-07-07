@@ -69,7 +69,7 @@ $listJamKeberangkatan = $manager->getService('JamKeberangkatanService')->listJam
                                         <option value="-1">-- Pilih Mobil --</option>
                                         <?php foreach($listMobil as $mobil): ?>
                                             <option value="<?= $mobil->getId() ?>" <?= $mobil->getId() == $rute->getMobil()?->getId() ? 'selected' : '' ?>>
-                                                <?= $mobil->getMerk() . ' / ' . $mobil->getNomorPolisi()  . ' / ' . $mobil->getDriver()->getNamaLengkap() ?>
+                                                <?= $mobil->getMerk() . ' / ' . $mobil->getPlatNomor()  . ' / ' . $mobil->getDriver()->getNamaLengkap() ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>

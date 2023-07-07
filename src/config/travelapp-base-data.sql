@@ -50,7 +50,7 @@ INSERT INTO `jadwal_keberangkatan` (`id`, `jam`, `alias`) VALUES
 -- Dumping data untuk tabel `mobil`
 --
 
-INSERT INTO `mobil` (`id`, `merk`, `jumlah_kursi`, `plat_nomor`, `gambar`) VALUES
+INSERT INTO m_mobil (`id`, `merk`, `jumlah_kursi`, `plat_nomor`, `gambar`) VALUES
 (1, 'Avanza', 8, 'BA 1234 QQ', NULL),
 (2, 'Mobil B', 8, 'BA 9892 QO', NULL),
 (3, 'Mobil C', 8, 'BA 9922 QE', NULL);

@@ -8,11 +8,11 @@ class Mobil implements EntityInterface
 
     private string $merk;
 
-    private string $nomor_polisi;
+    private string $plat_nomor;
 
     private int $jumlah_kursi;
 
-    private ?Akun $driver;
+    private ?Driver $driver;
 
     /**
      * @return int
@@ -53,17 +53,17 @@ class Mobil implements EntityInterface
     /**
      * @return string
      */
-    public function getNomorPolisi(): string
+    public function getPlatNomor(): string
     {
-        return $this->nomor_polisi;
+        return $this->plat_nomor;
     }
 
     /**
-     * @param string $nomor_polisi
+     * @param string $plat_nomor
      */
-    public function setNomorPolisi(string $nomor_polisi): self
+    public function setPlatNomor(string $plat_nomor): self
     {
-        $this->nomor_polisi = $nomor_polisi;
+        $this->plat_nomor = $plat_nomor;
 
         return $this;
     }
@@ -87,17 +87,17 @@ class Mobil implements EntityInterface
     }
 
     /**
-     * @return Akun|null
+     * @return Driver|null
      */
-    public function getDriver(): ?Akun
+    public function getDriver(): ?Driver
     {
         return $this->driver;
     }
 
     /**
-     * @param Akun|null $driver
+     * @param Driver|null $driver
      */
-    public function setDriver(?Akun $driver): self
+    public function setDriver(?Driver $driver): self
     {
         $this->driver = $driver;
 
@@ -109,7 +109,7 @@ class Mobil implements EntityInterface
         return [
             'id' => $this->getId(),
             'merk' => $this->getMerk(),
-            'nomor_polisi' => $this->getNomorPolisi(),
+            'plat_nomor' => $this->getPlatNomor(),
             'jumlah_kursi' => $this->getJumlahKursi(),
             'driver' => $this->getDriver()->toArray(false)
         ];

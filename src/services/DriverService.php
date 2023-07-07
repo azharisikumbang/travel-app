@@ -62,4 +62,11 @@ class DriverService
     {
         $this->driverRepository->deleteById($rute);
     }
+
+    public function driverTerdaftar(int|Driver $driver) : false|Driver
+    {
+        $id = is_int($driver) ? $driver : $driver->getId();
+
+        return $this->driverRepository->findById($id) ?? false;
+    }
 }

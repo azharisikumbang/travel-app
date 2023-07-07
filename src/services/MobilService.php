@@ -1,33 +1,46 @@
 <?php
 
 require_once __DIR__ . '/../repositories/MobilRepository.php';
-require_once __DIR__ . '/../repositories/AkunRepository.php';
+require_once __DIR__ . '/../repositories/DriverRepository.php';
 require_once __DIR__ . '/../entities/Mobil.php';
-require_once __DIR__ . '/../entities/Akun.php';
+require_once __DIR__ . '/../entities/Driver.php';
 
 class MobilService
 {
     private MobilRepository $mobilRepository;
 
-    private AkunRepository $userRepository;
+    private DriverRepository $driverRepository;
 
     public function __construct()
     {
         $this->mobilRepository = new MobilRepository();
-        $this->userRepository = new AkunRepository();
+        $this->driverRepository = new DriverRepository();
      }
 
-    public function tambahkanMobilOperasional(Mobil $mobil, null|int|Akun $driver = null) : false|Mobil
+    public function listMobil(int $length = 10, int $from = 0) : array
     {
-        if (is_int($driver)) $driver = $this->userRepository->findById($driver);
-
-        $mobil->setDriver($driver);
-
-        return $this->mobilRepository->save($mobil) ? $mobil : false;
+        return $this->mobilRepository->get($this->driverRepository, $length, $from);
     }
 
-    public function listMobilOperasional(): array
+    public function simpan(int $id, string $merk, string $platNomor, int $jumlahKursi, int $driver) : false|Mobil
     {
-        return $this->mobilRepository->get(10, 0);
+        if ($jumlahKursi < 1) return false;
+
+        $driver = $this->driverRepository->findById($driver);
+        if (is_null($driver)) return false;
+
+        $mobil = new Mobil();
+        $mobil->setId($id);
+        $mobil->setMerk($merk);
+        $mobil->setPlatNomor($platNomor);
+        $mobil->setJumlahKursi($jumlahKursi);
+        $mobil->setDriver($driver);
+
+        return $this->mobilRepository->updateOrCreate($mobil);
+    }
+
+    public function hapus(int|Mobil $mobil) : void
+    {
+        $this->mobilRepository->deleteById($mobil);
     }
 }

@@ -54,7 +54,7 @@ class DriverRepository extends BaseRepository
         return $updated ? $driver : false;
     }
 
-    public function findById(int $id, bool $withRelations) : ?Driver
+    public function findById(int $id, bool $withRelations = false) : ?Driver
     {
         $item = $this->basicFindById($id);
 

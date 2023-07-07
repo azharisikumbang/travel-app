@@ -27,7 +27,7 @@ class KeberangkatanRepository extends BaseRepository
             FROM rute_harian r
             LEFT JOIN daerah_operasional d1 ON d1.id = r.asal_id
             LEFT JOIN daerah_operasional d2 ON d2.id = r.tujuan_id
-            LEFT JOIN mobil m ON m.id = r.mobil_id
+            LEFT JOIN m_mobil m ON m.id = r.mobil_id
             LEFT JOIN jadwal_keberangkatan j ON j.id = r.jam_keberangkatan_id
             LEFT JOIN users u ON m.driver_id = u.id
             ORDER BY do_asal_kota ASC
@@ -108,7 +108,7 @@ class KeberangkatanRepository extends BaseRepository
                 ->setId($row['mobil_id'])
                 ->setMerk($row['m_merk'])
                 ->setJumlahKursi($row['m_jumlah_kursi'])
-                ->setNomorPolisi($row['m_plat_nomor'])
+                ->setPlatNomor($row['m_plat_nomor'])
                 ->setDriver($driver);
 
         $jam = (is_null($row['mobil_id']))
