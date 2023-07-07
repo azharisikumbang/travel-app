@@ -8,10 +8,6 @@ class DaerahOperasionalRepository extends BaseRepository
 
     private string $table = "m_daerah_operasional";
 
-    public function getTableName() : string
-    {
-        return $this->table;
-    }
     public function save(DaerahOpersional $daerah) : bool
     {
         $query = $this->getDatabaseConnection()->prepare("INSERT INTO {$this->table} (nama_kota) VALUES (:nama_kota)");

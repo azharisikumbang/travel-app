@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../repositories/PemesananRepository.php';
 require_once __DIR__ . '/../repositories/JamKeberangkatanRepository.php';
 require_once __DIR__ . '/../repositories/DaerahOperasionalRepository.php';
-require_once __DIR__ . '/../repositories/TipePenumpangRepository.php';
+require_once __DIR__ . '/../repositories/KategoriPelangganRepository.php';
 require_once __DIR__ . '/../repositories/TarifRepository.php';
 require_once __DIR__ . '/../entities/Pesanan.php';
 require_once __DIR__ . '/../entities/JamKeberangkatan.php';
@@ -15,7 +15,7 @@ class TiketService
 
     private JamKeberangkatanRepository $jamKeberangkatanRepository;
 
-    private TipePenumpangRepository $tipePenumpangRepository;
+    private KategoriPelangganRepository $tipePenumpangRepository;
 
     private DaerahOperasionalRepository $daerahOperasionalRepository;
 
@@ -25,7 +25,7 @@ class TiketService
     {
         $this->pemesananRepository = new PemesananRepository();
         $this->jamKeberangkatanRepository = new JamKeberangkatanRepository();
-        $this->tipePenumpangRepository = new TipePenumpangRepository();
+        $this->tipePenumpangRepository = new KategoriPelangganRepository();
         $this->daerahOperasionalRepository = new DaerahOperasionalRepository();
         $this->tarifRepository = new TarifRepository($this->tipePenumpangRepository, $this->daerahOperasionalRepository);
     }

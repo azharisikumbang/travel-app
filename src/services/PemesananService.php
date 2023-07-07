@@ -54,7 +54,7 @@ class PemesananService
 
         $pesanan = new Pesanan();
         $pesanan
-            ->setTipePenumpang($tarif->getTipePenumpang()->getTipePenumpang())
+            ->setTipePenumpang($tarif->getTipePenumpang()->getKategori())
             ->setNomorPesanan($nomorPesanan->getNomorPesanan())
             ->setNomorIterasiPesanan($nomorPesanan->getIterasi())
             ->setTanggalKeberangkatan($tanggalKeberangkatan)

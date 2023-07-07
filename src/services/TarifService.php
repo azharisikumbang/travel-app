@@ -1,10 +1,10 @@
 <?php
 
-require_once __DIR__ . '/../entities/TipePenumpang.php';
+require_once __DIR__ . '/../entities/KategoriPelanggan.php';
 require_once __DIR__ . '/../entities/DaerahOpersional.php';
 require_once __DIR__ . '/../entities/Tarif.php';
 require_once __DIR__ . '/../repositories/DaerahOperasionalRepository.php';
-require_once __DIR__ . '/../repositories/TipePenumpangRepository.php';
+require_once __DIR__ . '/../repositories/KategoriPelangganRepository.php';
 require_once __DIR__ . '/../repositories/TarifRepository.php';
 require_once __DIR__ . '/../repositories/KeberangkatanRepository.php';
 
@@ -12,7 +12,7 @@ class TarifService
 {
     private DaerahOperasionalRepository $daerahOperasionalRepository;
 
-    private TipePenumpangRepository $tipePenumpangRepository;
+    private KategoriPelangganRepository $tipePenumpangRepository;
 
     private TarifRepository $tarifRepository;
 
@@ -21,16 +21,16 @@ class TarifService
     public function __construct()
     {
         $this->daerahOperasionalRepository = new DaerahOperasionalRepository();
-        $this->tipePenumpangRepository = new TipePenumpangRepository();
+        $this->tipePenumpangRepository = new KategoriPelangganRepository();
         $this->tarifRepository = new TarifRepository($this->tipePenumpangRepository, $this->daerahOperasionalRepository);
         $this->ruteRepository = new KeberangkatanRepository();
     }
 
     public function buatTarif(
-        float $nominal,
-        int|TipePenumpang $tipe,
-        int|DaerahOpersional $asal,
-        int|DaerahOpersional $tujuan
+        float                 $nominal,
+        int|KategoriPelanggan $tipe,
+        int|DaerahOpersional  $asal,
+        int|DaerahOpersional  $tujuan
     ) : bool|Tarif {
         if ($asal == $tujuan) return false;
 

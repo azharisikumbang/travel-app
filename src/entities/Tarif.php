@@ -6,7 +6,7 @@ class Tarif implements EntityInterface
 {
     private int $id;
 
-    private ?TipePenumpang $tipePenumpang;
+    private ?KategoriPelanggan $tipePenumpang;
 
     private ?DaerahOpersional $asal;
 
@@ -33,17 +33,17 @@ class Tarif implements EntityInterface
     }
 
     /**
-     * @return TipePenumpang|null
+     * @return KategoriPelanggan|null
      */
-    public function getTipePenumpang(): ?TipePenumpang
+    public function getTipePenumpang(): ?KategoriPelanggan
     {
         return $this->tipePenumpang;
     }
 
     /**
-     * @param TipePenumpang|null $tipePenumpang
+     * @param KategoriPelanggan|null $tipePenumpang
      */
-    public function setTipePenumpang(?TipePenumpang $tipePenumpang): self
+    public function setTipePenumpang(?KategoriPelanggan $tipePenumpang): self
     {
         $this->tipePenumpang = $tipePenumpang;
 

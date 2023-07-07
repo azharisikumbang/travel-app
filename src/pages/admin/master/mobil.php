@@ -88,19 +88,19 @@ $listMobil = app()->getManager()->getService('MobilService')->listMobil();
                 <form @submit.prevent="simpanData">
                     <div class="flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md p-6">
                         <div class="relative bg-clip-border rounded-xl overflow-hidden bg-transparent text-gray-700 shadow-none m-0">
-                            <h6 class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-gray-900 mb-2"><span x-text="properties.sites.button_title"></span> Akun Driver</h6>
+                            <h6 class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-gray-900 mb-2"><span x-text="properties.sites.button_title"></span> Mobil</h6>
                         </div>
                         <div class="w-full min-w-[200px] mb-4">
                             <label for="" class="font-sans text-base text-gray-500 mb-2 block">Merk <small class="text-gray-500" x-text="properties.sites.query_title"></small></label>
-                            <input type="text" x-model="properties.form.merk" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
+                            <input type="text" x-model="properties.form.merk" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400" autofocus>
                         </div>
                         <div class="w-full min-w-[200px] mb-4">
                             <label for="" class="font-sans text-base text-gray-500 mb-2 block">Plat Nomor</label>
-                            <input type="text" x-model="properties.form.plat_nomor" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400" :readonly="properties.sites.show_password_input == false">
+                            <input type="text" x-model="properties.form.plat_nomor" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                         </div>
                         <div class="w-full min-w-[200px] mb-4">
                             <label for="" class="font-sans text-base text-gray-500 mb-2 block">Jumlah Kursi Penumpang</label>
-                            <input type="number" x-model="properties.form.jumlah_kursi" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400" autofocus>
+                            <input type="number" x-model="properties.form.jumlah_kursi" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                         </div>
                         <div class="w-full min-w-[200px] mb-4">
                             <label for="" class="font-sans text-base text-gray-500 mb-2 block">Driver</label>

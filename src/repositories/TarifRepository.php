@@ -7,13 +7,13 @@ class TarifRepository extends BaseRepository
     protected string $table = 'tarif';
 
     public function __construct(
-        private readonly TipePenumpangRepository $tipePenumpangRepository,
+        private readonly KategoriPelangganRepository $tipePenumpangRepository,
         private readonly DaerahOperasionalRepository $daerahOperasionalRepository
     ) { }
 
     public function save(Tarif $tarif) : bool
     {
-        if(!($tarif->getTipePenumpang() instanceof TipePenumpang)) return false;
+        if(!($tarif->getTipePenumpang() instanceof KategoriPelanggan)) return false;
         if(!($tarif->getAsal() instanceof DaerahOpersional)) return false;
         if(!($tarif->getTujuan() instanceof DaerahOpersional)) return false;
 
@@ -146,10 +146,10 @@ class TarifRepository extends BaseRepository
             ->setId($row['kota_tujuan_id'])
             ->setNamaKota($row['kota_tujuan']);
 
-        $tipe = new TipePenumpang();
+        $tipe = new KategoriPelanggan();
         $tipe
             ->setId($row['tipe_penumpang_id'])
-            ->setTipePenumpang($row['tipe_penumpang']);
+            ->setKategori($row['tipe_penumpang']);
 
         $tarif = new Tarif();
         $tarif
