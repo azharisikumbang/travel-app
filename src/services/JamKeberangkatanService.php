@@ -5,20 +5,30 @@ require_once __DIR__ . '/../entities/JamKeberangkatan.php';
 
 class JamKeberangkatanService
 {
-    private JamKeberangkatanRepository $repository;
+    private JamKeberangkatanRepository $jamKeberangkatanRepository;
 
     public function __construct()
     {
-        $this->repository = new JamKeberangkatanRepository();
+        $this->jamKeberangkatanRepository = new JamKeberangkatanRepository();
     }
 
-    public function tambahkanJamKeberangkatan(JamKeberangkatan $jamKeberangkatan) : bool
+    public function simpan(int $id, string $jam, string $alias) : false|JamKeberangkatan
     {
-        return $this->repository->save($jamKeberangkatan);
+        $jamKeberangkatan = new JamKeberangkatan();
+        $jamKeberangkatan->setId($id);
+        $jamKeberangkatan->setJam($jam);
+        $jamKeberangkatan->setAlias($alias);
+
+        return $this->jamKeberangkatanRepository->updateOrCreate($jamKeberangkatan);
     }
 
-    public function listJamKeberangkatan(): array
+    public function listJamKeberangkatan(int $length = 10, int $from = 0): array
     {
-        return $this->repository->get(10, 0);
+        return $this->jamKeberangkatanRepository->get($length, $from);
+    }
+
+    public function hapus(int|JamKeberangkatan $jamKeberangkatan) : bool
+    {
+        return $this->jamKeberangkatanRepository->deleteById($jamKeberangkatan);
     }
 }
