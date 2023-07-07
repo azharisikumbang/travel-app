@@ -1,13 +1,13 @@
 <?php
 
-/** @var $tipePenumpang TipePenumpang */
+/** @var $tipePenumpang KategoriPelanggan */
 $app = app()->getManager();
-$tipePenumpang = $app->getEntity('TipePenumpang');
+$tipePenumpang = $app->getEntity('KategoriPelanggan');
 $tipePenumpang->setTipePenumpang($_POST['kategori_penumpang']);
 
-/** @var $tipePenumpangService TipePenumpangService */
-$tipePenumpangService = $app->getService('TipePenumpangService');
-$tipePenumpangService->tambahkanTipePenumpang($tipePenumpang);
+/** @var $service KategoriPelangganService */
+$service = $app->getService('KategoriPelangganService');
+$service->tambahkanTipePenumpang($tipePenumpang);
 
 $app->getRouterManager()
     ->redirectTo(

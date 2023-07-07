@@ -2,11 +2,11 @@
 
 require_once __DIR__ . '/../Contracts/EntityInterface.php';
 
-class TipePenumpang implements EntityInterface
+class KategoriPelanggan implements EntityInterface
 {
     private int $id;
 
-    private string $tipe_penumpang;
+    private string $kategori;
 
     /**
      * @return int
@@ -29,17 +29,17 @@ class TipePenumpang implements EntityInterface
     /**
      * @return string
      */
-    public function getTipePenumpang(): string
+    public function getKategori(): string
     {
-        return $this->tipe_penumpang;
+        return $this->kategori;
     }
 
     /**
-     * @param string $tipe_penumpang
+     * @param string $kategori
      */
-    public function setTipePenumpang(string $tipe_penumpang): self
+    public function setKategori(string $kategori): self
     {
-        $this->tipe_penumpang = $tipe_penumpang;
+        $this->kategori = $kategori;
 
         return $this;
     }
@@ -48,7 +48,7 @@ class TipePenumpang implements EntityInterface
     {
         return [
             'id' => $this->getId(),
-            'tipe_penumpang' => $this->getTipePenumpang()
+            'kategori' => $this->getKategori()
         ];
     }
 }
