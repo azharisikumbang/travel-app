@@ -3,17 +3,13 @@
 require_once __DIR__ . '/../Contracts/EntityInterface.php';
 require_once __DIR__ . '/../enums/Role.php';
 
-class User implements EntityInterface
+class Akun implements EntityInterface
 {
     private int $id;
-
-    private ?string $namaLengkap;
 
     private string $username;
 
     private string $password;
-
-    private ?string $kontak;
 
     private Role $role;
 
@@ -31,24 +27,6 @@ class User implements EntityInterface
     public function setId(int $id): self
     {
         $this->id = $id;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNamaLengkap(): ?string
-    {
-        return $this->namaLengkap;
-    }
-
-    /**
-     * @param string $namaLengkap
-     */
-    public function setNamaLengkap(?string $namaLengkap): self
-    {
-        $this->namaLengkap = $namaLengkap;
 
         return $this;
     }
@@ -93,24 +71,6 @@ class User implements EntityInterface
     /**
      * @return string
      */
-    public function getKontak(): ?string
-    {
-        return $this->kontak;
-    }
-
-    /**
-     * @param string $kontak
-     */
-    public function setKontak(?string $kontak): self
-    {
-        $this->kontak = $kontak;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getRole(): Role
     {
         return $this->role;
@@ -119,9 +79,9 @@ class User implements EntityInterface
     /**
      * @param string $role
      */
-    public function setRole(Role $role): self
+    public function setRole(string|Role $role): self
     {
-        $this->role = $role;
+        $this->role = is_string($role) ? Role::fromLabel($role): $role;
 
         return $this;
     }
@@ -130,10 +90,8 @@ class User implements EntityInterface
     {
         return [
             'id' => $this->getId(),
-            'role' => $this->getRole()->name,
-            'username' => $this->getUsername(),
-            'nama_lengkap' => $this->getNamaLengkap(),
-            'kontak' => $this->getKontak()
+            'role' => $this->getRole()->value,
+            'username' => $this->getUsername()
         ];
     }
 }

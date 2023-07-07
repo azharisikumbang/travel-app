@@ -1,4 +1,10 @@
-<?php $listMobil = app()->getManager()->getService('MobilService')->listMobilOperasional();?>
+<?php
+
+$manager = app()->getManager();
+$listMobil = $manager->getService('MobilService')->listMobilOperasional();
+$listDriver = $manager->getService('UserService')->listDriver();
+
+?>
 <nav class="block w-full max-w-full bg-transparent text-white shadow-none transition-all px-0 py-1 border-b-2">
     <div class="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
         <h2 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-relaxed text-gray-900">Mobil Operasional</h2>
@@ -16,7 +22,7 @@
     <div class="mb-4 grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div class="xl:col-span-2">
             <div class="flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md overflow-hidden">
-                <div class="p-6 overflow-x-scroll px-0 pt-2 pb-0">
+                <div class="p-6 px-0 pt-2 pb-0">
                     <table class="w-full min-w-[640px] table-auto">
                         <thead>
                         <tr>
@@ -57,7 +63,9 @@
                                     <p class="block antialiased font-sans text-xs font-medium text-gray-600"><?= $mobil->getJumlahKursi(); ?></p>
                                 </td>
                                 <td class="py-3 px-5 border-b border-gray-200 text-center">
-                                    <p class="block antialiased font-sans text-xs font-medium text-gray-600">-</p>
+                                    <p class="block antialiased font-sans text-xs font-medium text-gray-600">
+                                        <?= $mobil->getDriver()->getNamaLengkap() . ' / ' . $mobil->getDriver()->getKontak() ?>
+                                    </p>
                                 </td>
                                 <td class="py-3 px-5 border-b border-gray-200">
                                     <div class="flex gap-2 justify-end">
@@ -95,8 +103,10 @@
                     <div class="w-full min-w-[200px] mb-4">
                         <label for="" class="font-sans text-base text-gray-500 mb-2 block">Driver</label>
                         <select name="driver" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
-                            <option value="_" selected>-- KOSONGKAN --</option>
-<!--                            <option value="ADMINISTRATOR">ADMINISTRATOR</option>-->
+                            <option value="-1" selected>-- KOSONGKAN --</option>
+                            <?php foreach ($listDriver as $driver): ?>
+                            <option value="<?= $driver->getId() ?>"><?= $driver->getNamaLengkap() . ' / ' . $driver->getKontak() ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="w-full min-w-[200px] mt-8">

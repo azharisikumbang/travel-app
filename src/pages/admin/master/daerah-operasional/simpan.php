@@ -11,9 +11,9 @@ $daerahOperasionalService->tambahkanDaerahOperasional($daerah);
 
 $app->getRouterManager()
     ->redirectTo(
-        'admin/master/wilayah-operasional',
+        'admin/master/daerah-operasional',
         true,
-        ['status' => true, 'message' => 'Wilayah operasional berhasil ditambahkan.']
+        ['status' => true, 'message' => 'Daerah operasional berhasil ditambahkan.']
     );
 
 

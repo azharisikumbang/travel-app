@@ -110,6 +110,25 @@ class TarifRepository extends BaseRepository
         return $this->newEntity($data);
     }
 
+    public function listRuteBerdasarkanKota(): false|array
+    {
+        $query = "SELECT 
+            t.kota_asal, 
+            d1.nama_kota as nama_kota_asal,
+            t.kota_tujuan,
+            d2.nama_kota as nama_kota_tujuan
+        FROM `tarif` t
+        JOIN daerah_operasional d1 ON d1.id = t.kota_asal
+        JOIN daerah_operasional d2 ON d2.id = t.kota_tujuan
+        GROUP BY nama_kota_asal, nama_kota_tujuan
+        ORDER BY nama_kota_asal ASC";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     protected function getTable(): string
     {
         return $this->table;

@@ -1,7 +1,7 @@
 <?php
 
 // @TODO: pindah ke middleware autorisasi
-/** @var $auth User */
+/** @var $auth Akun */
 $auth = session()->auth();
 if (!$auth) response()->unauthorized("Permintaan tidak diizinkan.");
 if(false === $auth->getRole()->isAdmin()) response()->unauthorized("Permintaan tidak diizinkan.");

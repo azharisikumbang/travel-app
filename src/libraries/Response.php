@@ -37,7 +37,7 @@ class Response
         $this->toJson(data: [
             'message' => 'BAD_REQUEST',
             'code' => 400,
-            'errors' => !is_array($errors) ? [$errors] : $errors
+            'errors' => is_array($errors) ? $errors : [$errors]
         ], code: 400);
     }
 

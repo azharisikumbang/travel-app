@@ -21,4 +21,14 @@ class DaerahOperasionalService
     {
         $this->daerahOperasionalRepository->save($daerah);
     }
+
+    public function simpan(DaerahOpersional $daerahOpersional) : bool
+    {
+        return $this->daerahOperasionalRepository->updateOrCreate($daerahOpersional);
+    }
+
+    public function hapus(int|DaerahOpersional $daerahOpersional) : void
+    {
+        $this->daerahOperasionalRepository->delete($daerahOpersional);
+    }
 }

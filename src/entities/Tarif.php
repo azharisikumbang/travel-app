@@ -104,7 +104,6 @@ class Tarif implements EntityInterface
         return $this;
     }
 
-
     public function toArray() : array
     {
         return [

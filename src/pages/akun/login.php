@@ -2,9 +2,9 @@
 <main>
     <div class="max-w-2xl mx-auto py-40 px-6">
         <?php if(session('temp')):
-            html_temp_alert(session('temp')['message'], 'yellow');
+            html_temp_alert(session('temp')['message'], session('temp')['status'] ? 'green' : 'yellow');
         endif; ?>
-        <form action="<?= site_url('otentikasi') ?>" method="post">
+        <form action="<?= site_url('akun/otentikasi') ?>" method="post">
             <div class="bg-gray-100 rounded-lg px-6 py-12">
                 <h2 class="block antialiased tracking-normal font-sans text-xl font-bold leading-relaxed text-gray-900 text-center mb-8">Masuk Ke Akun</h2>
                 <div class="w-full mb-4">
@@ -17,6 +17,9 @@
                 </div>
                 <div class="w-full mt-8">
                     <button type="submit" class="w-full text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-4 text-center mr-3 md:mr-0">Masuk</button>
+                </div>
+                <div class="mt-8 text-center">
+                    Belum punya akun ? <a href="<?= site_url('register') ?>" class="underline text-red-800 hover:text-red-600">Silahkan daftar</a>.
                 </div>
             </div>
         </form>

@@ -518,7 +518,7 @@ class Pesanan implements EntityInterface
             'pemesan_id' => $this->getPemesanId(),
             'mobil_id' => $this->getMobilId(),
             'list_kursi_dipesan' => array_map(fn($item) => $item->toArray(), $this->getListKursi()),
-            'rute' => $this->getRute(),
+            'keberangkatan' => $this->getRute(),
             'jadwal' => $this->getJadwalLengkap(),
             'tanggal_pemesanan' => $this->getTanggalPemesanan()->format('Y-m-d')
         ];

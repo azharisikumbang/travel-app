@@ -12,6 +12,8 @@ class Mobil implements EntityInterface
 
     private int $jumlah_kursi;
 
+    private ?Akun $driver;
+
     /**
      * @return int
      */
@@ -84,13 +86,32 @@ class Mobil implements EntityInterface
         return $this;
     }
 
+    /**
+     * @return Akun|null
+     */
+    public function getDriver(): ?Akun
+    {
+        return $this->driver;
+    }
+
+    /**
+     * @param Akun|null $driver
+     */
+    public function setDriver(?Akun $driver): self
+    {
+        $this->driver = $driver;
+
+        return $this;
+    }
+
     public function toArray(): array
     {
         return [
             'id' => $this->getId(),
             'merk' => $this->getMerk(),
             'nomor_polisi' => $this->getNomorPolisi(),
-            'jumlah_kursi' => $this->getJumlahKursi()
+            'jumlah_kursi' => $this->getJumlahKursi(),
+            'driver' => $this->getDriver()->toArray(false)
         ];
     }
 

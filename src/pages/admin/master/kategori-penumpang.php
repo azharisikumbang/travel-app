@@ -21,7 +21,7 @@
                         <h6 class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-gray-900 mb-1">Terdapat <?= count($listTipePenumpang) ?> Kategori Penumpang</h6>
                     </div>
                 </div>
-                <div class="p-6 overflow-x-scroll px-0 pt-0 pb-0">
+                <div class="p-6 px-0 pt-0 pb-0">
                     <table class="w-full min-w-[640px] table-auto">
                         <thead>
                         <tr>

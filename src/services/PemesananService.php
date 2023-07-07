@@ -156,7 +156,7 @@ class PemesananService
                         'kontak' => $item->getKontakPemesan(),
                         'titik_jemput' => $item->getTitikJemput()
                     ],
-                    'rute' => [
+                    'keberangkatan' => [
                         'asal' => $item->getKotaAsal(),
                         'tujuan' => $item->getKotaTujuan(),
                         'full' => $item->getRute()
@@ -199,7 +199,7 @@ class PemesananService
                         'kontak' => $item->getKontakPemesan(),
                         'titik_jemput' => $item->getTitikJemput()
                     ],
-                    'rute' => [
+                    'keberangkatan' => [
                         'asal' => $item->getKotaAsal(),
                         'tujuan' => $item->getKotaTujuan(),
                         'full' => $item->getRute()
@@ -238,7 +238,7 @@ class PemesananService
                     'kontak' => $pesanan->getKontakPemesan(),
                     'titik_jemput' => $pesanan->getTitikJemput()
                 ],
-                'rute' => [
+                'keberangkatan' => [
                     'asal' => $pesanan->getKotaAsal(),
                     'tujuan' => $pesanan->getKotaTujuan(),
                     'full' => $pesanan->getRute()
@@ -280,7 +280,7 @@ class PemesananService
                         'kontak' => $item->getKontakPemesan(),
                         'titik_jemput' => $item->getTitikJemput()
                     ],
-                    'rute' => [
+                    'keberangkatan' => [
                         'asal' => $item->getKotaAsal(),
                         'tujuan' => $item->getKotaTujuan(),
                         'full' => $item->getRute()
@@ -301,6 +301,22 @@ class PemesananService
         $this->pemesananRepository->updateStatusPembayaran($pesanan, $status);
 
         return $pesanan;
+    }
+
+    public function listJadwalPerjalananPelanggan(Akun $user, int $total = 10, $from = 0): array
+    {
+        $listPesanan = $this->pemesananRepository->getJadwalKeberangkatanByPemesanId($user, $total, $from);
+
+        $hariIni = date('Y-m-d');
+        $listPesananHariIni = [];
+        foreach ($listPesanan as $index => $pesanan) {
+            if($hariIni != $pesanan->getTanggalKeberangkatan()->format('Y-m-d')) continue;
+
+            $listPesananHariIni[] = $pesanan;
+            unset($listPesanan[$index]);
+        }
+
+        return ['hari_ini' => $listPesananHariIni, 'lainnya' => array_values($listPesanan)];
     }
 
     private function isStatusBuktiPembayaranConfirmable(Pesanan $pesanan): bool

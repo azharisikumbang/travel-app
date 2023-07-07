@@ -19,7 +19,7 @@ $kategori = $_POST['kategori_penumpang'];
 $tarifService = app()->getManager()->getService('TarifService');
 $tarifEntity = $tarifService->cariTarif($asal, $tujuan, $kategori);
 if (null === $tarifEntity) {
-    response()->badRequest("Rute dan kategori dipilih tidak tersedia, mohon periksa kembali.");
+    response()->badRequest("RuteHarian dan kategori dipilih tidak tersedia, mohon periksa kembali.");
 }
 
 // validasi ulang kursi apakah tersedia

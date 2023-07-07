@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../Contracts/EntityInterface.php';
+
 abstract class BaseRepository
 {
     public function __construct(private ?PDO $db = null)
@@ -19,7 +21,7 @@ abstract class BaseRepository
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    protected function basicSave(array $bind) : bool
+    protected function basicSave(array $bind) : false|int
     {
         $bindKeys = [];
         foreach ($bind as $attr => $value)
@@ -34,7 +36,7 @@ abstract class BaseRepository
             ->getDatabaseConnection()
             ->prepare("INSERT INTO {$this->getTable()} ($valueKeys) VALUES({$bindKeys})");
 
-        return $query->execute($bind);
+        return $query->execute($bind) ? $this->getDatabaseConnection()->lastInsertId() : false;
 
     }
 
@@ -47,6 +49,32 @@ abstract class BaseRepository
         return $stmt;
     }
 
+    public function exists(int|EntityInterface $entity): bool
+    {
+        return $this->queryExists(
+            "SELECT EXISTS(SELECT id FROM {$this->getTable()} WHERE id = :id) as 'exists'",
+            ['id' => is_int($entity) ? $entity : $entity->getId()]
+        );
+    }
+
+    public function queryExists(string $query, array $params) : bool
+    {
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute($params);
+
+        return (bool) $stmt->fetch(PDO::FETCH_ASSOC)['exists'];
+    }
+
+    public function deleteById(int|EntityInterface $entity) : bool
+    {
+        $query = "DELETE FROM {$this->getTable()} WHERE id = :id";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        return $stmt->execute(['id' => is_int($entity) ? $entity: $entity->getId()]);
+    }
+
     abstract protected function getTable(): string;
+
+    abstract protected function newEntity(array $row): EntityInterface;
 
 }

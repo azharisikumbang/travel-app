@@ -3,7 +3,7 @@
 $app = app()->getManager();
 $listKategoriPenumpang = $app->getService('TipePenumpangService')->listTipePenumpang();
 $listDaerah = $app->getService('DaerahOperasionalService')->listDaerahOperasional();
-$listTarifByKategori = $app->getService('TarifService')->listTarifByKategori(20);
+$listTarifByKategori = $app->getService('TarifService')->listTarifByKategori(50);
 
 ?>
 <nav class="block w-full max-w-full bg-transparent text-white shadow-none transition-all px-0 py-1 border-b-2">
@@ -22,23 +22,29 @@ $listTarifByKategori = $app->getService('TarifService')->listTarifByKategori(20)
     <?php endif; ?>
     <div class="mb-4 grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div class="xl:col-span-2">
-            <?php foreach($listTarifByKategori as $listTarif): ?>
-            <div class="mb-12">
-                <h5 class="block antialiased tracking-normal font-sans text-xl font-semibold leading-relaxed text-gray-900 mb-2">Kategori: <?= $listTarif['tipe_penumpang'] ?></h5>
-                <div class="grid grid-cols-3 gap-4">
-                    <?php foreach($listTarif['list_tarif'] as $tarif): ?>
-                    <div class="bg-clip-border rounded-xl bg-white text-gray-700 shadow-md p-6">
-                        <h6 class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-gray-900"><?= $tarif['kota_asal']['nama_kota'] ?> - <?= $tarif['kota_tujuan']['nama_kota'] ?></h6>
-                        <p class="font-sans text-base text-gray-500 mb-2 block">Rp <?= rupiah($tarif['tarif']) ?></p>
-                        <div class="border-t border-gray-200 pt-4">
-                            <button class="bg-orange-400 text-white text-sm rounded px-2 py-1 font-sans center">Edit</button>
-                            <button class="bg-red-700 text-white text-sm rounded px-2 py-1 font-sans center">Hapus</button>
+            <?php if($listTarifByKategori): ?>
+                <?php foreach($listTarifByKategori as $listTarif): ?>
+                <div class="mb-12">
+                    <h5 class="block antialiased tracking-normal font-sans text-xl font-semibold leading-relaxed text-gray-900 mb-2">Kategori: <?= $listTarif['tipe_penumpang'] ?></h5>
+                    <div class="grid grid-cols-3 gap-4">
+                        <?php foreach($listTarif['list_tarif'] as $tarif): ?>
+                        <div class="bg-clip-border rounded-xl bg-white text-gray-700 shadow-md p-6">
+                            <h6 class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-gray-900"><?= $tarif['kota_asal']['nama_kota'] ?> - <?= $tarif['kota_tujuan']['nama_kota'] ?></h6>
+                            <p class="font-sans text-base text-gray-500 mb-2 block">Rp <?= rupiah($tarif['tarif']) ?></p>
+                            <div class="border-t border-gray-200 pt-4">
+                                <button class="bg-orange-400 text-white text-sm rounded px-2 py-1 font-sans center">Edit</button>
+                                <button class="bg-red-700 text-white text-sm rounded px-2 py-1 font-sans center">Hapus</button>
+                            </div>
                         </div>
+                        <?php endforeach; ?>
                     </div>
-                    <?php endforeach; ?>
                 </div>
-            </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="text-center">
+                    Tidak ada data.
+                </div>
+            <?php endif; ?>
         </div>
         <div>
             <div class="flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md p-6">

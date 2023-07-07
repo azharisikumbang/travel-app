@@ -1,20 +1,19 @@
 <?php
 
-require_once __DIR__ . '/../repositories/UserRepository.php';
+require_once __DIR__ . '/../repositories/AkunRepository.php';
 
 class OtentikatorService
 {
-    private UserRepository $userRepository;
+    private AkunRepository $akunRepository;
 
     public function __construct()
     {
-        $this->userRepository = new UserRepository();
+        $this->akunRepository = new AkunRepository();
     }
 
     public function otentikasi(string $username, string $password) : bool
     {
-        $user = $this->userRepository->findByUsername($username);
-
+        $user = $this->akunRepository->findByUsername($username);
 
         if(is_null($user)) return false;
 
@@ -25,12 +24,12 @@ class OtentikatorService
         return true;
     }
 
-    private function verify(User $user, string $plainPassword) : bool
+    private function verify(Akun $user, string $plainPassword) : bool
     {
         return password_verify($plainPassword, $user->getPassword());
     }
 
-    private function createAuthenticatedSession(User $user) : void
+    private function createAuthenticatedSession(Akun $user) : void
     {
         session()->add('auth', $user->toArray());
     }

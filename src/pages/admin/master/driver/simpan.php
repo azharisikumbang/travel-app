@@ -1,14 +1,14 @@
 <?php
 
-/** @var $user User */
+/** @var $user Akun */
 $app = app()->getManager();
-$user = $app->getEntity('User');
+$user = $app->getEntity('Akun');
 $user
     ->setNamaLengkap($_POST['nama_lengkap'])
     ->setKontak($_POST['kontak'])
     ->setUsername($_POST['username'])
     ->setPassword($_POST['password'])
-    ->setRole($_POST['role'])
+    ->setRole('driver')
 ;
 
 $userRepository = $app->getRepository('UserRepository');
@@ -18,7 +18,7 @@ $userService->tambahkanAkunOperasional($user, $userRepository);
 
 $app->getRouterManager()
     ->redirectTo(
-        'admin/master/akun',
+        'admin/master/driver',
         true,
         ['status' => true, 'message' => 'Akun berhasil ditambahkan.']
     );

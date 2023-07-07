@@ -275,6 +275,43 @@ class PemesananRepository extends BaseRepository
         ]);
     }
 
+    public function getJadwalKeberangkatanByPemesanId(Akun $user, int $length = 10, int $from = 0): array
+    {
+        $query = "SELECT 
+                p.*,
+                pd.id as detail_pemesanan_id,
+                pd.nomor_kursi,
+                pd.harga_tiket
+            FROM pesanan p
+            LEFT JOIN pesanan_detail pd on p.id = pd.pesanan_id
+            WHERE pemesan_id = :pemesan_id AND status_bukti_pembayaran = :status_bukti_pembayaran AND tanggal_keberangkatan >= CURDATE()
+            ORDER BY tanggal_keberangkatan DESC
+            LIMIT {$from}, {$length}";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute(['pemesan_id' => $user->getId(), 'status_bukti_pembayaran' => StatusBuktiPembayaran::VALID->value]);
+
+        if($stmt->rowCount() < 1) return [];
+
+        $listPesanan = [];
+        $pesanan = null;
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $pesanan = ($pesanan?->getId() == $row['id']) ?  $pesanan : $this->newEntity($row);
+
+            $pesananDetail = new PesananDetail();
+            $pesananDetail
+                ->setId($row['detail_pemesanan_id'])
+                ->setPesananId($pesanan->getId())
+                ->setNomorKursi($row['nomor_kursi'])
+                ->setHargaTiket($row['harga_tiket']);
+
+            $pesanan->addPesananDetail($pesananDetail);
+            $listPesanan[$pesanan->getNomorPesanan()] = $pesanan;
+        }
+
+        return array_values($listPesanan);
+    }
+
     public function saveInformasiPembayaran(Pesanan $pesanan): void
     {
         $query = "UPDATE {$this->getTable()} 

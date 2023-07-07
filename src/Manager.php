@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/Contracts/ManagerInterface.php';
+
 class Manager implements ManagerInterface
 {
 
@@ -10,6 +12,8 @@ class Manager implements ManagerInterface
     private ?RouterInterface $routerManager;
 
     private ?Response $responseManager;
+
+    private ?Request $requestManager;
 
 
     public function setDatabaseManager(\DatabaseInterface $manager) : self
@@ -55,6 +59,22 @@ class Manager implements ManagerInterface
     public function getResponseManager(): ?Response
     {
         return $this->responseManager;
+    }
+
+    /**
+     * @return Request|null
+     */
+    public function getRequestManager(): ?Request
+    {
+        return $this->requestManager;
+    }
+
+    /**
+     * @param Request|null $requestManager
+     */
+    public function setRequestManager(?Request $requestManager): void
+    {
+        $this->requestManager = $requestManager;
     }
 
     /**

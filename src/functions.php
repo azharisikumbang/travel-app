@@ -2,8 +2,6 @@
 
 /** @var $app App */
 
-//var_dump($app->getConfigFrom('app', 'site_url')); die;
-
 if(!function_exists('app')) {
     function app(): App
     {
@@ -76,6 +74,13 @@ if (!function_exists('response')) {
     }
 }
 
+if (!function_exists('request')) {
+    function request()
+    {
+        return app()->getManager()->getRequestManager();
+    }
+}
+
 if (!function_exists('tanggal')) {
     function tanggal(DateTimeInterface $date, bool $month = true, bool $full = false)
     {
@@ -129,7 +134,6 @@ if(!(function_exists('html_require_component'))) {
     }
 }
 
-
 if(!(function_exists('html_alert'))) {
     function html_alert(string $message, string $color = 'red') : void
     {
@@ -147,6 +151,17 @@ if(!(function_exists('html_temp_alert'))) {
 if(!(function_exists('html_not_found'))) {
     function html_not_found(string $message = 'Tidak Ditemukan.') : void
     {
+        http_response_code(404);
         require __DIR__ . '/pages/static/404.php';
+        exit();
+    }
+}
+
+if(!(function_exists('html_unauthorized'))) {
+    function html_unauthorized(string $message = 'Tidak Ditemukan.') : void
+    {
+        http_response_code(403);
+        require __DIR__ . '/pages/static/403.php';
+        exit();
     }
 }

@@ -6,6 +6,7 @@ require_once __DIR__ . '/../entities/Tarif.php';
 require_once __DIR__ . '/../repositories/DaerahOperasionalRepository.php';
 require_once __DIR__ . '/../repositories/TipePenumpangRepository.php';
 require_once __DIR__ . '/../repositories/TarifRepository.php';
+require_once __DIR__ . '/../repositories/KeberangkatanRepository.php';
 
 class TarifService
 {
@@ -15,11 +16,14 @@ class TarifService
 
     private TarifRepository $tarifRepository;
 
+    private KeberangkatanRepository $ruteRepository;
+
     public function __construct()
     {
         $this->daerahOperasionalRepository = new DaerahOperasionalRepository();
         $this->tipePenumpangRepository = new TipePenumpangRepository();
         $this->tarifRepository = new TarifRepository($this->tipePenumpangRepository, $this->daerahOperasionalRepository);
+        $this->ruteRepository = new KeberangkatanRepository();
     }
 
     public function buatTarif(
@@ -45,6 +49,16 @@ class TarifService
 
     public function simpanTarifBaru(Tarif $tarif) : bool
     {
+        if(false === $this->ruteRepository->isAsalAndTujuanExists($tarif->getAsal(), $tarif->getTujuan())) {
+            $this->ruteRepository->save(
+                (new RuteHarian())
+                    ->setAsal($tarif->getAsal())
+                    ->setTujuan($tarif->getTujuan())
+                    ->setMobil(null)
+                    ->setJamKeberangkatan(null)
+            );
+        }
+
         return $this->tarifRepository->save($tarif);
     }
 
@@ -69,7 +83,7 @@ class TarifService
         return $result;
     }
 
-    public function lihatDetailTarif(int $tarif) : Tarif
+    public function lihatDetailTarif(int $tarif) : ?Tarif
     {
         return $this->tarifRepository->findById($tarif);
     }
@@ -77,5 +91,10 @@ class TarifService
     public function cariTarif(int $asal, int $tujuan, int $kategori) 
     {
         return $this->tarifRepository->cariTarif($asal, $tujuan, $kategori);
+    }
+
+    public function listRuteTersedia(): false|array
+    {
+        return $this->tarifRepository->listRuteBerdasarkanKota();
     }
 }

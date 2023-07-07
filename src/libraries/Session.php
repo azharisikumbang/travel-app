@@ -1,7 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../Contracts/SessionInterface.php';
-require_once __DIR__ . '/../entities/User.php';
+require_once __DIR__ . '/../entities/Akun.php';
+require_once __DIR__ . '/../enums/Role.php';
 
 class Session implements SessionInterface
 {
@@ -40,16 +41,22 @@ class Session implements SessionInterface
         return isset($_SESSION[$key]);
     }
 
-    public function auth(): ?User
+    public function auth(): ?Akun
     {
         $user = session('auth');
         if(is_null($user)) return null;
 
-        return (new User())
+        return (new Akun())
             ->setId($user['id'])
-            ->setNamaLengkap($user['nama_lengkap'])
-            ->setKontak($user['kontak'])
             ->setUsername($user['username'])
             ->setRole(Role::fromLabel($user['role']));
+    }
+
+    public function isAuthenticatedAs(string|Role $role): bool
+    {
+        $auth = $this->auth();
+        $role = is_string($role) ? Role::fromLabel($role) : $role;
+
+        return $auth ? $auth->getRole()->value == $role->value : false;
     }
 }

@@ -1,1 +1,1 @@
-INSERT INTO users (nama_lengkap, username, password, level) VALUES ('Administrator', 'admin', '$2y$10$oKkCaUIHawIqdx33sxwE1O9vHlhXcbfsRVQ/m7uoOL9gnjNWe1cay', 'ADMIN');
+INSERT INTO m_akun (username, password, role) VALUES ('admin', '$2y$10$F09VT7vnzeFqoTuQAj3CoOhJg4wq96bJy1Ah1ltQplyHAus8vJGJO', 'ADMIN');

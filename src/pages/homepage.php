@@ -21,7 +21,7 @@
                                     <h6 class="font-sans text-base text-gray-500 block">
                                         <span x-text="t.kota_asal.nama_kota"></span> - <span x-text="t.kota_tujuan.nama_kota"></span>
                                     </h6>
-                                    <p class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-gray-900">Rp <span x-text="t.tarif"></span></p>
+                                    <p class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-gray-900" x-text="currencyToRupiah(t.tarif)"></p>
                                 </div>
                                 <div class="basis-1/4">
                                     <a :href="'<?= site_url('pesan?tarif=') ?>' + t.id" class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3 md:mr-0">Pesan</a>
@@ -40,6 +40,9 @@
         Alpine.data('listAvailableTiket', () => ({
             active: 3,
             listTiket: [],
+            currencyToRupiah: function (number) {
+                return 'Rp ' + (new Intl.NumberFormat('id-Id', {"maximumSignificantDigits": 3}).format(number));
+            },
             init() {
                 axios.get("<?= site_url('api/list-tiket?order=kategori') ?>")
                     .then(res => this.listTiket = res.data)

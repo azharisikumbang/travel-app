@@ -1,1 +1,0 @@
-daftar page

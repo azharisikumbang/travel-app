@@ -8,7 +8,14 @@ $mobil
     ->setJumlahKursi($_POST['jumlah_kursi']);
 
 $service = $app->getService('MobilService');
-$service->tambahkanMobilOperasional($mobil);
+$saved = $service->tambahkanMobilOperasional($mobil, $_POST['driver']);
+
+if(false === $saved)
+    $app->getRouterManager()->redirectTo(
+        'admin/master/mobil',
+        true,
+        ['status' => false, 'message' => 'Data mobil gagal ditambahkan.']
+    );
 
 $app->getRouterManager()
     ->redirectTo(

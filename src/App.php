@@ -45,6 +45,10 @@ final class App
             default => Role::PUBLIC
         };
 
+        // @TODO: split to function for readble
+        // authorization
+//        if ($role != session()->auth()?->getRole()) html_unauthorized();;
+
         $pageTemplate = sprintf("%s/templates/%s.php", __DIR__, $role->pageTemplate());
 
         if(file_exists($pageTemplate)) require_once $pageTemplate;

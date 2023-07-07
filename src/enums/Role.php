@@ -1,11 +1,11 @@
 <?php
 
-enum Role
+enum Role: string
 {
-    case PUBLIC;
-    case PELANGGAN;
-    case ADMIN;
-    case DRIVER;
+    case PUBLIC = 'PUBLIC';
+    case PELANGGAN = 'PELANGGAN';
+    case ADMIN = 'ADMIN';
+    case DRIVER = 'DRIVER';
 
     public function pageTemplate(): string
     {
@@ -41,6 +41,14 @@ enum Role
     {
         return match($this) {
             Role::ADMIN => true,
+            default => false
+        };
+    }
+
+    public function isDriver() : bool
+    {
+        return match($this) {
+            Role::DRIVER => true,
             default => false
         };
     }

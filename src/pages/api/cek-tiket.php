@@ -7,11 +7,11 @@ if (false === $tiketService->cekTanggalKeberangkatanValid($tanggalPemesanan)) {
     response()->badRequest("Tanggal yang dipesan sudah terlewat, mohon periksa kembali.");
 }
 
-// validasi rute
+// validasi keberangkatan
 $tarifService = app()->getManager()->getService('TarifService');
 $tarifEntity = $tarifService->cariTarif($_GET['asal'], $_GET['tujuan'], $_GET['kategori']);
 if (null === $tarifEntity) {
-    response()->badRequest("Rute dan kategori dipilih tidak tersedia, mohon periksa kembali.");
+    response()->badRequest("RuteHarian dan kategori dipilih tidak tersedia, mohon periksa kembali.");
 }
 
 $listKursiTersedia = $tiketService->cariKursiTersedia(
