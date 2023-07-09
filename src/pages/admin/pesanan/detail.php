@@ -1,10 +1,18 @@
-<?php $pesanan = app()->getManager()->getService('PemesananService')->cariPesananBerdasarkanNomorPesanan($_GET['nomor']);  ?>
+<?php
+
+/** @var $pesanan Pesanan */
+$pesanan = app()->getManager()->getService('PemesananService')->cariPesananBerdasarkanNomorPesanan($_GET['nomor']);
+
+if (is_null($pesanan)) html_not_found();
+
+?>
 <main x-data="container">
     <nav class="block w-full max-w-full bg-transparent text-white shadow-none transition-all px-0 py-1 border-b-2">
         <div class="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
             <h2 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-relaxed text-gray-900" x-text="properties.sites.page_title"></h2>
-            <div class="flex items-center">
-                <span class="font-sans text-gray-500"><?php echo tanggal(date_create()) ?></span>
+            <div class="flex items-center gap-4">
+                <span class="font-sans text-gray-500">Sekarang: <?php echo tanggal(date_create()) ?></span>
+                <a @click="window.location.reload()" class="underline text-gray-500 hover:text-gray-600 cursor-pointer">Muat Ulang</a>
             </div>
         </div>
     </nav>
@@ -14,7 +22,7 @@
                 <h6 class="rounded-tl rounded-tr font-sans text-xl font-semibold text-gray-700 mb-2">Informasi Pemesanan (Tiket)</h6>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Nomor Tiket</label>
-                    <p class="w-full " x-text="properties.data.pesanan.nomor_pemesanan"></p>
+                    <p class="w-full" x-text="properties.data.pesanan.nomor_pemesanan"></p>
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Tanggal Tiket Dipesan</label>
@@ -26,7 +34,7 @@
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Rute Perjalanan</label>
-                    <p class="w-full " x-text="properties.data.pesanan.rute"></p>
+                    <p class="w-full " x-text="properties.data.pesanan.keberangkatan"></p>
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Mobil dan Driver</label>
@@ -158,7 +166,7 @@
                     },
                     "errors": {},
                     "data": {
-                        "pesanan": JSON.parse('<?= json_encode($pesanan?->toArray()) ?>')
+                        "pesanan": JSON.parse('<?= json_encode($pesanan->toArray()) ?>')
                     }
                 },
                 "init": function() {

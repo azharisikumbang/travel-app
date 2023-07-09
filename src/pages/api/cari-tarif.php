@@ -2,7 +2,7 @@
 
 $tarif = app()
     ->getManager()
-    ->getService('TarifService')
+    ->getService('TiketService')
     ->cariTarif($_GET['asal'], $_GET['tujuan'], $_GET['kategori']);
 
 if (empty($tarif)) response()->jsonNotFound("RuteHarian tidak tersedia, mohon cari keberangkatan lain atau hubungi penyedia layanan.");

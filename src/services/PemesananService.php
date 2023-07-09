@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../repositories/PemesananRepository.php';
 require_once __DIR__ . '/../repositories/JamKeberangkatanRepository.php';
 require_once __DIR__ . '/../repositories/DaerahOperasionalRepository.php';
+require_once __DIR__ . '/../repositories/MobilRepository.php';
 require_once __DIR__ . '/../entities/Object/NomorPesanan.php';
 require_once __DIR__ . '/../enums/StatusPemesanan.php';
 require_once __DIR__ . '/../enums/StatusBuktiPembayaran.php';
@@ -18,12 +19,15 @@ class PemesananService
 
     private PenyimpananService $penyimpananService;
 
+    private MobilRepository $mobilRepository;
+
     public function __construct()
     {
         $this->pemesananRepository = new PemesananRepository();
         $this->jamKeberangkatanRepository = new JamKeberangkatanRepository();
         $this->daerahOperasionalRepository = new DaerahOperasionalRepository();
         $this->penyimpananService = new PenyimpananService();
+        $this->mobilRepository = new MobilRepository();
     }
 
     public function buatNomorPemesanan(DateTimeInterface $tanggal) : NomorPesanan
@@ -44,28 +48,47 @@ class PemesananService
     }
 
     public function buatPesananBaru(
-        NomorPesanan $nomorPesanan,
-        DateTimeInterface $tanggalKeberangkatan,
+        DateTimeInterface    $tanggalKeberangkatan,
         int|JamKeberangkatan $jamKeberangkatan,
-        Tarif $tarif,
-        array $kursiDipesan // @TODO: change to Object
+        Tiket                $tiket,
+        int|Mobil            $mobil,
+        array                $kursiDipesan, // @TODO: change to Object,
+        bool                 $isRuteReversed = false
     ) : Pesanan {
-        $jamKeberangkatan = !($jamKeberangkatan instanceof JamKeberangkatan) ? $this->jamKeberangkatanRepository->findById($jamKeberangkatan) : $jamKeberangkatan;
+
+        $nomorPesanan = $this->buatNomorPemesanan($tanggalKeberangkatan);
+
+        if (is_int($jamKeberangkatan)) $jamKeberangkatan = $this->jamKeberangkatanRepository->findById($jamKeberangkatan);
+
+        $asal = $tiket->getRute()->getAsal();
+        $tujuan = $tiket->getRute()->getTujuan();
+
+        if ($isRuteReversed) {
+            $asal = $tiket->getRute()->getTujuan();
+            $tujuan = $tiket->getRute()->getAsal();
+        }
 
         $pesanan = new Pesanan();
-        $pesanan
-            ->setTipePenumpang($tarif->getTipePenumpang()->getKategori())
-            ->setNomorPesanan($nomorPesanan->getNomorPesanan())
-            ->setNomorIterasiPesanan($nomorPesanan->getIterasi())
-            ->setTanggalKeberangkatan($tanggalKeberangkatan)
-            ->setJamKeberangkatan($jamKeberangkatan->getJam(true))
-            ->setKotaAsal($tarif->getAsal()->getNamaKota())
-            ->setKotaTujuan($tarif->getTujuan()->getNamaKota())
-            ->setStatusPemesanan(StatusPemesanan::PENDING)
-            ->setStatusBuktiPembayaran(StatusBuktiPembayaran::PENDING)
-        ;
+        $pesanan->setNomorPesanan($nomorPesanan->getNomorPesanan());
+        $pesanan->setNomorIterasiPesanan($nomorPesanan->getIterasi());
+        $pesanan->setTanggalKeberangkatan($tanggalKeberangkatan);
+        $pesanan->setTanggalPemesanan(date_create('now'));
+        $pesanan->setJamKeberangkatan((string) $jamKeberangkatan);
+        $pesanan->setKotaAsal($asal->getNamaKota());
+        $pesanan->setKotaTujuan($tujuan->getNamaKota());
+        $pesanan->setKategoriPelanggan($tiket->getKategoriPelanggan()->getKategori());
+        $pesanan->setTotalTarif($tiket->getTarif() * count($kursiDipesan));
+        $pesanan->setStatusBuktiPembayaran(StatusBuktiPembayaran::PENDING);
+        $pesanan->setStatusPemesanan(StatusPemesanan::PENDING);
+        $pesanan->setPemesanId(1);
 
-        foreach ($kursiDipesan as $kursi) $pesanan->addNomorKursi($kursi, $tarif);
+        foreach ($kursiDipesan as $kursi) {
+            $pesananDetail = new PesananDetail();
+            $pesananDetail->setHargaTiket($tiket->getTarif());
+            $pesananDetail->setNomorKursi((int) $kursi);
+
+            $pesanan->addPesananDetail($pesananDetail);
+        }
 
         return $this->pemesananRepository->save($pesanan);
     }
@@ -317,6 +340,26 @@ class PemesananService
         }
 
         return ['hari_ini' => $listPesananHariIni, 'lainnya' => array_values($listPesanan)];
+    }
+
+    public function validasiTanggalKeberangkatan(DateTimeInterface $tanggal): bool
+    {
+        $today = date("Y-m-d");
+
+        return $today <= $tanggal->format("Y-m-d");
+    }
+
+    public function listKursiDipesanBerdasarkanTanggalDanRute(DateTimeInterface $tanggal, Rute $rute): array
+    {
+        return $this->pemesananRepository->getListKursiPesananByTanggalKeberangkatanAndRute($tanggal, $rute);
+    }
+
+    public function validasiKursiDipesan(DateTimeInterface $tanggal, Rute $rute, int $mobilId, array $kursi) : bool
+    {
+        $mobil = null;
+        if ($mobilId > 0) $mobil = $this->mobilRepository->findById($mobilId);
+
+        return true;
     }
 
     private function isStatusBuktiPembayaranConfirmable(Pesanan $pesanan): bool

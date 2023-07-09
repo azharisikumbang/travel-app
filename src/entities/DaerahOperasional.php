@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../Contracts/EntityInterface.php';
 
-class DaerahOpersional implements EntityInterface
+class DaerahOperasional implements EntityInterface
 {
     private int $id;
 

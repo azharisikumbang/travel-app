@@ -25,4 +25,8 @@ class PemesananDetailRepository extends BaseRepository
         }
     }
 
+    protected function newEntity(array $row, bool $withRelations = false): PesananDetail
+    {
+        return  new PesananDetail();
+    }
 }

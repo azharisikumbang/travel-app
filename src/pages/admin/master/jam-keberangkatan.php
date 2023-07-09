@@ -3,8 +3,9 @@
     <nav class="block w-full max-w-full bg-transparent text-white shadow-none transition-all px-0 py-1 border-b-2">
         <div class="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
             <h2 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-relaxed text-gray-900">Master - Jam Keberangkatan</h2>
-            <div class="flex items-center">
-                <span class="font-sans text-gray-500"><?php echo tanggal(date_create()) ?></span>
+            <div class="flex items-center gap-4">
+                <span class="font-sans text-gray-500 underline">Sekarang: <?php echo tanggal(date_create()) ?></span>
+                <span class="text-gray-500 underline hover:text-opacity-75 cursor-pointer" @click="window.location.reload()">Muat Ulang</span>
             </div>
         </div>
     </nav>

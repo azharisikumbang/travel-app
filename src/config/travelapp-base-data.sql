@@ -56,7 +56,7 @@ INSERT INTO m_mobil (`id`, `merk`, `jumlah_kursi`, `plat_nomor`, `gambar`) VALUE
 (3, 'Mobil C', 8, 'BA 9922 QE', NULL);
 
 --
--- Dumping data untuk tabel `tarif`
+-- Dumping data untuk tabel `tiket`
 --
 
 INSERT INTO `tarif` (`id`, `kota_asal`, `kota_tujuan`, `tipe_penumpang`, `tarif`) VALUES

@@ -2,23 +2,21 @@
 
 require_once __DIR__ . '/../Contracts/EntityInterface.php';
 
-class RuteHarian implements EntityInterface
+class Keberangkatan implements EntityInterface
 {
     private int $id;
 
-    private DaerahOperasional $asal;
+    private null|int|Rute $rute;
 
-    private DaerahOperasional $tujuan;
+    private null|int|Mobil $mobil;
 
-    private ?Mobil $mobil;
+    private null|int|JamKeberangkatan $jamKeberangkatan;
 
-    private ?JamKeberangkatan $jamKeberangkatan;
-
-    private ?DateTimeInterface $lastUpdated;
+    private null|int|DateTimeInterface $lastUpdated;
 
     public function getId(): int
     {
-        return $this->id;
+       return  $this->id;
     }
 
     /**
@@ -32,37 +30,19 @@ class RuteHarian implements EntityInterface
     }
 
     /**
-     * @return DaerahOperasional
+     * @return Rute
      */
-    public function getAsal(): DaerahOperasional
+    public function getRute(): Rute
     {
-        return $this->asal;
+        return $this->rute;
     }
 
     /**
-     * @param DaerahOperasional $asal
+     * @param Rute $rute
      */
-    public function setAsal(DaerahOperasional $asal): self
+    public function setRute(null|int|Rute $rute): self
     {
-        $this->asal = $asal;
-
-        return $this;
-    }
-
-    /**
-     * @return DaerahOperasional
-     */
-    public function getTujuan(): DaerahOperasional
-    {
-        return $this->tujuan;
-    }
-
-    /**
-     * @param DaerahOperasional $tujuan
-     */
-    public function setTujuan(DaerahOperasional $tujuan): self
-    {
-        $this->tujuan = $tujuan;
+        $this->rute = $rute;
 
         return $this;
     }
@@ -70,7 +50,7 @@ class RuteHarian implements EntityInterface
     /**
      * @return Mobil
      */
-    public function getMobil(): ?Mobil
+    public function getMobil(): null|int|Mobil
     {
         return $this->mobil;
     }
@@ -78,7 +58,7 @@ class RuteHarian implements EntityInterface
     /**
      * @param Mobil $mobil
      */
-    public function setMobil(?Mobil $mobil): self
+    public function setMobil(null|int|Mobil $mobil): self
     {
         $this->mobil = $mobil;
 
@@ -88,7 +68,7 @@ class RuteHarian implements EntityInterface
     /**
      * @return JamKeberangkatan
      */
-    public function getJamKeberangkatan(): ?JamKeberangkatan
+    public function getJamKeberangkatan(): null|int|JamKeberangkatan
     {
         return $this->jamKeberangkatan;
     }
@@ -96,7 +76,7 @@ class RuteHarian implements EntityInterface
     /**
      * @param JamKeberangkatan $jamKeberangkatan
      */
-    public function setJamKeberangkatan(?JamKeberangkatan $jamKeberangkatan): self
+    public function setJamKeberangkatan(null|int|JamKeberangkatan $jamKeberangkatan): self
     {
         $this->jamKeberangkatan = $jamKeberangkatan;
 
@@ -104,7 +84,7 @@ class RuteHarian implements EntityInterface
     }
 
     /**
-     * @return DateTimeInterface
+     * @return DateTimeInterface|null
      */
     public function getLastUpdated(): ?DateTimeInterface
     {
@@ -112,7 +92,7 @@ class RuteHarian implements EntityInterface
     }
 
     /**
-     * @param DateTimeInterface $lastUpdated
+     * @param DateTimeInterface|null $lastUpdated
      */
     public function setLastUpdated(?DateTimeInterface $lastUpdated): self
     {
@@ -125,10 +105,9 @@ class RuteHarian implements EntityInterface
     {
         return [
             'id' => $this->getId(),
-            'asal' => $this->getAsal()->toArray(),
-            'tujuan' => $this->getTujuan()->toArray(),
-            'jam_keberangkatan' => $this->getJamKeberangkatan()?->toArray(),
+            'rute' => $this->getRute()->toArray(),
             'mobil' => $this->getMobil()?->toArray(),
+            'jam_keberangkatan' => $this->getJamKeberangkatan()?->toArray(),
             'last_updated' => $this->getLastUpdated()?->format('Y-m-d H:i:s')
         ];
     }

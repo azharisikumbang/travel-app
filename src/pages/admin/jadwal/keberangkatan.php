@@ -2,8 +2,9 @@
     <nav class="block w-full max-w-full bg-transparent text-white shadow-none transition-all px-0 py-1 border-b-2">
         <div class="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
             <h2 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-relaxed text-gray-900" x-text="properties.sites.page_title"></h2>
-            <div class="flex items-center">
-                <span class="font-sans text-gray-500"><?php echo tanggal(date_create()) ?></span>
+            <div class="flex items-center gap-4">
+                <span class="font-sans text-gray-500">Sekarang: <?php echo tanggal(date_create()) ?></span>
+                <a @click="window.location.reload()" class="underline text-gray-500 hover:text-gray-600 cursor-pointer">Muat Ulang</a>
             </div>
         </div>
     </nav>

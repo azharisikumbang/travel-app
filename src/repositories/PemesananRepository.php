@@ -26,7 +26,7 @@ class PemesananRepository extends BaseRepository
     public function cekKursiTersedia(
         DateTimeInterface $tanggal,
         JamKeberangkatan $jam,
-        Tarif $tarif
+        Tiket $tarif
     ) : array
     {
         $query = "SELECT 
@@ -51,7 +51,7 @@ class PemesananRepository extends BaseRepository
         $stmt->execute([
             'tanggal_keberangkatan' => $tanggal->format("Y-m-d"),
             'jam_keberangkatan' => $jam->getJam(),
-            'kota_asal' => $tarif->getAsal()->getNamaKota(),
+            'kota_asal' => $tarif->getRute()->getNamaKota(),
             'kota_tujuan' => $tarif->getTujuan()->getNamaKota()
         ]);
 
@@ -98,15 +98,15 @@ class PemesananRepository extends BaseRepository
             'kota_asal' => $pesanan->getKotaAsal(),
             'kota_tujuan' => $pesanan->getKotaTujuan(),
             'titik_jemput' => $pesanan->getTitikJemput(),
-            'tipe_penumpang' => $pesanan->getTipePenumpang(),
+            'tipe_penumpang' => $pesanan->getKategoriPelanggan(),
             'total_tarif' => $pesanan->getTotalTarif(),
             'status_bukti_pembayaran' => $pesanan->getStatusBuktiPembayaran()->value,
             'status_pemesanan' => $pesanan->getStatusPemesanan()->value,
             'total_uang_muka' => $pesanan->getTotalUangMuka(),
             'total_dibayarkan' => $pesanan->getTotalDibayarkan(),
             'bukti_pembayaran' => $pesanan->getBuktiPembayaran(),
-            'pemesan_id' => $pesanan->getPemesanId(),
-            'mobil_id' => $pesanan->getMobilId()
+            'pelanggan_id' => $pesanan->getPemesanId(),
+            'mobil' => $pesanan->getMobil()
         ];
 
         $bindKeys = [];
@@ -195,7 +195,7 @@ class PemesananRepository extends BaseRepository
         return $result;
     }
 
-    public function filterPesanan(?DateTimeInterface $date, ?DaerahOpersional $asal, ?DaerahOpersional $tujuan, int $total = 10, int $from = 0, bool $withRelations = false): array
+    public function filterPesanan(?DateTimeInterface $date, ?DaerahOperasional $asal, ?DaerahOperasional $tujuan, int $total = 10, int $from = 0, bool $withRelations = false): array
     {
         $where = [];
         $whereString = "";
@@ -220,7 +220,7 @@ class PemesananRepository extends BaseRepository
         return $result;
     }
 
-    public function filterJadwal(?DateTimeInterface $date, ?DaerahOpersional $asal, ?DaerahOpersional $tujuan, int $total = 10, int $from = 0, bool $withRelations = false): array
+    public function filterJadwal(?DateTimeInterface $date, ?DaerahOperasional $asal, ?DaerahOperasional $tujuan, int $total = 10, int $from = 0, bool $withRelations = false): array
     {
         $where = ['status_bukti_pembayaran' => StatusBuktiPembayaran::VALID->value];
         $whereString = "";
@@ -333,7 +333,12 @@ class PemesananRepository extends BaseRepository
         ]);
     }
 
-    private function newEntity(array $row) : Pesanan
+    public function getListKursiPesananByTanggalKeberangkatanAndRute(DateTimeInterface $tanggal, Rute $rute): array
+    {
+
+    }
+
+    protected function newEntity(array $row, bool $withRelations = false) : Pesanan
     {
         return (new Pesanan())
             ->setId($row['id'])
@@ -346,7 +351,7 @@ class PemesananRepository extends BaseRepository
             ->setJamKeberangkatan($row['jam_keberangkatan'])
             ->setKotaAsal($row['kota_asal'])
             ->setKotaTujuan($row['kota_tujuan'])
-            ->setTipePenumpang($row['tipe_penumpang'])
+            ->setKategoriPelanggan($row['tipe_penumpang'])
             ->setTitikJemput($row['titik_jemput'])
             ->setTotalTarif($row['total_tarif'])
             ->setStatusBuktiPembayaran(StatusBuktiPembayaran::fromLabel($row['status_bukti_pembayaran']))
@@ -356,7 +361,7 @@ class PemesananRepository extends BaseRepository
             ->setBuktiPembayaran($row['bukti_pembayaran'])
             ->setNamaPembayaran($row['nama_pembayaran'])
             ->setBankPembayaran($row['bank_pembayaran'])
-            ->setPemesanId($row['pemesan_id'])
-            ->setMobilId($row['mobil_id']);
+            ->setPemesanId($row['pelanggan_id'])
+            ->setMobil($row['mobil']);
     }
 }

@@ -1,4 +1,13 @@
-<?php html_require_component('navbar'); ?>
+<?php
+
+$nomorPemesanan = session()->exists('nomor_pemesanan') ? session('nomor_pemesanan') : false;
+if (!$nomorPemesanan) html_not_found();
+
+$detailPesanan = app()->getManager()->getService('PemesananService')->cariPesananBerdasarkanNomorPesanan($nomorPemesanan);
+
+html_require_component('navbar');
+
+?>
 <main x-data="container">
     <div class="max-w-screen-xl mx-auto py-20 px-6">
         <?php if(session('temp')):
@@ -47,7 +56,7 @@
                             </tr>
                             <tr class="">
                                 <td class="px-4 py-2">Jadwal Keberangkatan</td>
-                                <td>: <span x-text="parseTanggalToIndo(properties.data.sesi_pesanan.tanggal_keberangkatan.date)"></span> <span x-text="properties.data.sesi_pesanan.jam_keberangkatan"></span> WIB</td>
+                                <td>: <span x-text="parseTanggalToIndo(properties.data.sesi_pesanan.tanggal_keberangkatan)"></span> <span x-text="properties.data.sesi_pesanan.jam_keberangkatan"></span> WIB</td>
                             </tr>
                             <tr>
                                 <td class="px-4 py-2 w-1/2">Rute Perjalanan</td>
@@ -131,7 +140,7 @@
                         "api_url": "<?= site_url() ?>",
                     },
                     "errors": {},
-                    "data": <?= json_encode(['sesi_pesanan' => session('pesanan')]) ?>,
+                    "data": <?= json_encode(['sesi_pesanan' => $detailPesanan->toArray()]) ?>,
                     "form": {
                         "nama": "",
                         "kontak": "",

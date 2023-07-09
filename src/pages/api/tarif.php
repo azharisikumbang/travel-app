@@ -1,13 +1,13 @@
 <?php
 
-/** @var $service TarifService */
-$service = app()->getManager()->getService('TarifService');
+/** @var $service TiketService */
+$service = app()->getManager()->getService('TiketService');
 
 $data = null;
 
-if(isset($_GET['tarif'])) {
-    $tarif = $service->lihatDetailTarif($_GET['tarif']);
-    if (!$tarif) response()->badRequest(['Tarif tidak ditemukan, mohon coba lagi.']);
+if(isset($_GET['tiket'])) {
+    $tarif = $service->lihatDetailTarif($_GET['tiket']);
+    if (!$tarif) response()->badRequest(['Tiket tidak ditemukan, mohon coba lagi.']);
 
     $data = $tarif->toArray();
 } else {

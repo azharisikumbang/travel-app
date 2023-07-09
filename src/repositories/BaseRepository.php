@@ -40,6 +40,17 @@ abstract class BaseRepository
 
     }
 
+    protected function getByQuery(string $query, array $bind = [], bool $withRelations = false) : array
+    {
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute($bind);
+
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row, $withRelations);
+
+        return $result;
+    }
+
     public function getDataFromTable(string $table, int $length = 10, int $from = 0, string $order = 'id', string $by = 'DESC'): false|PDOStatement
     {
 //        $table = $this->getTable() ?? $table;
@@ -75,6 +86,6 @@ abstract class BaseRepository
 
     abstract protected function getTable(): string;
 
-    abstract protected function newEntity(array $row): EntityInterface;
+    abstract protected function newEntity(array $row, bool $withRelations = false): EntityInterface;
 
 }

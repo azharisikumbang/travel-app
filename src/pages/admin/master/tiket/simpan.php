@@ -1,9 +1,9 @@
 <?php
 
 $app = app()->getManager();
-$tarifService = $app->getService('TarifService');
+$tarifService = $app->getService('TiketService');
 $tarif = $tarifService->buatTarif(
-    $_POST['tarif'],
+    $_POST['tiket'],
     $_POST['kategori'],
     $_POST['asal'],
     $_POST['tujuan'],
@@ -15,7 +15,7 @@ $isSaved = $tarifService->simpanTarifBaru($tarif);
 if($isSaved) return $app
     ->getRouterManager()
     ->redirectTo(
-    'admin/master/tarif',
+    'admin/master/tiket',
     true,
-    ['status' => true, 'message' => 'Data tarif baru berhasil ditambahkan.']
+    ['status' => true, 'message' => 'Data tiket baru berhasil ditambahkan.']
 );

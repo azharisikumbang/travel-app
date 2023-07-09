@@ -3,8 +3,8 @@
 $pemesananService = app()->getManager()->getService('PemesananService');
 
 /** @var bool|$pesanan Pesanan */
-$pesanan = session('pesanan');
-$pesanan = $pemesananService->simpanInformasiPemesan($pesanan['nomor_pemesanan'], $_POST['nama'], $_POST['kontak'], $_POST['titik_jemput']);
+$pesanan = session('nomor_pemesanan');
+$pesanan = $pemesananService->simpanInformasiPemesan($pesanan, $_POST['nama'], $_POST['kontak'], $_POST['titik_jemput']);
 
 if(false === $pesanan) response()->badRequest("Pesanan tidak diketahui, mohon cek kembali pesanan anda.");
 

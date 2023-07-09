@@ -1,28 +1,28 @@
 <?php
 
 require_once __DIR__ . '/BaseRepository.php';
-require_once __DIR__ . '/../entities/DaerahOpersional.php';
+require_once __DIR__ . '/../entities/DaerahOperasional.php';
 
 class DaerahOperasionalRepository extends BaseRepository
 {
 
     private string $table = "m_daerah_operasional";
 
-    public function save(DaerahOpersional $daerah) : bool
+    public function save(DaerahOperasional $daerah) : bool
     {
         $query = $this->getDatabaseConnection()->prepare("INSERT INTO {$this->table} (nama_kota) VALUES (:nama_kota)");
 
         return $query->execute(['nama_kota' => $daerah->getNamaKota()]);
     }
 
-    public function updateOrCreate(DaerahOpersional $daerahOpersional): bool
+    public function updateOrCreate(DaerahOperasional $daerahOpersional): bool
     {
         if ($this->exists($daerahOpersional)) return $this->update($daerahOpersional);
 
         return $this->save($daerahOpersional);
     }
 
-    public function update(DaerahOpersional $daerahOpersional): bool
+    public function update(DaerahOperasional $daerahOpersional): bool
     {
         $query = "UPDATE {$this->getTable()} SET nama_kota = :nama_kota WHERE id = :id";
 
@@ -34,7 +34,7 @@ class DaerahOperasionalRepository extends BaseRepository
         ]);
     }
 
-    public function delete(int|DaerahOpersional $daerahOpersional): void
+    public function delete(int|DaerahOperasional $daerahOpersional): void
     {
         $query = "DELETE FROM {$this->getTable()} WHERE id = :id";
         $stmt = $this->getDatabaseConnection()->prepare($query);
@@ -51,7 +51,7 @@ class DaerahOperasionalRepository extends BaseRepository
         return $result;
     }
 
-    public function findById(int $id) : null|DaerahOpersional
+    public function findById(int $id) : null|DaerahOperasional
     {
         $data = $this->basicFindById($id);
 
@@ -65,9 +65,9 @@ class DaerahOperasionalRepository extends BaseRepository
         return $this->table;
     }
 
-    protected function newEntity(array $data) : DaerahOpersional
+    protected function newEntity(array $data, bool $withRelations = false) : DaerahOperasional
     {
-        return (new DaerahOpersional())
+        return (new DaerahOperasional())
             ->setId($data['id'])
             ->setNamaKota($data['nama_kota']);
     }

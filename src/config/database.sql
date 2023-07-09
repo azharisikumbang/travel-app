@@ -100,6 +100,8 @@ CREATE TABLE m_keberangkatan(
 
 CREATE TABLE pesanan (
     id int primary key AUTO_INCREMENT,
+    nomor_pemesanan varchar(255) unique,
+    nomor_iterasi_pemesanan int,
     nama_pemesan varchar(255) not null,
     kontak_pemesan varchar(32) not null,
     tanggal_pemesanan datetime default CURRENT_TIMESTAMP,
@@ -115,10 +117,12 @@ CREATE TABLE pesanan (
     total_uang_muka decimal(15,2),
     total_dibayarkan decimal(15,2),
     bukti_pembayaran varchar(255),
-    pemesan_id int,
-    mobil_id int,
-    FOREIGN KEY (pemesan_id) REFERENCES users(id),
-    FOREIGN KEY (mobil_id) REFERENCES mobil(id)
+    nama_pembayaran varchar(255),
+    bank_pembayaran varchar(255),
+    pelanggan_id int,
+    mobil varchar(255) DEFAULT NULL,
+    driver varchar(255) DEFAULT NULL,
+    FOREIGN KEY (pelanggan_id) REFERENCES m_pelanggan(id)
 );
 
 CREATE TABLE pesanan_detail(
@@ -126,5 +130,5 @@ CREATE TABLE pesanan_detail(
     pesanan_id int NOT NULL,
     nomor_kursi int NOT NULL,
     harga_tiket decimal(15,2) not null,
-    FOREIGN KEY (pesanan_id) REFERENCES pesanan(id),
+    FOREIGN KEY (pesanan_id) REFERENCES pesanan(id)
 );

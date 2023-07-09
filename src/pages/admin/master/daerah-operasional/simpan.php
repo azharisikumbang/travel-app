@@ -1,8 +1,8 @@
 <?php
 
-/** @var $daerah DaerahOpersional */
+/** @var $daerah DaerahOperasional */
 $app = app()->getManager();
-$daerah = $app->getEntity('DaerahOpersional');
+$daerah = $app->getEntity('DaerahOperasional');
 $daerah->setNamaKota($_POST['nama_kota']);
 
 /** @var $daerahOperasionalService DaerahOpersionalService */

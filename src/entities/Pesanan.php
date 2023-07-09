@@ -29,7 +29,7 @@ class Pesanan implements EntityInterface
 
     private string $kotaTujuan;
 
-    private string $tipePenumpang;
+    private string $kategoriPelanggan;
 
     private ?string $titikJemput = null;
 
@@ -49,7 +49,9 @@ class Pesanan implements EntityInterface
 
     private StatusPemesanan $statusPemesanan;
 
-    private ?int $mobilId = null;
+    private ?string $mobil = null;
+
+    private ?string $driver = null;
 
     private array $listKursi;
 
@@ -159,9 +161,9 @@ class Pesanan implements EntityInterface
     /**
      * @return string
      */
-    public function getTipePenumpang(): string
+    public function getKategoriPelanggan(): string
     {
-        return $this->tipePenumpang;
+        return $this->kategoriPelanggan;
     }
 
     /**
@@ -239,9 +241,9 @@ class Pesanan implements EntityInterface
     /**
      * @return int
      */
-    public function getMobilId(): ?int
+    public function getMobil(): ?string
     {
-        return $this->mobilId;
+        return $this->mobil;
     }
 
     /**
@@ -353,11 +355,11 @@ class Pesanan implements EntityInterface
     }
 
     /**
-     * @param string $tipePenumpang
+     * @param string $kategoriPelanggan
      */
-    public function setTipePenumpang(string $tipePenumpang): self
+    public function setKategoriPelanggan(string $kategoriPelanggan): self
     {
-        $this->tipePenumpang = $tipePenumpang;
+        $this->kategoriPelanggan = $kategoriPelanggan;
 
         return $this;
     }
@@ -367,7 +369,7 @@ class Pesanan implements EntityInterface
      */
     public function setTitikJemput(string $titikJemput): self
     {
-        $this->titikJemput = $titikJemput;
+        $this->titikJemput = htmlspecialchars(trim($titikJemput));
 
         return $this;
     }
@@ -463,7 +465,7 @@ class Pesanan implements EntityInterface
         return $this;
     }
 
-    public function addNomorKursi(int $nomor, Tarif $tarif, int $id = null) : self
+    public function addNomorKursi(int $nomor, Tiket $tarif, int $id = null) : self
     {
         $pesananDetail = new PesananDetail();
         $pesananDetail->setHargaTiket($tarif->getTarif());
@@ -484,29 +486,45 @@ class Pesanan implements EntityInterface
     }
 
     /**
-     * @param int $mobilId
+     * @param int $mobil
      */
-    public function setMobilId(?int $mobilId): self
+    public function setMobil(?string $mobil): self
     {
-        $this->mobilId = $mobilId;
+        $this->mobil = $mobil;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDriver(): ?string
+    {
+        return $this->driver;
+    }
+
+    /**
+     * @param string|null $driver
+     */
+    public function setDriver(?string $driver): void
+    {
+        $this->driver = $driver;
     }
 
     public function toArray(): array
     {
         return [
-//            'id' => $this->getId(),
+            'id' => $this->getId(),
             'nomor_pemesanan' => $this->getNomorPesanan(),
-            'nomor_iterasi_pesanana' => $this->getNomorIterasiPesanan(),
+            'nomor_iterasi_pesanan' => $this->getNomorIterasiPesanan(),
             'nama_pemesanan' => $this->getNamaPemesan(),
             'kontak_pemesanan' => $this->getKontakPemesan(),
             'tanggal_keberangkatan' => $this->getTanggalKeberangkatan()->format('Y-m-d'),
             'jam_keberangkatan' => $this->getJamKeberangkatan(),
             'kota_asal' => $this->getKotaAsal(),
             'kota_tujuan' => $this->getKotaTujuan(),
-            'titik_jemput' => $this->getTitikJemput(),
-            'tipe_penumpang' => $this->getTipePenumpang(),
+            'titik_jemput' => html_entity_decode($this->getTitikJemput()),
+            'tipe_penumpang' => $this->getKategoriPelanggan(),
             'total_tarif' => $this->getTotalTarif(),
             'status_bukti_pembayaran' => $this->getStatusBuktiPembayaran()->value,
             'status_pemesanan' => $this->getStatusPemesanan()->value,
@@ -516,7 +534,7 @@ class Pesanan implements EntityInterface
             'nama_pembayaran' => $this->getNamaPembayaran(),
             'bank_pembayaran' => $this->getBankPembayaran(),
             'pemesan_id' => $this->getPemesanId(),
-            'mobil_id' => $this->getMobilId(),
+            'mobil' => $this->getMobil(),
             'list_kursi_dipesan' => array_map(fn($item) => $item->toArray(), $this->getListKursi()),
             'keberangkatan' => $this->getRute(),
             'jadwal' => $this->getJadwalLengkap(),

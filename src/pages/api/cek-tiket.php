@@ -8,7 +8,7 @@ if (false === $tiketService->cekTanggalKeberangkatanValid($tanggalPemesanan)) {
 }
 
 // validasi keberangkatan
-$tarifService = app()->getManager()->getService('TarifService');
+$tarifService = app()->getManager()->getService('TiketService');
 $tarifEntity = $tarifService->cariTarif($_GET['asal'], $_GET['tujuan'], $_GET['kategori']);
 if (null === $tarifEntity) {
     response()->badRequest("RuteHarian dan kategori dipilih tidak tersedia, mohon periksa kembali.");

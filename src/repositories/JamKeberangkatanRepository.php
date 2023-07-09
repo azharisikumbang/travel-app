@@ -61,7 +61,7 @@ class JamKeberangkatanRepository extends BaseRepository
         return $this->newEntity($data);
     }
 
-    protected function newEntity(array $row) : JamKeberangkatan
+    protected function newEntity(array $row, bool $withRelations = false) : JamKeberangkatan
     {
         return (new JamKeberangkatan())
             ->setId($row['id'])

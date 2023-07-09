@@ -2,9 +2,9 @@
 
 if (false === session()->isAuthenticatedAs('admin') || request()->notPostRequest()) response()->notFound();
 
-/** @var $daerah DaerahOpersional */
+/** @var $daerah DaerahOperasional */
 $app = app()->getManager();
-$daerah = $app->getEntity('DaerahOpersional');
+$daerah = $app->getEntity('DaerahOperasional');
 $daerah->setId($_POST['id'] ?? -1);
 $daerah->setNamaKota($_POST['nama_kota']);
 

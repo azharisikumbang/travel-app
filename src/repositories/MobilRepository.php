@@ -64,7 +64,19 @@ class MobilRepository extends BaseRepository
         return $result;
     }
 
-    protected function newEntity(array $row): Mobil
+    public function findById(int $id) : ?Mobil
+    {
+        $query = "SELECT m.*, s.nama as supir_nama, s.kontak as supir_kontak
+            FROM {$this->getTable()} m
+            JOIN m_supir s ON s.id = m.supir_id
+            WHERE m.id = :id";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+
+        return $stmt->execute(['id' => $id]) ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)) : null;
+    }
+
+    protected function newEntity(array $row, bool $withRelations = false): Mobil
     {
         $driver = new Driver();
         $driver->setId($row['supir_id']);

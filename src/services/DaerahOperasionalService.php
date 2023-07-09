@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../repositories/DaerahOperasionalRepository.php';
-require_once __DIR__ . '/../entities/DaerahOpersional.php';
+require_once __DIR__ . '/../entities/DaerahOperasional.php';
 
 class DaerahOperasionalService
 {
@@ -17,17 +17,17 @@ class DaerahOperasionalService
         return $this->daerahOperasionalRepository->get($length, $from);
     }
 
-    public function tambahkanDaerahOperasional(DaerahOpersional $daerah) : void
+    public function tambahkanDaerahOperasional(DaerahOperasional $daerah) : void
     {
         $this->daerahOperasionalRepository->save($daerah);
     }
 
-    public function simpan(DaerahOpersional $daerahOpersional) : bool
+    public function simpan(DaerahOperasional $daerahOpersional) : bool
     {
         return $this->daerahOperasionalRepository->updateOrCreate($daerahOpersional);
     }
 
-    public function hapus(int|DaerahOpersional $daerahOpersional) : void
+    public function hapus(int|DaerahOperasional $daerahOpersional) : void
     {
         $this->daerahOperasionalRepository->delete($daerahOpersional);
     }

@@ -118,7 +118,7 @@
         Alpine.data('container', () => {
             return ({
                 apiUrl: "<?= site_url() ?>",
-                currentTarif: <?= $_GET['tarif'] ?>,
+                currentTarif: <?= $_GET['tiket'] ?>,
                 errors: {},
                 data: {
                     listJamKeberangkatan: [],

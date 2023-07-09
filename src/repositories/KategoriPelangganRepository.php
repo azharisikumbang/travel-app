@@ -59,7 +59,7 @@ class KategoriPelangganRepository extends BaseRepository
         return $this->table;
     }
 
-    protected function newEntity(array $row): KategoriPelanggan
+    protected function newEntity(array $row, bool $withRelations = false): KategoriPelanggan
     {
         return (new KategoriPelanggan())
             ->setId($row['id'])

@@ -1,48 +1,49 @@
 <?php
 
 require_once __DIR__ . '/BaseRepository.php';
-require_once __DIR__ . '/../entities/RuteHarian.php';
-require_once __DIR__ . '/../entities/DaerahOpersional.php';
+require_once __DIR__ . '/../entities/Keberangkatan.php';
+require_once __DIR__ . '/../entities/Rute.php';
+require_once __DIR__ . '/../entities/DaerahOperasional.php';
 require_once __DIR__ . '/../entities/JamKeberangkatan.php';
 require_once __DIR__ . '/../entities/Mobil.php';
+require_once __DIR__ . '/../entities/Driver.php';
 
 class KeberangkatanRepository extends BaseRepository
 {
-    private string $table = 'rute_harian';
+    private string $table = 'm_keberangkatan';
 
-    public function get(int $total = 50, int $from = 0) : array
+    public function get(bool $withRelations = false) : array
     {
-        $query = "SELECT 
-                r.*,
-                d1.nama_kota as do_asal_kota,
-                d2.nama_kota as do_tujuan_kota,
-                m.merk as m_merk,
-                m.jumlah_kursi as m_jumlah_kursi,
-                m.plat_nomor as m_plat_nomor,
-                j.jam as j_jam,
-                j.alias as j_alias,
-                u.id as driver_id,
-                u.nama_lengkap as u_nama_lengkap,
-                u.kontak as u_kontak
-            FROM rute_harian r
-            LEFT JOIN daerah_operasional d1 ON d1.id = r.asal_id
-            LEFT JOIN daerah_operasional d2 ON d2.id = r.tujuan_id
-            LEFT JOIN m_mobil m ON m.id = r.mobil_id
-            LEFT JOIN jadwal_keberangkatan j ON j.id = r.jam_keberangkatan_id
-            LEFT JOIN users u ON m.driver_id = u.id
-            ORDER BY do_asal_kota ASC
-        ";
+        if ($withRelations) return $this->getWithRelations();
 
-        $stmt = $this->getDatabaseConnection()->prepare($query);
-        $stmt->execute();
 
-        if ($stmt->rowCount() < 1) return [];
 
-        $result = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row, true);
+    }
 
-        return $result;
+    public function getWithRelations()
+    {
+        $query = "SELECT
+                k.*,
+                mr.asal_id as r_asal_id,
+                mr.tujuan_id as r_tujuan_id,
+                mdo1.nama_kota as r_asal_nama_kota,
+                mdo2.nama_kota as r_tujuan_nama_kota,
+                mjk.jam as jk_jam,
+                mjk.alias as jk_alias,
+                mm.merk as m_merk,
+                mm.plat_nomor as m_plat_nomor,
+                mm.supir_id as m_supir_id,
+                ms.nama as s_nama
+            FROM m_keberangkatan k
+            LEFT JOIN m_jadwal_keberangkatan mjk on k.jam_keberangkatan_id = mjk.id
+            LEFT JOIN m_mobil mm on k.mobil_id = mm.id
+            LEFT JOIN m_rute mr on k.rute_id = mr.id
+            LEFT JOIN m_supir ms on mm.supir_id = ms.id
+            LEFT JOIN m_daerah_operasional mdo1 on mr.asal_id = mdo1.id
+            LEFT JOIN m_daerah_operasional mdo2 on mr.tujuan_id = mdo2.id
+            ORDER BY s_nama, m_merk, r_asal_nama_kota, r_tujuan_nama_kota";
 
+        return $this->getByQuery($query, [], true);
     }
 
     public function getWhere(array $where) : ?RuteHarian
@@ -62,7 +63,7 @@ class KeberangkatanRepository extends BaseRepository
         ]);
     }
 
-    public function isAsalAndTujuanExists(int|DaerahOpersional $asal, int|DaerahOpersional $tujuan) : bool
+    public function isAsalAndTujuanExists(int|DaerahOperasional $asal, int|DaerahOperasional $tujuan) : bool
     {
         $query = "SELECT EXISTS(SELECT id FROM rute_harian WHERE asal_id = :asal AND tujuan_id = :tujuan) as 'exists'";
 
@@ -75,61 +76,121 @@ class KeberangkatanRepository extends BaseRepository
         return $stmt->fetch(PDO::FETCH_ASSOC)['exists'];
     }
 
-    public function save(RuteHarian $rute): bool
+    public function save(Keberangkatan $keberangkatan): bool
     {
         return $this->basicSave([
-            'asal_id' => $rute->getAsal()->getId(),
-            'tujuan_id' => $rute->getTujuan()->getId(),
-            'mobil_id' => $rute->getMobil()?->getId(),
-            'jam_keberangkatan_id' => $rute->getJamKeberangkatan()?->getId()
+            'rute_id' => $keberangkatan->getRute()->getId(),
+            'tujuan_id' => $keberangkatan->getTujuan()->getId(),
+            'mobil_id' => $keberangkatan->getMobil()?->getId(),
+            'jam_keberangkatan_id' => $keberangkatan->getJamKeberangkatan()?->getId()
         ]);
     }
 
-    private function newEntity(array $row, bool $withRelations = false) : RuteHarian
+    protected function newEntity(array $row, bool $withRelations = false) : Keberangkatan
     {
-        $asal = (new DaerahOpersional())
-            ->setId($row['asal_id'])
-            ->setNamaKota($row['do_asal_kota']);
+        if($withRelations) return $this->newEntityWithRelations($row);
 
-        $tujuan = (new DaerahOpersional())
-            ->setId($row['tujuan_id'])
-            ->setNamaKota($row['do_tujuan_kota']);
+        $keberangkatan = new Keberangkatan();
+        $keberangkatan->setId($row['id']);
+        $keberangkatan->setRute($row['rute_id']);
+        $keberangkatan->setMobil($row['mobil_id']);
+        $keberangkatan->setJamKeberangkatan($row['jam_keberangkatan_id']);
+        $keberangkatan->setLastUpdated(date_create($row['last_updated']));
 
-        $driver = (is_null($row['mobil_id']))
-            ? null
-            : (new Akun())
-                ->setId($row['driver_id'])
-                ->setNamaLengkap($row['u_nama_lengkap'])
-                ->setKontak($row['u_kontak']);
+        return $keberangkatan;
+    }
 
-        $mobil = (is_null($row['mobil_id']))
-            ? null
-            : (new Mobil())
-                ->setId($row['mobil_id'])
-                ->setMerk($row['m_merk'])
-                ->setJumlahKursi($row['m_jumlah_kursi'])
-                ->setPlatNomor($row['m_plat_nomor'])
-                ->setDriver($driver);
+    protected function newEntityWithRelations(array $row)
+    {
+        $asal = new DaerahOperasional();
+        $asal->setId($row['r_asal_id']);
+        $asal->setNamaKota($row['r_asal_nama_kota']);
 
-        $jam = (is_null($row['mobil_id']))
-            ? null
-            : (new JamKeberangkatan())
-                ->setId($row['jam_keberangkatan_id'])
-                ->setAlias($row['j_alias'])
-                ->setJam($row['j_jam']);
+        $tujuan = new DaerahOperasional();
+        $tujuan->setId($row['r_tujuan_id']);
+        $tujuan->setNamaKota($row['r_tujuan_nama_kota']);
 
-        return (new RuteHarian())
-            ->setId($row['id'])
-            ->setAsal($asal)
-            ->setTujuan($tujuan)
-            ->setMobil($mobil)
-            ->setJamKeberangkatan($jam)
-            ->setLastUpdated(date_create($row['last_updated']));
+        $rute = new Rute();
+        $rute->setId($row['rute_id']);
+        $rute->setAsal($asal);
+        $rute->setTujuan($tujuan);
+
+        $mobil = null;
+        if (!is_null($row['mobil_id']))
+        {
+            $driver = new Driver();
+            $driver->setId($row['m_supir_id']);
+            $driver->setNama($row['s_nama']);
+
+            $mobil = new Mobil();
+            $mobil->setId($row['mobil_id']);
+            $mobil->setMerk($row['m_merk']);
+            $mobil->setPlatNomor($row['m_plat_nomor']);
+            $mobil->setDriver($driver);
+        }
+
+        $jamKeberangkatan = null;
+        if(!is_null($row['jam_keberangkatan_id'])) {
+            $jamKeberangkatan = new JamKeberangkatan();
+            $jamKeberangkatan->setId($row['jam_keberangkatan_id']);
+            $jamKeberangkatan->setJam($row['jk_jam']);
+            $jamKeberangkatan->setAlias($row['jk_alias']);
+        }
+
+        $keberangkatan = new Keberangkatan();
+        $keberangkatan->setId($row['id']);
+        $keberangkatan->setRute($rute);
+        $keberangkatan->setMobil($mobil);
+        $keberangkatan->setJamKeberangkatan($jamKeberangkatan);
+        $keberangkatan->setLastUpdated(date_create($row['last_updated']));
+
+        return $keberangkatan;
     }
 
     protected function getTable(): string
     {
         return $this->table;
+    }
+
+    public function update(Mobil $mobil, JamKeberangkatan $jamKeberangkatan, array $existsRute) : bool
+    {
+        $dbh = $this->getDatabaseConnection();
+
+        $query = $dbh->prepare("DELETE FROM {$this->getTable()} WHERE mobil_id = :mobil");
+
+        try {
+
+            $dbh->beginTransaction();
+            $query->execute(['mobil' => $mobil->getId()]);
+
+            foreach ($existsRute as $item) {
+                if(!($item instanceof Rute)) continue;
+
+                $this->basicSave([
+                    'mobil_id' => $mobil->getId(),
+                    'jam_keberangkatan_id' => $jamKeberangkatan->getId(),
+                    'rute_id' => $item->getId()
+                ]);
+            }
+
+            $dbh->commit();
+
+        } catch (Exception $e) {
+            $dbh->rollBack();
+
+            die($e->getMessage());
+        }
+
+        return true;
+    }
+
+    public function resetByMobil(int|Mobil $mobil) : bool
+    {
+        $stmt = $this->getDatabaseConnection()->prepare("DELETE FROM {$this->getTable()} WHERE mobil_id = :mobil");
+
+        return $stmt->execute([
+            'mobil' => is_int($mobil) ? $mobil : $mobil->getId()
+        ]);
     }
 
 }

@@ -1,15 +1,15 @@
 <?php
 
 require_once __DIR__ . '/../Contracts/EntityInterface.php';
-require_once __DIR__ . '/DaerahOpersional.php';
+require_once __DIR__ . '/DaerahOperasional.php';
 
 class Rute implements EntityInterface
 {
     private int $id;
 
-    private DaerahOpersional $asal;
+    private DaerahOperasional $asal;
 
-    private DaerahOpersional $tujuan;
+    private DaerahOperasional $tujuan;
 
     public function getId(): int
     {
@@ -27,17 +27,17 @@ class Rute implements EntityInterface
     }
 
     /**
-     * @return DaerahOpersional
+     * @return DaerahOperasional
      */
-    public function getAsal(): DaerahOpersional
+    public function getAsal(): DaerahOperasional
     {
         return $this->asal;
     }
 
     /**
-     * @param DaerahOpersional $asal
+     * @param DaerahOperasional $asal
      */
-    public function setAsal(DaerahOpersional $asal): self
+    public function setAsal(DaerahOperasional $asal): self
     {
         $this->asal = $asal;
 
@@ -45,17 +45,17 @@ class Rute implements EntityInterface
     }
 
     /**
-     * @return DaerahOpersional
+     * @return DaerahOperasional
      */
-    public function getTujuan(): DaerahOpersional
+    public function getTujuan(): DaerahOperasional
     {
         return $this->tujuan;
     }
 
     /**
-     * @param DaerahOpersional $tujuan
+     * @param DaerahOperasional $tujuan
      */
-    public function setTujuan(DaerahOpersional $tujuan): self
+    public function setTujuan(DaerahOperasional $tujuan): self
     {
         $this->tujuan = $tujuan;
 

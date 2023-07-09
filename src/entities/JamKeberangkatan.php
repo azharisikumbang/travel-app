@@ -74,4 +74,8 @@ class JamKeberangkatan implements EntityInterface
         ];
     }
 
+    public function __toString(): string
+    {
+        return $this->jam;
+    }
 }
