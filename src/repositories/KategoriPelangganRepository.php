@@ -65,4 +65,13 @@ class KategoriPelangganRepository extends BaseRepository
             ->setId($row['id'])
             ->setKategori($row['kategori']);
     }
+
+    public function getWhere(string $where, string $value) : ?KategoriPelanggan
+    {
+        $query = "SELECT * FROM {$this->getTable()} WHERE {$where} = :value LIMIT 1";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+
+        return $stmt->execute(["value" => $value]) ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)) : null;
+    }
 }

@@ -69,4 +69,16 @@ class DriverService
 
         return $this->driverRepository->findById($id) ?? false;
     }
+
+    public function listRuteSaya(Driver|Akun $driver): array
+    {
+        if ($driver instanceof Akun) $driver = $this->driverRepository->findByAkunId($driver);
+
+        return $this->driverRepository->listRuteByDriver($driver);
+    }
+
+    public function findByAkun(Akun $akun)
+    {
+        return $this->driverRepository->findByAkunId($akun);
+    }
 }

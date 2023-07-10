@@ -119,10 +119,10 @@ CREATE TABLE pesanan (
     bukti_pembayaran varchar(255),
     nama_pembayaran varchar(255),
     bank_pembayaran varchar(255),
-    pelanggan_id int,
+    pemesan_id int,
     mobil varchar(255) DEFAULT NULL,
     driver varchar(255) DEFAULT NULL,
-    FOREIGN KEY (pelanggan_id) REFERENCES m_pelanggan(id)
+    FOREIGN KEY (pemesan_id) REFERENCES m_akun(id)
 );
 
 CREATE TABLE pesanan_detail(

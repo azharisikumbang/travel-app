@@ -81,6 +81,30 @@ class DriverRepository extends BaseRepository
         );
     }
 
+    public function listRuteByDriver(int|Driver $driver) : array
+    {
+        $query = "SELECT mdo1.nama_kota as asal, mdo2.nama_kota as tujuan, mm.merk as merk, mm.plat_nomor as plat_nomor
+            FROM m_supir ms
+            LEFT JOIN m_mobil mm on ms.id = mm.supir_id
+            LEFT JOIN m_keberangkatan mk on mm.id = mk.mobil_id
+            LEFT JOIN m_rute mr on mr.id = mk.rute_id
+            LEFT JOIN m_daerah_operasional mdo1 on mr.asal_id = mdo1.id
+            LEFT JOIN m_daerah_operasional mdo2 on mr.tujuan_id = mdo2.id
+            WHERE ms.id = :driver";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            'driver' => is_int($driver) ? $driver : $driver->getId()
+        ]);
+
+        $rute = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) $rute[] = [
+            'asal' => $row['asal'], 'tujuan' => $row['tujuan'], 'merk' => $row['merk'], 'plat_nomor' => $row['plat_nomor']
+        ];
+
+        return $rute;
+    }
+
     protected function getTable(): string
     {
         return $this->table;
@@ -101,5 +125,15 @@ class DriverRepository extends BaseRepository
             ->setKontak($row['kontak'])
             ->setPhoto(null)
             ->setAkun($akun);
+    }
+
+    public function findByAkunId(int|Akun $akun) : ?Driver
+    {
+        $query = "SELECT * FROM {$this->getTable()} WHERE akun_id = :akun";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute(['akun' => $akun->getId()]);
+
+        return $stmt->rowCount() ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC), false) : null;
     }
 }

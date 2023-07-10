@@ -38,6 +38,13 @@ final class App
     public function loadTemplateFor(?string $for, mixed $content = null) : void
     {
         $content = $content ?? $this->getContent();
+
+        $paths = explode('/', $this->getManager()->getRouterManager()->getPath());
+
+        if (count($paths) < 2) {
+            $for = 'public';
+        }
+
         $role = match (strtolower($for)) {
             'admin' => Role::ADMIN,
             'pelanggan' => Role::PELANGGAN,
@@ -45,9 +52,7 @@ final class App
             default => Role::PUBLIC
         };
 
-        // @TODO: split to function for readble
-        // authorization
-//        if ($role != session()->auth()?->getRole()) html_unauthorized();;
+
 
         $pageTemplate = sprintf("%s/templates/%s.php", __DIR__, $role->pageTemplate());
 

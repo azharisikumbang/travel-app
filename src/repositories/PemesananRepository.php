@@ -84,7 +84,7 @@ class PemesananRepository extends BaseRepository
         return $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC));
     }
 
-    public function save(Pesanan $pesanan) : Pesanan
+    public function save(Pesanan $pesanan) : false|Pesanan
     {
         $dbh = $this->getDatabaseConnection();
 
@@ -105,7 +105,7 @@ class PemesananRepository extends BaseRepository
             'total_uang_muka' => $pesanan->getTotalUangMuka(),
             'total_dibayarkan' => $pesanan->getTotalDibayarkan(),
             'bukti_pembayaran' => $pesanan->getBuktiPembayaran(),
-            'pelanggan_id' => $pesanan->getPemesanId(),
+            'pemesan_id' => $pesanan->getPemesanId(),
             'mobil' => $pesanan->getMobil()
         ];
 
@@ -135,6 +135,8 @@ class PemesananRepository extends BaseRepository
             $dbh->rollBack();
 
             die($e->getMessage());
+
+            return false;
         }
 
         return $pesanan;
@@ -289,7 +291,7 @@ class PemesananRepository extends BaseRepository
             LIMIT {$from}, {$length}";
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
-        $stmt->execute(['pemesan_id' => $user->getId(), 'status_bukti_pembayaran' => StatusBuktiPembayaran::VALID->value]);
+        $stmt->execute(['pemesan_id' => $user->getId(), 'status_bukti_pembayaran' => StatusBuktiPembayaran::UNCONFIRMED->value]);
 
         if($stmt->rowCount() < 1) return [];
 
@@ -361,7 +363,53 @@ class PemesananRepository extends BaseRepository
             ->setBuktiPembayaran($row['bukti_pembayaran'])
             ->setNamaPembayaran($row['nama_pembayaran'])
             ->setBankPembayaran($row['bank_pembayaran'])
-            ->setPemesanId($row['pelanggan_id'])
+            ->setPemesanId($row['pemesan_id'])
             ->setMobil($row['mobil']);
+    }
+
+    public function getDailyPesananByDriver(DriverRepository $driverRepository, Driver $driver) : array
+    {
+        $listRute = $driverRepository->listRuteByDriver($driver);
+        $inRute = [];
+        foreach ($listRute as $rute) {
+            $inRute[] = $rute['asal'];
+            $inRute[] = $rute['tujuan'];
+        }
+
+        $in = sprintf("%s%s%s", '("', implode('","', array_unique($inRute)), '")');
+
+
+        $query = "SELECT p.*, 
+                pd.id as detail_pemesanan_id,
+                pd.nomor_kursi,
+                pd.harga_tiket
+            FROM pesanan p
+            JOIN pesanan_detail pd on p.id = pd.pesanan_id
+            WHERE tanggal_keberangkatan = CURDATE()
+            AND kota_asal IN {$in}
+            AND kota_tujuan IN {$in}";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute();
+
+        if($stmt->rowCount() < 1) return [];
+
+        $listPesanan = [];
+        $pesanan = null;
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $pesanan = ($pesanan?->getId() == $row['id']) ?  $pesanan : $this->newEntity($row);
+
+            $pesananDetail = new PesananDetail();
+            $pesananDetail
+                ->setId($row['detail_pemesanan_id'])
+                ->setPesananId($pesanan->getId())
+                ->setNomorKursi($row['nomor_kursi'])
+                ->setHargaTiket($row['harga_tiket']);
+
+            $pesanan->addPesananDetail($pesananDetail);
+            $listPesanan[$pesanan->getNomorPesanan()] = $pesanan;
+        }
+
+        return $listPesanan;
     }
 }

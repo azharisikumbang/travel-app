@@ -1,4 +1,9 @@
-<?php $route = strtolower(get_current_route()); ?>
+<?php
+
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
+$route = strtolower(get_current_route());
+
+?>
 <!doctype html>
 <html>
 <head>

@@ -4,6 +4,7 @@ require_once __DIR__ . '/../repositories/PemesananRepository.php';
 require_once __DIR__ . '/../repositories/JamKeberangkatanRepository.php';
 require_once __DIR__ . '/../repositories/DaerahOperasionalRepository.php';
 require_once __DIR__ . '/../repositories/MobilRepository.php';
+require_once __DIR__ . '/../repositories/DriverRepository.php';
 require_once __DIR__ . '/../entities/Object/NomorPesanan.php';
 require_once __DIR__ . '/../enums/StatusPemesanan.php';
 require_once __DIR__ . '/../enums/StatusBuktiPembayaran.php';
@@ -21,6 +22,8 @@ class PemesananService
 
     private MobilRepository $mobilRepository;
 
+    private DriverRepository $driverRepository;
+
     public function __construct()
     {
         $this->pemesananRepository = new PemesananRepository();
@@ -28,6 +31,7 @@ class PemesananService
         $this->daerahOperasionalRepository = new DaerahOperasionalRepository();
         $this->penyimpananService = new PenyimpananService();
         $this->mobilRepository = new MobilRepository();
+        $this->driverRepository = new DriverRepository();
     }
 
     public function buatNomorPemesanan(DateTimeInterface $tanggal) : NomorPesanan
@@ -54,7 +58,7 @@ class PemesananService
         int|Mobil            $mobil,
         array                $kursiDipesan, // @TODO: change to Object,
         bool                 $isRuteReversed = false
-    ) : Pesanan {
+    ) : false|Pesanan {
 
         $nomorPesanan = $this->buatNomorPemesanan($tanggalKeberangkatan);
 
@@ -80,7 +84,7 @@ class PemesananService
         $pesanan->setTotalTarif($tiket->getTarif() * count($kursiDipesan));
         $pesanan->setStatusBuktiPembayaran(StatusBuktiPembayaran::PENDING);
         $pesanan->setStatusPemesanan(StatusPemesanan::PENDING);
-        $pesanan->setPemesanId(1);
+        $pesanan->setPemesanId(session()->auth()->getId());
 
         foreach ($kursiDipesan as $kursi) {
             $pesananDetail = new PesananDetail();
@@ -352,6 +356,11 @@ class PemesananService
     public function listKursiDipesanBerdasarkanTanggalDanRute(DateTimeInterface $tanggal, Rute $rute): array
     {
         return $this->pemesananRepository->getListKursiPesananByTanggalKeberangkatanAndRute($tanggal, $rute);
+    }
+
+    public function listPemesananHarianBerdasarkanDriver(string|Driver $driver) : array
+    {
+        return $this->pemesananRepository->getDailyPesananByDriver($this->driverRepository, $driver);
     }
 
     public function validasiKursiDipesan(DateTimeInterface $tanggal, Rute $rute, int $mobilId, array $kursi) : bool

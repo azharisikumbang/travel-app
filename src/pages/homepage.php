@@ -15,7 +15,7 @@ html_require_component('navbar');
             </div>
             <div class="flex col-span-3 mx-auto justify-center mb-12">
                 <template x-for="tiket in listTiket">
-                    <div class="py-2 px-12 border-gray-800 border text-center cursor-pointer" x-text="tiket[0].nama" :class="{ 'bg-gray-800 text-white': active == tiket[0].kategori_id }" @click="active = tiket[0].kategori_id"></div>
+                    <div class="py-2 px-12 border-gray-800 border text-center cursor-pointer hover:bg-gray-800 hover:text-white" x-text="tiket[0].nama" :class="{ 'bg-gray-800 text-white': active == tiket[0].kategori_id }" @click="active = tiket[0].kategori_id"></div>
                 </template>
             </div>
             <div>

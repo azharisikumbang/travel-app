@@ -1,5 +1,12 @@
 <?php
 
+if (
+    false === session()->isAuthenticatedAs('pelanggan')
+) {
+    response()->redirectTo(site_url('akun/login'), ['message' => 'Anda harus login terlebih dahulu.', 'status' => false]);
+    exit();
+}
+
 $manager = app()->getManager();
 $listDaerahOperasional = $manager->getService('DaerahOperasionalService')->listDaerahOperasional();
 $listKategoriPenumpang = app()->getManager()->getService('KategoriPelangganService')->listKategoriPelanggan();
@@ -42,19 +49,19 @@ html_require_component('navbar');
                                 <select x-model="properties.form.asal" class="cursor-pointer w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                                     <option value="-1">-- Pilih Asal --</option>
                                     <template x-for="daerah in properties.data.list_daerah_operasional">
-                                        <option :value="daerah.id" x-text="daerah.nama_kota" :selected="daerah.id == properties.data.selected_rute.rute.asal.id"></option>
+                                        <option :value="daerah.id" x-text="daerah.nama_kota" :selected="daerah.id == properties.data.selected_rute?.rute.asal.id"></option>
                                     </template>
                                 </select>
                                 <select x-model="properties.form.tujuan" class="cursor-pointer w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                                     <option value="-1">-- Pilih Tujuan --</option>
                                     <template x-for="daerah in properties.data.list_daerah_operasional">
-                                        <option :value="daerah.id" x-text="daerah.nama_kota" :selected="daerah.id == properties.data.selected_rute.rute.tujuan.id"></option>
+                                        <option :value="daerah.id" x-text="daerah.nama_kota" :selected="daerah.id == properties.data.selected_rute?.rute.tujuan.id"></option>
                                     </template>
                                 </select>
                                 <select x-model="properties.form.kategori" class="cursor-pointer w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                                     <option value="-1">-- Pilih Kategori Penumpang --</option>
                                     <template x-for="tipe in properties.data.list_kategori_penumpang">
-                                        <option :value="tipe.id" x-text="tipe.kategori" :selected="tipe.id == properties.data.selected_rute.kategori.id"></option>
+                                        <option :value="tipe.id" x-text="tipe.kategori" :selected="tipe.id == properties.data.selected_rute?.kategori.id"></option>
                                     </template>
                                 </select>
                             </div>
@@ -84,7 +91,7 @@ html_require_component('navbar');
                                         <div class="flex justify-between">
                                             <span>: </span>
                                             <select x-model="properties.form.jam_keberangkatan" class="cursor-pointer w-full text-gray-700 font-sans font-normal outline outline-0">
-                                                <option value="-1">-- Pilih Jam --</option>
+                                                <option value="-1" x-text="properties.sites.jam_keberangkatan.length < 1 ? 'Ditentukan segera.' : '-- Pilih Mobil --'"></option>
                                                 <template x-for="jam in properties.sites.jam_keberangkatan">
                                                     <option :value="jam.id" x-text="jam.jam + ' WIB ( ' + jam.alias + ' )'"></option>
                                                 </template>
@@ -115,7 +122,7 @@ html_require_component('navbar');
                                     <div class="w-2/3 py-8 text-center border border-gray-500 bg-gray-300 cursor-not-allowed">
                                         <span>Supir</span>
                                     </div>
-                                    <template x-for="kursi in properties.sites.selected_mobil.details.list_kursi">
+                                    <template x-for="kursi in properties.sites.selected_mobil.details?.list_kursi">
                                         <div class="w-1/3 py-8 text-center border kursi-trigger hover:text-white"
                                              :class="kursi.tersedia ? 'border-gray-400 hover:bg-blue-500 bg-white cursor-pointer ' : 'bg-red-600 hover:bg-red-600 text-white cursor-not-allowed'"
                                              @click="addNomorKursi(kursi)" x-text="kursi.nomor">
@@ -134,225 +141,244 @@ html_require_component('navbar');
 
                 </div>
             </div>
+            <script type="text/javascript">
+                document.addEventListener('alpine:init', () => {
+                    const actions = {
+                        "cekTiket": function () {
+                            this.clearMassage();
+                            let alpineObj = this;
+
+                            this.getApiRequest('/api/pesan/cek-tiket', {
+                                'tanggal_keberangkatan': this.properties.form.tanggal_keberangkatan,
+                                'asal': this.properties.form.asal,
+                                'tujuan': this.properties.form.tujuan,
+                                'kategori': this.properties.form.kategori
+                            }, function (response) {
+                                alpineObj.parseRutePerjalanan(response.data.rute);
+                                alpineObj.parseJamKeberangkatan(response.data.list_jam_keberangkatan_tersedia);
+                                alpineObj.parseListMobil(response.data.list_mobil_tersedia);
+                                alpineObj.properties.sites.advance_form = true;
+                            }, function (error) {
+                                console.error(error);
+                                alpineObj.addErrorMassage('bad_request', error.response.data.errors.message);
+                            });
+                        },
+                        "parseRutePerjalanan": function (rute) {
+                            if (rute?.reversed) this.properties.sites.rute = `${rute.rute.tujuan.nama_kota} - ${rute.rute.asal.nama_kota}`;
+                            else this.properties.sites.rute = `${rute.rute.asal.nama_kota} - ${rute.rute.tujuan.nama_kota}`
+                        },
+                        "parseJamKeberangkatan": function (jamKeberangkatan) {
+                            this.properties.sites.jam_keberangkatan = jamKeberangkatan;
+                        },
+                        "parseListMobil": function(mobil) {
+                            this.properties.sites.list_mobil = mobil;
+                            if (mobil.length > 0) {
+                                this.properties.sites.selected_mobil.details = mobil[0];
+                                this.properties.sites.selected_mobil.total_kursi_penumpang = mobil[0].total_kursi_penumpang;
+                            }
+                        },
+                        "parseListKursi": function () {
+                            let indexSelected = this.properties.sites.list_mobil.findIndex(item => item.mobil.id == this.properties.form.mobil);
+
+
+
+                            this.properties.sites.selected_mobil.details = this.properties.sites.list_mobil[indexSelected];
+                            this.properties.sites.selected_mobil.total_kursi_penumpang = this.properties.sites.list_mobil[indexSelected].total_kursi_penumpang;
+
+                            this.properties.form.list_nomor_kursi = [];
+                            let listKursiTrigger = document.getElementsByClassName('kursi-trigger');
+                            for (const listKursiTriggerElement of listKursiTrigger) {
+                                listKursiTriggerElement.classList.remove('bg-blue-500');
+                                listKursiTriggerElement.classList.remove('text-white');
+                            }
+                        },
+                        "addNomorKursi": function (kursi) {
+                            if (kursi.tersedia === false) return;
+
+                            let elem = this.$event.target;
+                            let index = this.properties.form.list_nomor_kursi.indexOf(kursi.nomor);
+                            if (index >= 0) {
+                                elem.classList.remove('bg-blue-500');
+                                elem.classList.remove('text-white');
+                                this.properties.form.list_nomor_kursi.splice(index, 1);
+
+                                return;
+                            }
+
+                            elem.classList.add('bg-blue-500');
+                            elem.classList.add('text-white');
+                            this.properties.form.list_nomor_kursi.push(kursi.nomor);
+
+                            return;
+                        },
+                        "pesanSekarang": function () {
+                            this.clearMassage();
+
+                            let alpineObj = this;
+                            let elem = this.$event.target;
+                            let elemTitle = this.properties.sites.button_title;
+                            this.buttonLoading(elem);
+
+                            this.postData(
+                                '/api/pesanan/create',
+                                this.createFormData({
+                                    'tanggal_keberangkatan': this.properties.form.tanggal_keberangkatan,
+                                    'asal': this.properties.form.asal,
+                                    'tujuan': this.properties.form.tujuan,
+                                    'mobil': this.properties.form.mobil,
+                                    'kategori': this.properties.form.kategori,
+                                    'jam_keberangkatan': this.properties.form.jam_keberangkatan,
+                                    'list_nomor_kursi': this.properties.form.list_nomor_kursi,
+                                }),
+                                function (response) {
+                                    elem.disabled = false;
+                                    elem.innerText = elemTitle;
+                                    elem.classList.remove('bg-gray-700');
+                                    elem.classList.remove('hover:bg-gray-700');
+                                    elem.classList.remove('focus:ring-gray-700');
+                                    elem.classList.remove('opacity-80');
+                                    elem.classList.remove('cursor-not-allowed');
+
+                                    window.location.href = `${alpineObj.properties.sites.api_url}/info-pemesan`;
+                                },
+                                function (error) {
+                                    console.error(error);
+                                    alpineObj.addErrorMassage('bad_request', error.response.data.errors.message);
+                                }
+                            );
+                        }
+                    };
+                    const utils = {
+                        "tanggalToIndo": function (tanggal) {
+                            if (!tanggal) return null;
+                            let date = new Date(tanggal);
+
+                            return date.toLocaleDateString('id-ID',  { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                        },
+                        "rupiah": function (number) {
+                            return 'Rp ' + (new Intl.NumberFormat('id-Id', {"maximumSignificantDigits": 3}).format(number));
+                        },
+                        "buttonLoading": function(elem, statusText = 'Mohon Tunggu') {
+                            elem.disabled = true;
+                            elem.innerText = statusText;
+                            elem.classList.add('bg-gray-700');
+                            elem.classList.add('hover:bg-gray-700');
+                            elem.classList.add('focus:ring-gray-700');
+                            elem.classList.add('opacity-80');
+                            elem.classList.add('cursor-not-allowed');
+                        },
+                        "buttonRemoveLoading": function (elem, statusText, success = 'bg-green-700') {
+                            elem.disabled = false;
+                            elem.innerText = statusText;
+                            elem.classList.remove('bg-gray-700');
+                            elem.classList.remove('hover:bg-gray-700');
+                            elem.classList.remove('focus:ring-gray-700');
+                            elem.classList.remove('opacity-80');
+                            elem.classList.remove('cursor-not-allowed');
+
+                            elem.classList.add('bg-green-700');
+                        },
+                        "getApiRequest": function (to, params = null, callback, errCallback) {
+                            return axios
+                                .get(this.properties.sites.api_url + to, { params: params })
+                                .then(res => callback(res))
+                                .catch(err => errCallback(err));
+                        },
+                        "postData": function (to, data, callback, callbackError) {
+                            let that = this;
+                            return axios
+                                .post(this.properties.sites.api_url + to, data)
+                                .then(res => callback(res))
+                                .catch(err => callbackError(err));
+                        },
+                        "createFormData": function (data) {
+                            const form = new FormData();
+                            for (const key in data) form.append(key, data[key]);
+
+                            return form;
+                        },
+                        "addErrorMassage": function (name, message) {
+                            this.addMessage(name, message);
+                        },
+                        "addNormalMessage": function (name, message) {
+                            this.addMessage(name, message, 'normal', 'green');
+                        },
+                        "addMessage": function (name, message, container = 'errors', color = 'red') {
+                            let exists = this.properties.messages[container].findIndex(item => item.name == name);
+
+                            if (exists !== -1) {
+                                this.properties.messages[container][exists] = { 'name': name, 'message': message, 'color': color };
+
+                                return;
+                            }
+
+                            this.properties.messages[container].push({ 'name': name, 'message': message, 'color': color });
+                        },
+                        "clearMassage": function(){
+                            this.properties.messages.errors = [];
+                            this.properties.messages.normal = [];
+                        }
+                    };
+
+                    Alpine.data('container',
+                        () => ({
+                            ...actions,
+                            ...utils,
+                            "properties": {
+                                "sites": {
+                                    "api_url": "<?= site_url() ?>",
+                                    "rute": "",
+                                    "jam_keberangkatan": [],
+                                    "list_mobil": [],
+                                    "selected_mobil": {
+                                        'total_kursi_penumpang' : 7,
+                                        'details': {
+                                            'list_kursi' : [
+                                                { 'nomor': 1, 'tersedia': true },
+                                                { 'nomor': 2, 'tersedia': true },
+                                                { 'nomor': 3, 'tersedia': true },
+                                                { 'nomor': 4, 'tersedia': true },
+                                                { 'nomor': 5, 'tersedia': true },
+                                                { 'nomor': 6, 'tersedia': true },
+                                                { 'nomor': 7, 'tersedia': true },
+                                            ]
+                                        }
+                                    },
+                                    "advance_form": false,
+                                    "button_title": 'Pesan Sekarang'
+                                },
+                                "messages": {
+                                    "errors": [],
+                                    "normal": []
+                                },
+                                "data": {
+                                    "selected_rute": JSON.parse('<?= json_encode($selectedRute) ?>'),
+                                    "list_kategori_penumpang": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listKategoriPenumpang)) ?>'),
+                                    "list_daerah_operasional": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listDaerahOperasional)) ?>')
+                                },
+                                "form": {
+                                    "tanggal_keberangkatan": null,
+                                    "asal": -1,
+                                    "tujuan": -1,
+                                    "kategori": -1,
+                                    "jam_keberangkatan": -1,
+                                    "mobil": -1,
+                                    "list_nomor_kursi": []
+                                }
+                            },
+                            "init": function () {
+                                this.properties.form.tanggal_keberangkatan = "<?= date('Y-m-d') ?>";
+                                if (this.properties.data.selected_rute) {
+                                    this.properties.form.asal = this.properties.data.selected_rute.rute.asal.id;
+                                    this.properties.form.tujuan = this.properties.data.selected_rute.rute.tujuan.id;
+                                    this.properties.form.kategori = this.properties.data.selected_rute.kategori.id;
+                                }
+                            }
+                        })
+                    );
+                });
+
+            </script>
         </form>
     </div>
 </main>
-<script type="text/javascript">
-    document.addEventListener('alpine:init', () => {
-        const actions = {
-            "cekTiket": function () {
-                let alpineObj = this;
-
-                this.getApiRequest('/api/pesan/cek-tiket', {
-                    'tanggal_keberangkatan': this.properties.form.tanggal_keberangkatan,
-                    'asal': this.properties.form.asal,
-                    'tujuan': this.properties.form.tujuan,
-                    'kategori': this.properties.form.kategori
-                }, function (response) {
-                    alpineObj.parseRutePerjalanan(response.data.rute);
-                    alpineObj.parseJamKeberangkatan(response.data.list_jam_keberangkatan_tersedia);
-                    alpineObj.parseListMobil(response.data.list_mobil_tersedia);
-                    alpineObj.properties.sites.advance_form = true;
-                }, function (error) {
-                    console.error(error);
-                });
-            },
-            "parseRutePerjalanan": function (rute) {
-                if (rute.reversed) this.properties.sites.rute = `${rute.rute.tujuan.nama_kota} - ${rute.rute.asal.nama_kota}`;
-                else this.properties.sites.rute = `${rute.rute.asal.nama_kota} - ${rute.rute.tujuan.nama_kota}`
-            },
-            "parseJamKeberangkatan": function (jamKeberangkatan) {
-                this.properties.sites.jam_keberangkatan = jamKeberangkatan;
-            },
-            "parseListMobil": function(mobil) {
-                this.properties.sites.list_mobil = mobil;
-                this.properties.sites.selected_mobil.details = mobil[0];
-                this.properties.sites.selected_mobil.total_kursi_penumpang = mobil[0].total_kursi_penumpang;
-            },
-            "parseListKursi": function () {
-                let indexSelected = this.properties.sites.list_mobil.findIndex(item => item.mobil.id == this.properties.form.mobil);
-
-                this.properties.sites.selected_mobil.details = this.properties.sites.list_mobil[indexSelected];
-                this.properties.sites.selected_mobil.total_kursi_penumpang = this.properties.sites.list_mobil[indexSelected].total_kursi_penumpang;
-
-                this.properties.form.list_nomor_kursi = [];
-                let listKursiTrigger = document.getElementsByClassName('kursi-trigger');
-                for (const listKursiTriggerElement of listKursiTrigger) {
-                    listKursiTriggerElement.classList.remove('bg-blue-500');
-                    listKursiTriggerElement.classList.remove('text-white');
-                }
-            },
-            "addNomorKursi": function (kursi) {
-                if (kursi.tersedia === false) return;
-
-                let elem = this.$event.target;
-                let index = this.properties.form.list_nomor_kursi.indexOf(kursi.nomor);
-                if (index >= 0) {
-                    elem.classList.remove('bg-blue-500');
-                    elem.classList.remove('text-white');
-                    this.properties.form.list_nomor_kursi.splice(index, 1);
-
-                    return;
-                }
-
-                elem.classList.add('bg-blue-500');
-                elem.classList.add('text-white');
-                this.properties.form.list_nomor_kursi.push(kursi.nomor);
-
-                return;
-            },
-            "pesanSekarang": function () {
-                this.clearMassage();
-
-                let alpineObj = this;
-                let elem = this.$event.target;
-                let elemTitle = this.properties.sites.button_title;
-                this.buttonLoading(elem);
-
-                this.postData(
-                    '/api/pesanan/create',
-                    this.createFormData({
-                        'tanggal_keberangkatan': this.properties.form.tanggal_keberangkatan,
-                        'asal': this.properties.form.asal,
-                        'tujuan': this.properties.form.tujuan,
-                        'mobil': this.properties.form.mobil,
-                        'kategori': this.properties.form.kategori,
-                        'jam_keberangkatan': this.properties.form.jam_keberangkatan,
-                        'list_nomor_kursi': this.properties.form.list_nomor_kursi,
-                    }),
-                    function (response) {
-                        elem.disabled = false;
-                        elem.innerText = elemTitle;
-                        elem.classList.remove('bg-gray-700');
-                        elem.classList.remove('hover:bg-gray-700');
-                        elem.classList.remove('focus:ring-gray-700');
-                        elem.classList.remove('opacity-80');
-                        elem.classList.remove('cursor-not-allowed');
-
-                        window.location.href = `${alpineObj.properties.sites.api_url}/pesan/info-pemesan`;
-                    },
-                    function (error) {
-                        console.error(error);
-                    }
-                );
-            }
-        };
-        const utils = {
-            "tanggalToIndo": function (tanggal) {
-                if (!tanggal) return null;
-                let date = new Date(tanggal);
-
-                return date.toLocaleDateString('id-ID',  { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            },
-            "rupiah": function (number) {
-                return 'Rp ' + (new Intl.NumberFormat('id-Id', {"maximumSignificantDigits": 3}).format(number));
-            },
-            "buttonLoading": function(elem, statusText = 'Mohon Tunggu') {
-                elem.disabled = true;
-                elem.innerText = statusText;
-                elem.classList.add('bg-gray-700');
-                elem.classList.add('hover:bg-gray-700');
-                elem.classList.add('focus:ring-gray-700');
-                elem.classList.add('opacity-80');
-                elem.classList.add('cursor-not-allowed');
-            },
-            "buttonRemoveLoading": function (elem, statusText, success = 'bg-green-700') {
-                elem.disabled = false;
-                elem.innerText = statusText;
-                elem.classList.remove('bg-gray-700');
-                elem.classList.remove('hover:bg-gray-700');
-                elem.classList.remove('focus:ring-gray-700');
-                elem.classList.remove('opacity-80');
-                elem.classList.remove('cursor-not-allowed');
-
-                elem.classList.add('bg-green-700');
-            },
-            "getApiRequest": function (to, params = null, callback, errCallback) {
-                return axios
-                    .get(this.properties.sites.api_url + to, { params: params })
-                    .then(res => callback(res))
-                    .catch(err => errCallback(err));
-            },
-            "postData": function (to, data, callback, callbackError) {
-                let that = this;
-                return axios
-                    .post(this.properties.sites.api_url + to, data)
-                    .then(res => callback(res))
-                    .catch(err => callbackError(err));
-            },
-            "createFormData": function (data) {
-                const form = new FormData();
-                for (const key in data) form.append(key, data[key]);
-
-                return form;
-            },
-            "addErrorMassage": function (name, message) {
-                this.addMessage(name, message);
-            },
-            "addNormalMessage": function (name, message) {
-                this.addMessage(name, message, 'normal', 'green');
-            },
-            "addMessage": function (name, message, container = 'errors', color = 'red') {
-                let exists = this.properties.messages[container].findIndex(item => item.name == name);
-
-                if (exists !== -1) {
-                    this.properties.messages[container][exists] = { 'name': name, 'message': message, 'color': color };
-
-                    return;
-                }
-
-                this.properties.messages[container].push({ 'name': name, 'message': message, 'color': color });
-            },
-            "clearMassage": function(){
-                this.properties.messages.errors = [];
-                this.properties.messages.normal = [];
-            }
-        };
-
-        Alpine.data('container',
-            () => ({
-                ...actions,
-                ...utils,
-                "properties": {
-                    "sites": {
-                        "api_url": "<?= site_url() ?>",
-                        "rute": "",
-                        "jam_keberangkatan": [],
-                        "list_mobil": [],
-                        "selected_mobil": {
-                            'total_kursi_penumpang' : 0,
-                            'details': {}
-                        },
-                        "advance_form": false,
-                        "button_title": 'Pesan Sekarang'
-                    },
-                    "messages": {
-                        "errors": [],
-                        "normal": []
-                    },
-                    "data": {
-                        "selected_rute": JSON.parse('<?= json_encode($selectedRute) ?>'),
-                        "list_kategori_penumpang": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listKategoriPenumpang)) ?>'),
-                        "list_daerah_operasional": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listDaerahOperasional)) ?>')
-                    },
-                    "form": {
-                        "tanggal_keberangkatan": null,
-                        "asal": -1,
-                        "tujuan": -1,
-                        "kategori": -1,
-                        "jam_keberangkatan": -1,
-                        "mobil": -1,
-                        "list_nomor_kursi": []
-                    }
-                },
-                "init": function () {
-                    this.properties.form.asal = this.properties.data.selected_rute.rute.asal.id;
-                    this.properties.form.tujuan = this.properties.data.selected_rute.rute.tujuan.id;
-                    this.properties.form.kategori = this.properties.data.selected_rute.kategori.id;
-                    this.properties.form.tanggal_keberangkatan = "<?= date('Y-m-d') ?>";
-                }
-            })
-        );
-    });
-
-</script>

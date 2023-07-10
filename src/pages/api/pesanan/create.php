@@ -49,6 +49,10 @@ $pesanan = $pemesananService->buatPesananBaru(
     $rute['reversed']
 );
 
+if (false === $pesanan) response()->serverError(
+    ['message' => 'Terjadi kesalahan pada server, mohon coba kembali.']
+);
+
 session()->add('nomor_pemesanan', $pesanan->getNomorPesanan());
 
 response()->jsonOk(['nomor_pemesanan' => $pesanan->getNomorPesanan()], 201);

@@ -9,7 +9,7 @@ $password = $_POST['password'];
 $otentikator = app()->getManager()->getService('OtentikatorService');
 
 if (false === $otentikator->otentikasi($username, $password))
-    response()->redirectTo(site_url('login'), ['status' => false, 'message' => 'Username atau password salah, silahkan coba kembali.']);
+    response()->redirectTo(site_url('akun/login'), ['status' => false, 'message' => 'Username atau password salah, silahkan coba kembali.']);
 
 /** @var $user Akun */
 $user = session()->auth();

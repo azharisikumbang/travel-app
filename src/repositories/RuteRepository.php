@@ -90,7 +90,7 @@ class RuteRepository extends BaseRepository
             'tujuan' => $tujuan->getId()
         ]);
 
-        return $found ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)) : null;
+        return $stmt->rowCount() ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)) : null;
     }
 
     public function update(Rute $rute) : false|Rute

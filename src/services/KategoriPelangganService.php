@@ -30,4 +30,9 @@ class KategoriPelangganService
     {
         return $this->kategoriPelangganRepository->deleteById($kategoriPelanggan);
     }
+
+    public function cari(string $kategori) : ?KategoriPelanggan
+    {
+        return $this->kategoriPelangganRepository->getWhere('kategori', $kategori);
+    }
 }

@@ -1,4 +1,10 @@
-<?php html_require_component('navbar'); ?>
+<?php
+
+if (session()->auth()) response()->redirectTo(site_url(session()->auth()->getRole()->redirectPage()));
+
+html_require_component('navbar');
+
+?>
 <main>
     <div class="max-w-2xl mx-auto py-40 px-6">
         <?php if(session('temp')):
@@ -19,7 +25,7 @@
                     <button type="submit" class="w-full text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-4 text-center mr-3 md:mr-0">Masuk</button>
                 </div>
                 <div class="mt-8 text-center">
-                    Belum punya akun ? <a href="<?= site_url('register') ?>" class="underline text-red-800 hover:text-red-600">Silahkan daftar</a>.
+                    Belum punya akun ? <a href="<?= site_url('akun/register') ?>" class="underline text-red-800 hover:text-red-600">Silahkan daftar</a>.
                 </div>
             </div>
         </form>

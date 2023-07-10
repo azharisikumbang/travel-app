@@ -1,4 +1,10 @@
-<?php $auth = session()->auth(); ?><!doctype html>
+<?php
+
+if (false === session()->isAuthenticatedAs('pelanggan')) html_unauthorized();
+
+$auth = session()->auth();
+
+?><!doctype html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -13,10 +19,10 @@
         <div class="border rounded-lg p-4 shadow-md">
             <div class="flex border-b-2 pb-4 items-center">
                 <div class="w-20 mr-4">
-                    <img src="https://ui-avatars.com/api/?name=<?= $auth->getNamaLengkap() ?>" alt="<?= $auth->getNamaLengkap() ?>" class="rounded-full">
+                    <img src="https://ui-avatars.com/api/?name=<?= $auth->getUsername() ?>" alt="<?= $auth->getUsername() ?>" class="rounded-full">
                 </div>
                 <div class="w-full">
-                    <h2 class="font-sans text-xl font-semibold text-gray-800"><?= $auth->getNamaLengkap() ?></h2>
+                    <h2 class="font-sans text-xl font-semibold text-gray-800"><?= $auth->getUsername() ?></h2>
                     <p class="text-sm font-light font-sans"><?= $auth->getRole()->value ?></p>
                 </div>
             </div>
@@ -45,7 +51,7 @@
                     <a href="" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Ganti Kata Sandi</a>
                 </li>
                 <li class="mb-1">
-                    <a href="" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Akhiri Sesi</a>
+                    <a href="<?= site_url('akun/logout') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Akhiri Sesi</a>
                 </li>
             </ul>
             <div class="my-4">

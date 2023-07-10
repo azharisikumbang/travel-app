@@ -13,9 +13,9 @@ class AkunService
         $this->akunRepository = new AkunRepository();
     }
 
-    public function tambahkanAkunOperasional(Akun $user, AkunRepository $repository) : bool
+    public function buatAkunBaru(Akun $user) : false|Akun
     {
-        return $repository->save($user);
+        return $this->akunRepository->save($user);
     }
 
     public function listAkunOperasional(int $length = 10, int $from = 0) : array
@@ -26,22 +26,6 @@ class AkunService
     public function listDriver(int $length = 10, int $from = 0) : array
     {
         return $this->akunRepository->getByRole(Role::DRIVER, $length, $from);
-    }
-
-    public function buatAkunPelanggan(string $nama, string $kontak, string $username, string $password) : false|Akun
-    {
-        if ($this->cekApakahAkunTerdaftar($username)) return false;
-
-        $user = new Akun();
-        $user
-            ->setNamaLengkap($nama)
-            ->setKontak($kontak)
-            ->setUsername($username)
-            ->setPassword(password_hash($password, PASSWORD_DEFAULT), true)
-            ->setRole(Role::PELANGGAN)
-        ;
-
-        return $this->akunRepository->save($user) ? $user : false;
     }
 
     public function cekApakahAkunTerdaftar(string $username) : bool
