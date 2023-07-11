@@ -412,4 +412,20 @@ class PemesananRepository extends BaseRepository
 
         return $listPesanan;
     }
+
+    public function getBuktiPembayaran(string $nomorPemesanan) : false|string
+    {
+        $query = "SELECT id, bukti_pembayaran 
+            FROM {$this->getTable()} 
+            WHERE NOT status_bukti_pembayaran = :status_bukti_pembayaran 
+            AND nomor_pemesanan = :nomor_pemesanan";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            'status_bukti_pembayaran' => StatusBuktiPembayaran::PENDING->value,
+            'nomor_pemesanan' => $nomorPemesanan
+        ]);
+
+        return $stmt->rowCount() ? $stmt->fetch(PDO::FETCH_ASSOC)['bukti_pembayaran'] : false;
+    }
 }

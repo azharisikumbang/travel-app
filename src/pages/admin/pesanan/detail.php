@@ -64,15 +64,15 @@ if (is_null($pesanan)) html_not_found();
                 <h6 class="rounded-tl rounded-tr font-sans text-xl font-semibold text-gray-700 mb-2">Informasi Pemesan</h6>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Atas Nama Pemesan</label>
-                    <p class="w-full " x-text="properties.data.pesanan.nama_pemesanan"></p>
+                    <p class="w-full " x-text="properties.data.pesanan.nama_pemesanan ?? '-'"></p>
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Kontak Pemesan</label>
-                    <p class="w-full " x-text="properties.data.pesanan.kontak_pemesanan"></p>
+                    <p class="w-full " x-text="properties.data.pesanan.kontak_pemesanan == '' ?? '-'"></p>
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Alamat Jemput</label>
-                    <p class="w-full " x-text="properties.data.pesanan.titik_jemput"></p>
+                    <p class="w-full " x-text="properties.data.pesanan.titik_jemput ?? '-'"></p>
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Informasi Akun Pemesan</label>
@@ -83,11 +83,11 @@ if (is_null($pesanan)) html_not_found();
                 <h6 class="rounded-tl rounded-tr font-sans text-xl font-semibold text-gray-700 mb-2">Informasi Pembayaran</h6>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Atas Nama Pembayaran</label>
-                    <p class="w-full " x-text="properties.data.pesanan.nama_pembayaran"></p>
+                    <p class="w-full " x-text="properties.data.pesanan.nama_pembayaran ?? '-'"></p>
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Bank Pembayaran</label>
-                    <p class="w-full " x-text="properties.data.pesanan.bank_pembayaran"></p>
+                    <p class="w-full " x-text="properties.data.pesanan.bank_pembayaran ?? '-'"></p>
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Nominal Dibayarkan</label>
@@ -95,7 +95,8 @@ if (is_null($pesanan)) html_not_found();
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Bukti Pembayaran</label>
-                    <a href="" class="text-red-500 underline text-sm block hover:text-red-600">Unduh untuk melihat.</a>
+                    <a x-show="properties.data.pesanan.status_bukti_pembayaran.toLowerCase() == 'valid'" :href="properties.sites.api_url + '/api/admin/pesanan/unduh-bukti-pembayaran?nomor=' + properties.data.pesanan.nomor_pemesanan" class="text-red-500 underline text-sm block hover:text-red-600">Unduh untuk melihat.</a>
+                    <span x-show="properties.data.pesanan.status_bukti_pembayaran.toLowerCase() != 'valid'" class="block">-</span>
                 </div>
             </div>
             <template x-if="properties.data.pesanan.status_bukti_pembayaran.toLowerCase() == 'unconfirmed'">

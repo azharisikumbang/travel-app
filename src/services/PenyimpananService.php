@@ -19,4 +19,20 @@ final class PenyimpananService
 
         return $filename;
     }
+
+    public function downloadBuktiPembayaran(string $file): void
+    {
+        $filename = sprintf("%s/%s", rtrim($this->disk['bukti_pembayaran'], "/"), basename($file));
+
+        if (file_exists($filename)) {
+            header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
+            header("Cache-Control: public"); // needed for internet explorer
+            header("Content-Type: application/image");
+            header("Content-Transfer-Encoding: Binary");
+            header("Content-Length:".filesize($filename));
+            header("Content-Disposition: attachment; filename=".$file);
+            readfile($filename);
+            die();
+        }
+    }
 }

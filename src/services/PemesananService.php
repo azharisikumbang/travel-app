@@ -363,6 +363,13 @@ class PemesananService
         return $this->pemesananRepository->getDailyPesananByDriver($this->driverRepository, $driver);
     }
 
+    public function unduhBuktiPembayaran(string $nomorPemesanan) : false|string
+    {
+        $file = $this->pemesananRepository->getBuktiPembayaran($nomorPemesanan);
+
+        return $file ?? false;
+    }
+
     public function validasiKursiDipesan(DateTimeInterface $tanggal, Rute $rute, int $mobilId, array $kursi) : bool
     {
         $mobil = null;
