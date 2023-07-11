@@ -35,4 +35,33 @@ final class PenyimpananService
             die();
         }
     }
+
+    public function getDisk() : array
+    {
+        return $this->disk;
+    }
+
+    public function simpanFileTiketPDF(string $filename, ?string $content) : string
+    {
+        $file = sprintf("%s/%s", rtrim($this->disk['tiket'], "/"), $filename);
+        file_put_contents($file, $content);
+
+        return $filename;
+    }
+
+    public function downloadTiket(string $file)
+    {
+        $filename = sprintf("%s/%s", rtrim($this->disk['tiket'], "/"), basename($file));
+
+        if (file_exists($filename)) {
+            header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
+            header("Cache-Control: public"); // needed for internet explorer
+            header("Content-Type: application/image");
+            header("Content-Transfer-Encoding: Binary");
+            header("Content-Length:".filesize($filename));
+            header("Content-Disposition: attachment; filename=".$file);
+            readfile($filename);
+            die();
+        }
+    }
 }

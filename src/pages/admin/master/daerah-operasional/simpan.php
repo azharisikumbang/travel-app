@@ -1,5 +1,7 @@
 <?php
 
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
+
 /** @var $daerah DaerahOperasional */
 $app = app()->getManager();
 $daerah = $app->getEntity('DaerahOperasional');

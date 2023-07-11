@@ -1,5 +1,6 @@
 <?php
 
+if (false === session()->isAuthenticatedAs('pelanggan')) html_unauthorized();
 /** @var $pesanan Pesanan  */
 $listJadwalPerjalananPelanggan = app()->getManager()->getService('PemesananService')->listJadwalPerjalananPelanggan(session()->auth());
 

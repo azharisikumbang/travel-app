@@ -1,4 +1,8 @@
-<?php $listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalService')->listDaerahOperasional();?>
+<?php
+
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
+
+$listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalService')->listDaerahOperasional();?>
 <main x-data="container">
     <nav class="block w-full max-w-full bg-transparent text-white shadow-none transition-all px-0 py-1 border-b-2">
         <div class="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">

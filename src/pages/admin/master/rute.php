@@ -1,4 +1,6 @@
 <?php
+
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
 $listRute = app()->getManager()->getService('RuteService')->listRute(50);
 $listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalService')->listDaerahOperasional();
 ?>

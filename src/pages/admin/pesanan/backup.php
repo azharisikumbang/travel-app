@@ -1,5 +1,7 @@
 <?php
 
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
+
 /** @var $pesanan Pesanan */
 $listPesanan = app()->getManager()->getService('PemesananService')->listPesananBerdasarkanHari(20, 0);
 

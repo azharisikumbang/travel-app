@@ -1,4 +1,7 @@
-<?php html_require_component('navbar'); ?>
+<?php
+if (session()->auth()) response()->redirectTo(site_url(session()->auth()->getRole()->redirectPage()));
+html_require_component('navbar');
+?>
 <main>
     <div class="max-w-2xl mx-auto px-6 py-20">
         <?php if(session('temp')):

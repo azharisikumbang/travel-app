@@ -1,3 +1,3 @@
 <?php
 
-print_r($_GET);
+if (false === session()->isAuthenticatedAs('pelanggan')) html_unauthorized();

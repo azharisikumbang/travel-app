@@ -1,5 +1,6 @@
 <?php
 
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
 $listTarif = app()->getManager()->getService('TiketService')->listTarif(100);
 $listKategoriPelanggan = app()->getManager()->getService('KategoriPelangganService')->listKategoriPelanggan();
 $listRute = app()->getManager()->getService('RuteService')->listRute(50);

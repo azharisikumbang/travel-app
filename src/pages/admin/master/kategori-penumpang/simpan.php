@@ -1,5 +1,7 @@
 <?php
 
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
+
 /** @var $tipePenumpang KategoriPelanggan */
 $app = app()->getManager();
 $tipePenumpang = $app->getEntity('KategoriPelanggan');

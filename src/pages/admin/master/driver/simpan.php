@@ -1,5 +1,7 @@
 <?php
 
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
+
 /** @var $user Akun */
 $app = app()->getManager();
 $user = $app->getEntity('Akun');

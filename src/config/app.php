@@ -8,6 +8,8 @@ return [
     'penyimpanan' => [
         'base_dir' => __DIR__ . '/../storages/',
         'bukti_pembayaran' => __DIR__ . '/../storages/bukti-pembayaran',
+        'tiket' => __DIR__ . '/../storages/tiket',
+        'tiket_templates' => __DIR__ . '/../templates/tiket.php'
     ],
     'kontak' => [
         'utama' => '081268280330',

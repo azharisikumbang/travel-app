@@ -1,4 +1,6 @@
 <?php
+
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
 $listDriver = app()->getManager()->getService('DriverService')->listDriver(20);
 $listMobil = app()->getManager()->getService('MobilService')->listMobil();
 ?>

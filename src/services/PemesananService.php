@@ -9,6 +9,7 @@ require_once __DIR__ . '/../entities/Object/NomorPesanan.php';
 require_once __DIR__ . '/../enums/StatusPemesanan.php';
 require_once __DIR__ . '/../enums/StatusBuktiPembayaran.php';
 require_once __DIR__ . '/PenyimpananService.php';
+require_once __DIR__ . '/PDFService.php';
 
 class PemesananService
 {
@@ -391,5 +392,26 @@ class PemesananService
     private function createNomorPesananObject(string $nomor, int $iterasi) : NomorPesanan
     {
         return new NomorPesanan($nomor, $iterasi);
+    }
+
+    public function buatFileTiket(Pesanan $pesanan) : null|Pesanan
+    {
+        $pesanan = is_string($pesanan) ? $this->pemesananRepository->findByNomorPesanan($pesanan, true) : $pesanan;
+
+        if (is_null($pesanan)) return null;
+        if ($pesanan->getStatusBuktiPembayaran() !== StatusBuktiPembayaran::VALID) return null;
+        if ($pesanan->getListKursi() < 1) $pesanan = $this->pemesananRepository->findByNomorPesanan($pesanan->getNomorPesanan());
+
+        $pdf = new PDFService($this->penyimpananService);
+        $tiket = $pdf->buatTiket($pesanan);
+        $pesanan->setFileTiket($tiket);
+        $this->pemesananRepository->updateInformasiFileTiket($pesanan);
+
+        return $pesanan;
+    }
+
+    public function unduhTiket(string $nomorPemesanan) : false|string
+    {
+        return $this->pemesananRepository->getFileTiket($nomorPemesanan);
     }
 }

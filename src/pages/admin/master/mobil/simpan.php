@@ -1,5 +1,7 @@
 <?php
 
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
+
 $app = app()->getManager();
 $mobil = $app->getEntity('Mobil');
 $mobil

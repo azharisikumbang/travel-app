@@ -53,6 +53,8 @@ class Pesanan implements EntityInterface
 
     private ?string $driver = null;
 
+    private ?string $fileTiket = null;
+
     private array $listKursi;
 
     public function setId(int $id): self
@@ -506,9 +508,23 @@ class Pesanan implements EntityInterface
     /**
      * @param string|null $driver
      */
-    public function setDriver(?string $driver): void
+    public function setDriver(?string $driver): self
     {
         $this->driver = $driver;
+
+        return $this;
+    }
+
+    public function getFileTiket(): ?string
+    {
+        return $this->fileTiket;
+    }
+
+    public function setFileTiket(?string $tiket) : self
+    {
+        $this->fileTiket = $tiket;
+
+        return $this;
     }
 
     public function toArray(): array
@@ -538,7 +554,8 @@ class Pesanan implements EntityInterface
             'list_kursi_dipesan' => array_map(fn($item) => $item->toArray(), $this->getListKursi()),
             'keberangkatan' => $this->getRute(),
             'jadwal' => $this->getJadwalLengkap(),
-            'tanggal_pemesanan' => $this->getTanggalPemesanan()->format('Y-m-d')
+            'tanggal_pemesanan' => $this->getTanggalPemesanan()->format('Y-m-d'),
+            'tiket' => $this->getFileTiket()
         ];
     }
 }

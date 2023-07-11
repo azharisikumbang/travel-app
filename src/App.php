@@ -52,8 +52,6 @@ final class App
             default => Role::PUBLIC
         };
 
-
-
         $pageTemplate = sprintf("%s/templates/%s.php", __DIR__, $role->pageTemplate());
 
         if(file_exists($pageTemplate)) require_once $pageTemplate;

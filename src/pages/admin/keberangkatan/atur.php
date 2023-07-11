@@ -1,5 +1,7 @@
 <?php
 
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
+
 $manager = app()->getManager();
 $listKeberangkatanHarian = $manager->getService('KeberangkatanService')->listKeberangkatanHarian();
 $listMobil = $manager->getService('MobilService')->listMobil(50);

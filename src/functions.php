@@ -165,3 +165,10 @@ if(!(function_exists('html_unauthorized'))) {
         exit();
     }
 }
+
+if(!(function_exists('load_externals'))) {
+    function load_externals(callable $callback) : void
+    {
+        $callback(__DIR__ . '/externals/');
+    }
+}

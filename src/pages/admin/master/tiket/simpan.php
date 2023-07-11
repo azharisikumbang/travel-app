@@ -1,5 +1,7 @@
 <?php
 
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
+
 $app = app()->getManager();
 $tarifService = $app->getService('TiketService');
 $tarif = $tarifService->buatTarif(

@@ -1,11 +1,12 @@
-<?php $message ??= 'Maaf, halaman yang anda maksud tidak ditemukan di server kami, mohon periksa tujuan anda.'; ?>
-<section class="bg-white">
+<section class="bg-yellow-500">
     <div class="py-8 px-4 mx-auto max-w-screen-xl h-screen lg:py-16 lg:px-6">
-        <div class="mx-auto max-w-screen-sm text-center">
+        <div class="mx-auto max-w-screen-2xl py-16 text-center bg-white rounded-lg shadow-lg">
             <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600 dark:text-primary-500">404</h1>
-            <p class="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl dark:text-white">Halaman Tidak Ditemukan.</p>
-            <p class="mb-4 text-lg font-light text-gray-500 dark:text-gray-400"><?= $message ?> </p>
-            <a href="<?= site_url() ?>" class="inline-flex text-white bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-900 my-4">Back to Homepage</a>
+            <p class="mb-4 text-3xl tracking-tight font-bold text-gray-900 md:text-4xl">Halaman Tidak Ditemukan.</p>
+            <p class="mb-4 text-lg font-light text-gray-500 w-2/3 mx-auto">
+                Maaf, permintaan yang anda lakukan tidak ditemukan, sepertinya anda mengalami masalah mohon muat ulang halaman atau kontak administrasi terkait. Terima Kasih.</p>
+            <a href="<?= site_url() ?>" class="bg-gray-600  inline-flex text-white hover:bg-gray-800 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Kembali Ke Halaman Utama</a>
+            <p class="mt-24"><?= date("Y") ?> &copy; PT. Sorek Wisata Transport</p>
         </div>
     </div>
 </section>

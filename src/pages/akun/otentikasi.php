@@ -1,5 +1,6 @@
 <?php
 
+if (session()->auth()) response()->redirectTo(site_url(session()->auth()->getRole()->redirectPage()));
 if(!request()->isPostRequest()) return response()->notFound();
 
 $username = $_POST['username'];

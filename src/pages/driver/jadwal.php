@@ -1,5 +1,6 @@
 <?php
 
+if (false === session()->isAuthenticatedAs('driver')) html_unauthorized();
 /** @var $pesanan Pesanan  */
 $app = app()->getManager();
 $driver = $app->getService('DriverService')->findByAkun(session()->auth());

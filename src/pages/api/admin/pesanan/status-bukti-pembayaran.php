@@ -29,7 +29,10 @@ $confirmed = $service->konfirmasiPembayaran($pesanan, $status);
 
 if (false === $confirmed) response()->badRequest('Gagal mengkonfirmasi pembayaran, mohon coba lagi.');
 
-response()->toJson([
+$tiket = $service->buatFileTiket($pesanan);
+
+response()->toJson(data: [
     'nomor_pemesanan' => $confirmed->getNomorPesanan(),
-    'status_konfirmasi' => $confirmed->getStatusBuktiPembayaran()->value
+    'status_konfirmasi' => $confirmed->getStatusBuktiPembayaran()->value,
+    'tiket' => $tiket?->getFileTiket()
 ]);

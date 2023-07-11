@@ -1,5 +1,7 @@
 <?php
 
+if (session()->auth()) response()->redirectTo(site_url(session()->auth()->getRole()->redirectPage()));
+
 if (strtolower($_SERVER['REQUEST_METHOD']) !== 'post') response()->notFound();
 if ($_POST['password'] !== $_POST['confirm_password']) response()->redirectTo(site_url('register'), ['status' => false, 'message' => 'Password konfirmasi tidak sama, mohon periksa kembali']);
 

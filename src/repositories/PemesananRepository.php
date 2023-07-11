@@ -364,6 +364,7 @@ class PemesananRepository extends BaseRepository
             ->setNamaPembayaran($row['nama_pembayaran'])
             ->setBankPembayaran($row['bank_pembayaran'])
             ->setPemesanId($row['pemesan_id'])
+            ->setFileTiket($row['file_tiket'])
             ->setMobil($row['mobil']);
     }
 
@@ -427,5 +428,33 @@ class PemesananRepository extends BaseRepository
         ]);
 
         return $stmt->rowCount() ? $stmt->fetch(PDO::FETCH_ASSOC)['bukti_pembayaran'] : false;
+    }
+
+    public function updateInformasiFileTiket(Pesanan $pesanan) : void
+    {
+        $query = "UPDATE {$this->getTable()} SET file_tiket = :file_tiket WHERE nomor_pemesanan = :nomor_pemesanan";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            'file_tiket' => $pesanan->getFileTiket(),
+            'nomor_pemesanan' => $pesanan->getNomorPesanan()
+        ]);
+    }
+
+    public function getFileTiket(string $nomorPemesanan) : false|string
+    {
+        $query = "SELECT id, file_tiket 
+            FROM {$this->getTable()} 
+            WHERE status_bukti_pembayaran = :status_bukti_pembayaran 
+            AND nomor_pemesanan = :nomor_pemesanan 
+            LIMIT 1";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            'status_bukti_pembayaran' => StatusBuktiPembayaran::VALID->value,
+            'nomor_pemesanan' => $nomorPemesanan
+        ]);
+
+        return $stmt->rowCount() ? $stmt->fetch(PDO::FETCH_ASSOC)['file_tiket'] : false;
     }
 }

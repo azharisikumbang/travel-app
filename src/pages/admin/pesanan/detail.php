@@ -1,5 +1,7 @@
 <?php
 
+if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
+
 /** @var $pesanan Pesanan */
 $pesanan = app()->getManager()->getService('PemesananService')->cariPesananBerdasarkanNomorPesanan($_GET['nomor']);
 
@@ -55,7 +57,8 @@ if (is_null($pesanan)) html_not_found();
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Tiket</label>
-                    <a href="" class="text-red-500 underline text-sm block hover:text-red-600">Unduh untuk melihat.</a>
+                    <a x-show="properties.data.pesanan.tiket" :href="properties.sites.api_url + '/api/admin/pesanan/unduh-tiket?nomor=' + properties.data.pesanan.nomor_pemesanan" class="text-red-500 underline text-sm block hover:text-red-600">Unduh untuk melihat.</a>
+                    <span x-show="properties.data.pesanan.tiket == null || properties.data.pesanan.tiket == ''" class="block">-</span>
                 </div>
             </div>
         </div>
