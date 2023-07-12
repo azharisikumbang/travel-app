@@ -47,4 +47,22 @@ class AkunService
                 ->setPassword($password)
         );
     }
+
+    public function informasiAkun(string $username) : null|Akun
+    {
+        return $this->akunRepository->findByUsername($username);
+    }
+
+    public function gantiPasswordAkun(string $username, string $password, bool $sameAsAuthenticated = false) : bool
+    {
+        if ($sameAsAuthenticated){
+            if ($username !== session()->auth()->getUsername()) return false;
+        }
+
+        /** @var $akun Akun */
+        $akun = session()->auth();
+        $akun->setPassword($password);
+
+        return $this->akunRepository->updatePassword($akun);
+    }
 }

@@ -78,4 +78,12 @@ class AkunRepository extends BaseRepository
     {
         return $this->table;
     }
+
+    public function updatePassword(Akun $akun): bool
+    {
+        $query = "UPDATE {$this->getTable()} SET password = :password WHERE username = :username";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        return $stmt->execute(['username' => $akun->getUsername(), 'password' => $akun->getPassword()]);
+    }
 }
