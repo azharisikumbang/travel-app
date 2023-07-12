@@ -94,11 +94,12 @@ $listProvinsi = Provinsi::toArray();
                         <div class="w-full min-w-[200px] mb-4">
                             <label for="" class="font-sans text-base text-gray-500 mb-2 block">Provinsi</label>
                             <select x-model="properties.form.provinsi" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
-                                <option value="-1">-- Pilih Driver --</option>
+                                <option value="-1">-- Pilih Provinsi --</option>
                                 <template x-for="(provinsi, index) in properties.data.list_provinsi" :key="index">
                                     <option :value="index" x-text="provinsi"></option>
                                 </template>
-                            </select></div>
+                            </select>
+                        </div>
                         <div class="w-full min-w-[200px]">
                             <button @click="simpanData" type="submit" class="bg-green-500 w-full text-white rounded py-4 font-sans center" x-text="properties.sites.button_title"></button>
                         </div>

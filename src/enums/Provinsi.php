@@ -14,20 +14,23 @@ enum Provinsi: int
         };
     }
 
-    public static function fromLabel(string $label) : Provinsi
+    public static function fromLabel(string $label) : false|Provinsi
     {
         $label = strtoupper($label);
 
         return match($label) {
             'SUMATRA_BARAT' => Provinsi::SUMATRA_BARAT,
-            'RIAU' => Provinsi::RIAU        };
+            'RIAU' => Provinsi::RIAU,
+            default => false
+        };
     }
 
-    public static function fromValue(int $label) : Provinsi
+    public static function fromValue(int $label) : false|Provinsi
     {
         return match($label) {
             1 => Provinsi::SUMATRA_BARAT,
-            2 => Provinsi::RIAU
+            2 => Provinsi::RIAU,
+            default => false
         };
     }
 

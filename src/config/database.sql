@@ -48,7 +48,7 @@ CREATE TABLE m_jadwal_keberangkatan (
     alias varchar(32) null
 );
 
-CREATE TABLE mobil (
+CREATE TABLE m_mobil (
     id int primary key AUTO_INCREMENT,
     merk varchar(128) not null,
     jumlah_kursi int default 1,
@@ -86,13 +86,12 @@ CREATE TABLE m_tiket(
 
 CREATE TABLE m_keberangkatan(
     id int primary key AUTO_INCREMENT,
-    rute_id int not null,
+    provinsi_id int not null,
     mobil_id int NOT NULL,
     jam_keberangkatan_id int NOT NULL,
     last_updated datetime DEFAULT CURRENT_TIMESTAMP,
-    INDEX (rute_id, mobil_id, jam_keberangkatan_id),
-    FOREIGN KEY (rute_id) REFERENCES m_rute(id),
-    FOREIGN KEY (mobil_id) REFERENCES mobil(id),
+    INDEX (provinsi_id, mobil_id, jam_keberangkatan_id),
+    FOREIGN KEY (mobil_id) REFERENCES m_mobil(id),
     FOREIGN KEY (jam_keberangkatan_id) REFERENCES m_jadwal_keberangkatan(id)
 );
 
