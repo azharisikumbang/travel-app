@@ -52,4 +52,14 @@ class PelangganService
 
 
     }
+
+    public function listPelanggan(int $page = 1, ?string $search = null): false|array
+    {
+        if($search) return $this->pelangganRepository->findByNamaPelanggan($search);
+
+        $total = 10;
+        $offset = ($page - 1) * $total;
+
+        return $this->pelangganRepository->get($total, $offset);
+    }
 };

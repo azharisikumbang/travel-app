@@ -23,6 +23,32 @@ class PelangganRepository extends BaseRepository
         return $saved ? $pelanggan->setId($saved) : false;
     }
 
+    public function findByNamaPelanggan(string $search) : array
+    {
+        return $this->getByQuery(
+            "SELECT p.*, a.username, k.kategori
+                FROM {$this->getTable()} p 
+                JOIN m_akun a ON a.id = p.akun_id
+                JOIN m_kategori_pelanggan k ON k.id = p.kategori_id
+                WHERE p.nama LIKE :nama",
+            ['nama' => "%". $search . "%"],
+            true
+        );
+    }
+
+    public function get(int $total, int $offset) : array
+    {
+        return $this->getByQuery(
+            "SELECT p.*, a.username, k.kategori
+                FROM {$this->getTable()} p 
+                JOIN m_akun a ON a.id = p.akun_id
+                JOIN m_kategori_pelanggan k ON k.id = p.kategori_id
+                LIMIT $offset, $total",
+            [],
+            true
+        );
+    }
+
     protected function getTable(): string
     {
         return $this->table;
@@ -30,7 +56,23 @@ class PelangganRepository extends BaseRepository
 
     protected function newEntity(array $row, bool $withRelations = false): Pelanggan
     {
-        return new Pelanggan();
+        $akun = (new Akun())
+            ->setId($row['akun_id'])
+            ->setUsername($row['username'])
+            ->setRole(Role::PELANGGAN);
+
+        $kategori = (new KategoriPelanggan())
+            ->setId($row['kategori_id'])
+            ->setKategori($row['kategori']);
+
+        return (new Pelanggan())
+            ->setId($row['id'])
+            ->setNama($row['nama'])
+            ->setKontak($row['kontak'])
+            ->setAkun($akun)
+            ->setKategoriPelanggan($kategori)
+            ->setPhoto($row['photo_id'])
+            ->setPhotoIdentitas($row['photo_identitas']);
     }
 
 }
