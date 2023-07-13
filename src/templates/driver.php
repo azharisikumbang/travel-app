@@ -1,7 +1,6 @@
 <?php
 
 if (false === session()->isAuthenticatedAs('driver')) html_unauthorized();
-
 $auth = session()->auth();
 
 ?><!doctype html>
@@ -26,29 +25,12 @@ $auth = session()->auth();
                     <p class="text-sm font-light font-sans"><?= $auth->getRole()->value ?></p>
                 </div>
             </div>
-            <ul class="mb-4 flex flex-col gap-1 mt-2">
-                <li class="mt-4 mb-2">
-                    <p class="block antialiased font-sans text-sm leading-normal font-black uppercase opacity-75">Pemesanan</p>
+            <ul class="flex flex-col gap-1 mt-4">
+                <li class="mb-1">
+                    <a href="<?= site_url('driver/jadwal') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Lihat Jadwal Harian</a>
                 </li>
                 <li class="mb-1">
-                    <a href="<?= site_url('driver/jadwal') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Jadwal Perjalanan (harian)</a>
-                </li>
-                <li class="mb-1">
-                    <a href="<?= site_url('driver/rute') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Daftar Rute Saya</a>
-                </li>
-                <li class="mb-1">
-                    <a href="<?= site_url('driver/pesanan') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Semua Pesanan</a>
-                </li>
-            </ul>
-            <ul class="mb-4 flex flex-col gap-1 mt-2">
-                <li class="mt-4 mb-2">
-                    <p class="block antialiased font-sans text-sm leading-normal font-black uppercase opacity-75">Lainnya</p>
-                </li>
-                <li class="mb-1">
-                    <a href="" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Pengaturan Akun</a>
-                </li>
-                <li class="mb-1">
-                    <a href="" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Ganti Kata Sandi</a>
+                    <a href="<?= site_url('driver/pengaturan/kata-sandi') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Ganti Kata Sandi</a>
                 </li>
                 <li class="mb-1">
                     <a href="<?= site_url('akun/logout') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Akhiri Sesi</a>

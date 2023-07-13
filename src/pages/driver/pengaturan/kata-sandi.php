@@ -1,6 +1,6 @@
 <?php
 
-if (false === session()->isAuthenticatedAs('pelanggan')) html_unauthorized();
+if (false === session()->isAuthenticatedAs('driver')) html_unauthorized();
 $akun = session()->auth();
 
 ?>
@@ -17,7 +17,7 @@ $akun = session()->auth();
                     <?php echo session('temp')['message'] ?>
                 </div>
             <?php endif; ?>
-            <form action="<?= site_url('pelanggan/pengaturan/kata-sandi/simpan'); ?>" method="post">
+            <form action="<?= site_url('driver/pengaturan/kata-sandi/simpan'); ?>" method="post">
                 <div class="w-full min-w-[200px] mb-4">
                     <label for="" class="font-sans text-base text-gray-500 mb-2 block">Password</label>
                     <input type="password" name="password" class="w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">

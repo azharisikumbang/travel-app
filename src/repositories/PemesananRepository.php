@@ -376,15 +376,9 @@ class PemesananRepository extends BaseRepository
 
     public function getDailyPesananByDriver(DriverRepository $driverRepository, Driver $driver) : array
     {
-        $listRute = $driverRepository->listRuteByDriver($driver);
-        $inRute = [];
-        foreach ($listRute as $rute) {
-            $inRute[] = $rute['asal'];
-            $inRute[] = $rute['tujuan'];
-        }
+        $listRute = $driverRepository->listTujuanByDriver($driver);
 
-        $in = sprintf("%s%s%s", '("', implode('","', array_unique($inRute)), '")');
-
+        $tujuan = implode(', ', array_map(fn ($item) => "'" . $item['nama_kota'] . "'", $listRute));
 
         $query = "SELECT p.*, 
                 pd.id as detail_pemesanan_id,
@@ -393,11 +387,12 @@ class PemesananRepository extends BaseRepository
             FROM pesanan p
             JOIN pesanan_detail pd on p.id = pd.pesanan_id
             WHERE tanggal_keberangkatan = CURDATE()
-            AND kota_asal IN {$in}
-            AND kota_tujuan IN {$in}";
+            AND status_bukti_pembayaran = :status
+            AND kota_tujuan IN ($tujuan)
+            ORDER BY p.kota_asal";
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
-        $stmt->execute();
+        $stmt->execute(['status' => StatusBuktiPembayaran::VALID->value]);
 
         return $this->extracted($stmt);
     }

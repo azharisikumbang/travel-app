@@ -4,6 +4,7 @@ if (false === session()->isAuthenticatedAs('driver')) html_unauthorized();
 /** @var $pesanan Pesanan  */
 $app = app()->getManager();
 $driver = $app->getService('DriverService')->findByAkun(session()->auth());
+$mobil = $app->getService('DriverService')->getMobilDanRuteSaya($driver);
 $listRuteDriver = $app->getService('DriverService')->listRuteSaya($driver);
 $listJadwalPerjalananPelanggan = $app->getService('PemesananService')->listPemesananHarianBerdasarkanDriver($driver, $listRuteDriver);
 
@@ -14,7 +15,20 @@ $listJadwalPerjalananPelanggan = $app->getService('PemesananService')->listPemes
     </div>
     <div class="mb-4">
         <div class="mb-8">
-            <h3 class="font-sans text-lg text-gray-800 font-medium mb-4">Tanggal Keberangkatan: <?= tanggal(date_create('now')) ?> (Hari ini)</h3>
+            <div class="flex gap-4 mb-8">
+                <div class="bg-red-100 rounded w-3/12 p-4">
+                    <p class="font-medium">Tanggal:</p>
+                    <p><?= tanggal(date_create('now')) ?> (Hari ini)</p>
+                </div>
+                <div class="bg-red-100 rounded w-3/12 p-4">
+                    <p class="font-medium">Mobil:</p>
+                    <p><?= $mobil['merk'] ?> <?= $mobil['plat_nomor'] ?></p>
+                </div>
+                <div class="bg-red-100 rounded w-3/12 p-4">
+                    <p class="font-medium">Berangkat:</p>
+                    <p><?= $mobil['posisi'] ?></p>
+                </div>
+            </div>
             <?php if(count($listJadwalPerjalananPelanggan) > 0): ?>
                 <div class="grid grid-cols-3 gap-4">
                     <?php foreach($listJadwalPerjalananPelanggan as $pesanan): ?>
