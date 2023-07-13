@@ -9,7 +9,8 @@ class DaerahOperasional implements EntityInterface
 
     private string $nama_kota;
 
-    private Provinsi $provinsi;
+    private ?Provinsi $provinsi = null;
+
     /**
      * @return int
      */
@@ -49,9 +50,9 @@ class DaerahOperasional implements EntityInterface
     /**
      * @return Provinsi
      */
-    public function getProvinsi(): Provinsi
+    public function getProvinsi(): ?Provinsi
     {
-        return $this->provinsi;
+        return $this->provinsi ?? null;
     }
 
     /**
@@ -70,8 +71,8 @@ class DaerahOperasional implements EntityInterface
             'id' => $this->getId(),
             'nama_kota' => $this->getNamaKota(),
             'provinsi' => [
-                'id' => $this->getProvinsi()->value,
-                'nama' => $this->getProvinsi()->getDisplayName()
+                'id' => $this->getProvinsi()?->value,
+                'nama' => $this->getProvinsi()?->getDisplayName()
             ]
         ];
     }

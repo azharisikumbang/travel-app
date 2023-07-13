@@ -25,8 +25,7 @@ class PemesananRepository extends BaseRepository
 
     public function cekKursiTersedia(
         DateTimeInterface $tanggal,
-        JamKeberangkatan $jam,
-        Tiket $tarif
+        DaerahOperasional $asal
     ) : array
     {
         $query = "SELECT 
@@ -393,25 +392,7 @@ class PemesananRepository extends BaseRepository
         $stmt = $this->getDatabaseConnection()->prepare($query);
         $stmt->execute();
 
-        if($stmt->rowCount() < 1) return [];
-
-        $listPesanan = [];
-        $pesanan = null;
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $pesanan = ($pesanan?->getId() == $row['id']) ?  $pesanan : $this->newEntity($row);
-
-            $pesananDetail = new PesananDetail();
-            $pesananDetail
-                ->setId($row['detail_pemesanan_id'])
-                ->setPesananId($pesanan->getId())
-                ->setNomorKursi($row['nomor_kursi'])
-                ->setHargaTiket($row['harga_tiket']);
-
-            $pesanan->addPesananDetail($pesananDetail);
-            $listPesanan[$pesanan->getNomorPesanan()] = $pesanan;
-        }
-
-        return $listPesanan;
+        return $this->extracted($stmt);
     }
 
     public function getBuktiPembayaran(string $nomorPemesanan) : false|string
@@ -456,5 +437,86 @@ class PemesananRepository extends BaseRepository
         ]);
 
         return $stmt->rowCount() ? $stmt->fetch(PDO::FETCH_ASSOC)['file_tiket'] : false;
+    }
+
+    public function getListPesananHariIniByAsalKota(string $asal) : array
+    {
+        $query = "SELECt p.tanggal_keberangkatan, p.mobil,
+                p.id, 
+                p.kota_asal, 
+                p.nomor_pemesanan,
+                pd.nomor_kursi as pd_nomor_kursi
+        FROM pesanan p
+        JOIN pesanan_detail pd on p.id = pd.pesanan_id
+        WHERE p.tanggal_keberangkatan = CURDATE() AND NOT p.status_pemesanan = :batal";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute(['batal' => StatusPemesanan::BATAL->value]);
+
+        if ($stmt->rowCount() < 1) return [];
+
+        $result = [];
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if (!isset($result[$row['id']])) $result[$row['id']] = [
+                'id' => $row['id'],
+                'mobil' => $row['mobil'],
+                'tanggal_keberangkatan' => $row['tanggal_keberangkatan'],
+                'asal' => $row['kota_asal'],
+                'list_kursi_dipesan' => []
+            ];
+
+            $result[$row['id']]['list_kursi_dipesan'][] = $row['pd_nomor_kursi'];
+        }
+
+        return $result;
+    }
+
+    public function getByPemesan(Pelanggan|Akun $pelanggan) : array
+    {
+        $id = ($pelanggan instanceof Pelanggan) ? $pelanggan->getAkun()->getId() : $pelanggan->getId();
+
+        $query = "SELECT 
+                p.*,
+                pd.id as detail_pemesanan_id,
+                pd.nomor_kursi,
+                pd.harga_tiket
+            FROM pesanan p
+            LEFT JOIN pesanan_detail pd on p.id = pd.pesanan_id
+            WHERE pemesan_id = :pemesan_id
+            ORDER BY tanggal_keberangkatan DESC";
+
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute(['pemesan_id' => $id]);
+
+        return $this->extracted($stmt);
+    }
+
+    /**
+     * @param false|PDOStatement $stmt
+     * @return array
+     */
+    public function extracted(false|PDOStatement $stmt): array
+    {
+        if ($stmt->rowCount() < 1) return [];
+
+        $listPesanan = [];
+        $pesanan = null;
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $pesanan = ($pesanan?->getId() == $row['id']) ? $pesanan : $this->newEntity($row);
+
+            $pesananDetail = new PesananDetail();
+            $pesananDetail
+                ->setId($row['detail_pemesanan_id'])
+                ->setPesananId($pesanan->getId())
+                ->setNomorKursi($row['nomor_kursi'])
+                ->setHargaTiket($row['harga_tiket']);
+
+            $pesanan->addPesananDetail($pesananDetail);
+            $listPesanan[$pesanan->getNomorPesanan()] = $pesanan;
+        }
+
+        return $listPesanan;
     }
 }

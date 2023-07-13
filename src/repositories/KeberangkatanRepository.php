@@ -29,6 +29,7 @@ class KeberangkatanRepository extends BaseRepository
                 mjk.alias as jk_alias,
                 mm.merk as m_merk,
                 mm.plat_nomor as m_plat_nomor,
+                mm.jumlah_kursi as m_jumlah_kursi,
                 mm.supir_id as m_supir_id,
                 ms.nama as s_nama
             FROM m_keberangkatan k
@@ -40,9 +41,26 @@ class KeberangkatanRepository extends BaseRepository
         return $this->getByQuery($query, [], true);
     }
 
-    public function getWhere(array $where) : ?RuteHarian
+    public function getWhere(array $where) : array
     {
-        return $this->newEntity([], true);
+
+        $query = "SELECT
+                k.*,
+                mjk.jam as jk_jam,
+                mjk.alias as jk_alias,
+                mm.merk as m_merk,
+                mm.plat_nomor as m_plat_nomor,
+                mm.jumlah_kursi as m_jumlah_kursi,
+                mm.supir_id as m_supir_id,
+                ms.nama as s_nama
+            FROM m_keberangkatan k
+            LEFT JOIN m_jadwal_keberangkatan mjk on k.jam_keberangkatan_id = mjk.id
+            LEFT JOIN m_mobil mm on k.mobil_id = mm.id
+            LEFT JOIN m_supir ms on mm.supir_id = ms.id
+            WHERE k.provinsi_id = :provinsi_id
+            ORDER BY s_nama, m_merk, k.provinsi_id";
+
+        return $this->getByQuery($query, $where, true);
     }
 
     public function updateMobilAndJam(RuteHarian $rute, Mobil $mobil, JamKeberangkatan $jam): bool
@@ -132,6 +150,7 @@ class KeberangkatanRepository extends BaseRepository
             $mobil->setId($row['mobil_id']);
             $mobil->setMerk($row['m_merk']);
             $mobil->setPlatNomor($row['m_plat_nomor']);
+            $mobil->setJumlahKursi($row['m_jumlah_kursi']);
             $mobil->setDriver($driver);
         }
 

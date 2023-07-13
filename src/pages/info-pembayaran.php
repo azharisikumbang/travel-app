@@ -6,17 +6,18 @@
         endif; ?>
         <div x-if="Object.keys(properties.errors) > 0">
             <template x-for="key in Object.keys(properties.errors)">
-                <?php html_alert("properties.errors[key].message", "properties.errors[key].status"); ?>
+                <?php html_alert("properties.errors[key]?.message", "properties.errors[key]?.status"); ?>
             </template>
         </div>
         <form @submit.prevent="submit">
             <div class="mb-4">
                 <h2 class="block antialiased tracking-normal font-sans text-xl font-bold leading-relaxed text-gray-900">Informasi Pembayaran</h2>
             </div>
-            <div x-if="properties.data.sesi_pesanan != null">
+            <div x-show="properties.data.sesi_pesanan">
                 <div class="mb-4 px-4 py-6 text-green-600 border-green-600 border rounded">
                     <!-- @TODO: ganti nama dan bank pembayaran -->
                     <p><span class="font-bold">Perhatian!</span> Pesanan anda telah dicatat, silhakan lakukan pembayaran ke {BANK XXX} atas nama PT. Sorek Wisata Transport paling lambat 2 jam setelah pemesanan.</p>
+                    <p>Minimum pembayaran berupa DP adalah 50 % dari total tagihan.</p>
                     <p>Anda dapat mengakses kembali detail pesanan di <a href="" class="underline">portal pelanggan</a> untuk melakukan pembayaran di lain waktu.</p>
                 </div>
             </div>
@@ -32,7 +33,7 @@
                             <input x-model="properties.form.bank" type="text" class="w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                         </div>
                         <div class="w-full mb-4">
-                            <label for="" class="font-sans text-base text-gray-600 mb-2 block">Nominal Dibayarkan</label>
+                            <label for="" class="font-sans text-base text-gray-600 mb-2 block">Nominal Dibayarkan <small>(minimal bayar: Rp <span x-text="toRupiah(properties.data.sesi_pesanan.total_tarif / 2)"></span>)</small></label>
                             <input x-model="properties.form.nominal" type="number" class="w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                         </div>
                         <div class="w-full mb-4">
@@ -88,7 +89,8 @@
         // @TODO: separate to file
         const actions = {
             "submit": function () {
-                console.log(this.properties.form.bukti);
+                console.log(this.properties.errors);
+                this.removeError('bad_request');
                 this.isInputFilled('nama', 'nama', "Nama pemesan masih kosong, mohon diisi.");
                 this.isInputFilled('bank', 'bank', "Nomor handphone pemesan masih kosong, mohon diisi.");
                 this.isInputFilled('nominal', 'nominal', "Alamat titik jemput masih kosong, mohon diisi.");

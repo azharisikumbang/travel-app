@@ -8,9 +8,9 @@ class Driver implements EntityInterface
 
     private string $nama;
 
-    private string $kontak;
+    private string $kontak = "";
 
-    private ?Akun $akun;
+    private ?Akun $akun = null;
 
     private ?string $photo = null;
 

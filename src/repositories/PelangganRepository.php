@@ -49,6 +49,20 @@ class PelangganRepository extends BaseRepository
         );
     }
 
+    public function getDetailByAkun(Akun $akun): ?Pelanggan
+    {
+        $query = "SELECT p.*, a.username, k.kategori
+                FROM {$this->getTable()} p 
+                JOIN m_akun a ON a.id = p.akun_id
+                JOIN m_kategori_pelanggan k ON k.id = p.kategori_id
+                WHERE p.akun_id = :akun";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute(['akun' => $akun->getId()]);
+
+        return $stmt->rowCount() ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)): null;
+    }
+
     protected function getTable(): string
     {
         return $this->table;
@@ -73,6 +87,26 @@ class PelangganRepository extends BaseRepository
             ->setKategoriPelanggan($kategori)
             ->setPhoto($row['photo_id'])
             ->setPhotoIdentitas($row['photo_identitas']);
+    }
+
+    public function findById(int $id) : ?Pelanggan
+    {
+        return $this->basicFindById($id);
+    }
+
+    public function update(Pelanggan $pelanggan) : false|Pelanggan
+    {
+        $query = "UPDATE {$this->getTable()} SET nama = :nama, kontak = :kontak, kategori_id = :kategori_id, photo_identitas = :photo_identitas WHERE akun_id = :akun_id";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+
+        return $stmt->execute([
+            'nama' => $pelanggan->getNama(),
+            'kontak' => $pelanggan->getKontak(),
+            'kategori_id' => $pelanggan->getKategoriPelanggan()->getId(),
+            'photo_identitas' => $pelanggan->getPhotoIdentitas(),
+            'akun_id' => $pelanggan->getAkun()->getId(),
+        ]) ? $pelanggan : false;
     }
 
 }

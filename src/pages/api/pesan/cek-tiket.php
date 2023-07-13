@@ -34,44 +34,15 @@ if (false === $tiket) response()->badRequest([
 
 $listJamKeberangkatan = $app->getService('JamKeberangkatanService')->listJamKeberangkatan();
 
-//$listPesanan = $pemesananService->listKursiDipesanBerdasarkanTanggalDanRute($tanggalKeberangkatan, $rute['rute']);
+$listMobilDanKursi = [];
+if ($tanggalKeberangkatan->format('Y-m-d') == date('Y-m-d')) {
+    $listMobilDanKursi = $pemesananService->listMobilDanKursiByDate($_GET['asal']);
+}
 
-response()->toJson([
+response()->jsonOk([
     'tanggal_keberangkatan' => $tanggalKeberangkatan->format('Y-m-d'),
     'rute' => ['reversed' => $rute['reversed'], 'rute' => $rute['rute']->toArray()],
-    'list_mobil_tersedia' => [
-//        [
-//            'mobil' => [ 'id' => 1, 'merk' => 'Toyota Avanza X', 'jumlah_kursi' => 7, 'plat_nomor' => 'BM 2819 QQ' ],
-//            'driver' => [ 'id' => 2, 'nama' => 'Alex Luis', 'kontak' => '082869136322' ],
-//            'total_kursi_penumpang' => 7,
-//            'kursi_terpesan' => [1, 2, 4],
-//            'kursi_tersedia' => [3, 5, 6, 7],
-//            'list_kursi' => [
-//                ['nomor' => 1, 'tersedia' => false],
-//                ['nomor' => 2, 'tersedia' => false],
-//                ['nomor' => 3, 'tersedia' => true],
-//                ['nomor' => 4, 'tersedia' => false],
-//                ['nomor' => 5, 'tersedia' => true],
-//                ['nomor' => 6, 'tersedia' => true],
-//                ['nomor' => 7, 'tersedia' => true]
-//            ]
-//        ],[
-//            'mobil' => [ 'id' => 2, 'merk' => 'Toyota Avanza Y', 'jumlah_kursi' => 7, 'plat_nomor' => 'BM 2819 QQ' ],
-//            'driver' => [ 'id' => 3, 'nama' => 'Alex Luis', 'kontak' => '082869136322' ],
-//            'total_kursi_penumpang' => 7,
-//            'kursi_terpesan' => [6, 7],
-//            'kursi_tersedia' => [1, 2, 3, 4, 5],
-//            'list_kursi' => [
-//                ['nomor' => 1, 'tersedia' => true],
-//                ['nomor' => 2, 'tersedia' => true],
-//                ['nomor' => 3, 'tersedia' => true],
-//                ['nomor' => 4, 'tersedia' => true],
-//                ['nomor' => 5, 'tersedia' => true],
-//                ['nomor' => 6, 'tersedia' => false],
-//                ['nomor' => 7, 'tersedia' => false]
-//            ]
-//        ]
-    ],
+    'list_mobil_tersedia' => $listMobilDanKursi,
     'list_jam_keberangkatan_tersedia' => array_map(fn($item) => $item->toArray(), $listJamKeberangkatan)
 ]);
 

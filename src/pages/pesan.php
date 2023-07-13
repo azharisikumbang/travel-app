@@ -91,7 +91,7 @@ html_require_component('navbar');
                                         <div class="flex justify-between">
                                             <span>: </span>
                                             <select x-model="properties.form.jam_keberangkatan" class="cursor-pointer w-full text-gray-700 font-sans font-normal outline outline-0">
-                                                <option value="-1" x-text="properties.sites.jam_keberangkatan.length < 1 ? 'Ditentukan segera.' : '-- Pilih Mobil --'"></option>
+                                                <option value="-1" x-text="properties.sites.jam_keberangkatan.length < 1 ? 'Ditentukan segera.' : '-- Pilih Jam --'"></option>
                                                 <template x-for="jam in properties.sites.jam_keberangkatan">
                                                     <option :value="jam.id" x-text="jam.jam + ' WIB ( ' + jam.alias + ' )'"></option>
                                                 </template>
@@ -105,7 +105,7 @@ html_require_component('navbar');
                                         <div class="flex justify-between items-center">
                                             <span>:</span>
                                             <select x-model="properties.form.mobil" @change="parseListKursi" class="cursor-pointer w-full text-gray-700 font-sans font-normal outline outline-0">
-                                                <option value="-1" x-text="properties.sites.list_mobil.length < 1 ? 'Diatur di loket.' : '-- Pilih Mobil --'"></option>
+                                                <option value="-1" x-text="properties.sites.list_mobil.length < 1 ? 'Diatur di hari keberangkatan.' : '-- Pilih Mobil --'"></option>
                                                 <template x-for="mobil in properties.sites.list_mobil">
                                                     <option :value="mobil.mobil.id" x-text="mobil.mobil.merk + ' - ' + mobil.mobil.plat_nomor"></option>
                                                 </template>
@@ -146,6 +146,7 @@ html_require_component('navbar');
                     const actions = {
                         "cekTiket": function () {
                             this.clearMassage();
+                            this.clearListKursiDipilih();
                             let alpineObj = this;
 
                             this.getApiRequest('/api/pesan/cek-tiket', {
@@ -154,9 +155,9 @@ html_require_component('navbar');
                                 'tujuan': this.properties.form.tujuan,
                                 'kategori': this.properties.form.kategori
                             }, function (response) {
-                                alpineObj.parseRutePerjalanan(response.data.rute);
-                                alpineObj.parseJamKeberangkatan(response.data.list_jam_keberangkatan_tersedia);
-                                alpineObj.parseListMobil(response.data.list_mobil_tersedia);
+                                alpineObj.parseRutePerjalanan(response.data.data.rute);
+                                alpineObj.parseJamKeberangkatan(response.data.data.list_jam_keberangkatan_tersedia);
+                                alpineObj.parseListMobil(response.data.data.list_mobil_tersedia);
                                 alpineObj.properties.sites.advance_form = true;
                             }, function (error) {
                                 console.error(error);
@@ -179,18 +180,10 @@ html_require_component('navbar');
                         },
                         "parseListKursi": function () {
                             let indexSelected = this.properties.sites.list_mobil.findIndex(item => item.mobil.id == this.properties.form.mobil);
-
-
-
                             this.properties.sites.selected_mobil.details = this.properties.sites.list_mobil[indexSelected];
                             this.properties.sites.selected_mobil.total_kursi_penumpang = this.properties.sites.list_mobil[indexSelected].total_kursi_penumpang;
 
-                            this.properties.form.list_nomor_kursi = [];
-                            let listKursiTrigger = document.getElementsByClassName('kursi-trigger');
-                            for (const listKursiTriggerElement of listKursiTrigger) {
-                                listKursiTriggerElement.classList.remove('bg-blue-500');
-                                listKursiTriggerElement.classList.remove('text-white');
-                            }
+                            this.clearListKursiDipilih();
                         },
                         "addNomorKursi": function (kursi) {
                             if (kursi.tersedia === false) return;
@@ -246,6 +239,14 @@ html_require_component('navbar');
                                     alpineObj.addErrorMassage('bad_request', error.response.data.errors.message);
                                 }
                             );
+                        },
+                        "clearListKursiDipilih": function () {
+                            this.properties.form.list_nomor_kursi = [];
+                            let listKursiTrigger = document.getElementsByClassName('kursi-trigger');
+                            for (const listKursiTriggerElement of listKursiTrigger) {
+                                listKursiTriggerElement.classList.remove('bg-blue-500');
+                                listKursiTriggerElement.classList.remove('text-white');
+                            }
                         }
                     };
                     const utils = {

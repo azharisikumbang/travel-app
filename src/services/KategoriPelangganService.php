@@ -35,4 +35,9 @@ class KategoriPelangganService
     {
         return $this->kategoriPelangganRepository->getWhere('kategori', $kategori);
     }
+
+    public function cariById(int $id): ?KategoriPelanggan
+    {
+        return $this->kategoriPelangganRepository->findById($id);
+    }
 }

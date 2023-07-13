@@ -26,8 +26,13 @@ $auth = session()->auth();
                     <p class="text-sm font-light font-sans"><?= $auth->getRole()->value ?></p>
                 </div>
             </div>
+            <ul class="flex flex-col gap-1 mt-6">
+                <li class="mb-1">
+                    <a href="<?= site_url('pelanggan/dashboard') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Dashboard</a>
+                </li>
+            </ul>
             <ul class="mb-4 flex flex-col gap-1 mt-2">
-                <li class="mt-4 mb-2">
+                <li class="mt-1 mb-2">
                     <p class="block antialiased font-sans text-sm leading-normal font-black uppercase opacity-75">Pemesanan</p>
                 </li>
                 <li class="mb-1">
@@ -45,10 +50,10 @@ $auth = session()->auth();
                     <p class="block antialiased font-sans text-sm leading-normal font-black uppercase opacity-75">Lainnya</p>
                 </li>
                 <li class="mb-1">
-                    <a href="" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Pengaturan Akun</a>
+                    <a href="<?= site_url('pelanggan/pengaturan/akun') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Pengaturan Akun</a>
                 </li>
                 <li class="mb-1">
-                    <a href="" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Ganti Kata Sandi</a>
+                    <a href="<?= site_url('pelanggan/pengaturan/kata-sandi') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Ganti Kata Sandi</a>
                 </li>
                 <li class="mb-1">
                     <a href="<?= site_url('akun/logout') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Akhiri Sesi</a>

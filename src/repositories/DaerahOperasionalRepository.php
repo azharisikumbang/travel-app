@@ -77,4 +77,12 @@ class DaerahOperasionalRepository extends BaseRepository
             ->setProvinsi(Provinsi::fromValue($data['provinsi']))
             ;
     }
+
+    public function findByNamaKota(string $asal) : ?DaerahOperasional
+    {
+        $query = "SELECT * FROM {$this->getTable()} WHERE nama_kota = :nama_kota";
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+
+        return $stmt->execute(['nama_kota' => $asal]) ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)) : null;
+    }
 }
