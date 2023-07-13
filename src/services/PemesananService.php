@@ -352,6 +352,11 @@ class PemesananService
         return ['hari_ini' => $listPesananHariIni, 'lainnya' => array_values($listPesanan)];
     }
 
+    public function listPesananMenungguPembayaran(Akun $akun): array
+    {
+        return $this->pemesananRepository->getPesananMenungguPembayaran($akun, 10, 0);
+    }
+
     public function validasiTanggalKeberangkatan(DateTimeInterface $tanggal): bool
     {
         $today = date("Y-m-d");

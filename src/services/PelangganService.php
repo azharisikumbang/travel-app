@@ -71,6 +71,8 @@ class PelangganService
         return $this->pelangganRepository->get($total, $offset);
     }
 
+    /** @doc jadwal adalah tiket yang telah dibayar diatas 1/2 total tarif dan/atau menunggu konfirmasi atau valid  */
+
     public function informasiSaya(Akun $akun): Pelanggan
     {
         return $this->pelangganRepository->getDetailByAkun($akun);
@@ -126,6 +128,20 @@ class PelangganService
         }
 
         return $result;
+    }
+
+    public function semuaPesananSaya(array $filter) : array
+    {
+        $filter = [
+            'nomor_pemesanan' => $filter['search'] ? "%" . $filter['search'] . "%" : null,
+            'tanggal_keberangkatan' => !is_null($filter['date']) ? date_create($filter['date']) : null,
+            'pagination' => [
+                'offset' => ($filter['page'] - 1) * 10,
+                'total' => 10
+            ]
+        ];
+
+        return $this->pemesananRepository->getPesananPelangganByFilter(session()->auth(), $filter);
     }
 
     private function isPesananToday(DateTimeInterface $tanggal) : bool

@@ -39,10 +39,10 @@ $auth = session()->auth();
                     <a href="<?= site_url('pelanggan/jadwal') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Perjalanan Saya ( jadwal )</a>
                 </li>
                 <li class="mb-1">
-                    <a href="" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Menunggu Pembayaran</a>
+                    <a href="<?= site_url('pelanggan/pesanan/menunggu-pembayaran') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Menunggu Pembayaran</a>
                 </li>
                 <li class="mb-1">
-                    <a href="<?= site_url('pelanggan/pesanan') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Semua Pesanan</a>
+                    <a href="<?= site_url('pelanggan/pesanan/list') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Semua Pesanan</a>
                 </li>
             </ul>
             <ul class="mb-4 flex flex-col gap-1 mt-2">

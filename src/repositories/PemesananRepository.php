@@ -285,12 +285,19 @@ class PemesananRepository extends BaseRepository
                 pd.harga_tiket
             FROM pesanan p
             LEFT JOIN pesanan_detail pd on p.id = pd.pesanan_id
-            WHERE pemesan_id = :pemesan_id AND status_bukti_pembayaran = :status_bukti_pembayaran AND tanggal_keberangkatan >= CURDATE()
+            WHERE pemesan_id = :pemesan_id 
+              AND status_bukti_pembayaran IN (:unconfirmed, :valid)
+              AND total_dibayarkan >= (total_tarif / 2)
+              AND tanggal_keberangkatan >= CURDATE()
             ORDER BY tanggal_keberangkatan DESC
             LIMIT {$from}, {$length}";
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
-        $stmt->execute(['pemesan_id' => $user->getId(), 'status_bukti_pembayaran' => StatusBuktiPembayaran::UNCONFIRMED->value]);
+        $stmt->execute([
+            'pemesan_id' => $user->getId(),
+            'unconfirmed' => StatusBuktiPembayaran::UNCONFIRMED->value,
+            'valid' => StatusBuktiPembayaran::VALID->value
+        ]);
 
         if($stmt->rowCount() < 1) return [];
 
@@ -518,5 +525,104 @@ class PemesananRepository extends BaseRepository
         }
 
         return $listPesanan;
+    }
+
+    public function getPesananMenungguPembayaran($user, $total, $from)
+    {
+        $query = "SELECT 
+                p.*,
+                pd.id as detail_pemesanan_id,
+                pd.nomor_kursi,
+                pd.harga_tiket
+            FROM pesanan p
+            LEFT JOIN pesanan_detail pd on p.id = pd.pesanan_id
+            WHERE pemesan_id = :pemesan_id 
+              AND status_bukti_pembayaran = :unconfirmed
+              AND total_dibayarkan < total_tarif
+              AND tanggal_keberangkatan >= CURDATE()
+            ORDER BY tanggal_keberangkatan DESC
+            LIMIT {$from}, {$total}";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            'pemesan_id' => $user->getId(),
+            'unconfirmed' => StatusBuktiPembayaran::UNCONFIRMED->value
+        ]);
+
+        if($stmt->rowCount() < 1) return [];
+
+        $listPesanan = [];
+        $pesanan = null;
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $pesanan = ($pesanan?->getId() == $row['id']) ?  $pesanan : $this->newEntity($row);
+
+            $pesananDetail = new PesananDetail();
+            $pesananDetail
+                ->setId($row['detail_pemesanan_id'])
+                ->setPesananId($pesanan->getId())
+                ->setNomorKursi($row['nomor_kursi'])
+                ->setHargaTiket($row['harga_tiket']);
+
+            $pesanan->addPesananDetail($pesananDetail);
+            $listPesanan[$pesanan->getNomorPesanan()] = $pesanan;
+        }
+
+        return array_values($listPesanan);
+    }
+
+    public function getPesananPelangganByFilter(Akun $auth, array $filter) : array
+    {
+        $from = $filter['pagination']['offset'] ?? 0;
+        $total = $filter['pagination']['total'] ?? 10;
+        $search = $filter['nomor_pemesanan'];
+        $tanggal = $filter['tanggal_keberangkatan'] ? $filter['tanggal_keberangkatan']->format('Y-m-d') . '%' : null;
+
+        $where = [];
+        if ($tanggal) $where['tanggal_keberangkatan'] = $tanggal;
+        if ($search) $where['nomor_pemesanan'] = $search;
+
+        $whereQuery = "";
+        foreach ($where as $colomn => $value) {
+            $whereQuery .= " AND $colomn LIKE :$colomn";
+        }
+
+        $whereQuery = rtrim($whereQuery, "AND");
+
+        $query = "SELECT 
+                p.*,
+                pd.id as detail_pemesanan_id,
+                pd.nomor_kursi,
+                pd.harga_tiket
+            FROM pesanan p
+            LEFT JOIN pesanan_detail pd on p.id = pd.pesanan_id
+            WHERE pemesan_id = :pemesan_id {$whereQuery} 
+            ORDER BY tanggal_keberangkatan DESC
+            LIMIT {$from}, {$total}";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            'pemesan_id' => $auth->getId(),
+            ...$where
+        ]);
+
+        if($stmt->rowCount() < 1) return [];
+
+        $listPesanan = [];
+        $pesanan = null;
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $pesanan = ($pesanan?->getId() == $row['id']) ?  $pesanan : $this->newEntity($row);
+
+            $pesananDetail = new PesananDetail();
+            $pesananDetail
+                ->setId($row['detail_pemesanan_id'])
+                ->setPesananId($pesanan->getId())
+                ->setNomorKursi($row['nomor_kursi'])
+                ->setHargaTiket($row['harga_tiket']);
+
+            $pesanan->addPesananDetail($pesananDetail);
+            $listPesanan[$pesanan->getNomorPesanan()] = $pesanan;
+        }
+
+        return array_values($listPesanan);
     }
 }
