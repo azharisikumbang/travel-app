@@ -56,10 +56,10 @@ final class PenyimpananService
         if (file_exists($filename)) {
             header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
             header("Cache-Control: public"); // needed for internet explorer
-            header("Content-Type: application/image");
+            header("Content-Type: application/pdf");
             header("Content-Transfer-Encoding: Binary");
             header("Content-Length:".filesize($filename));
-            header("Content-Disposition: attachment; filename=".$file);
+            header("Content-Disposition: attachment; filename=\"".$file . "\"");
             readfile($filename);
             die();
         }
@@ -89,7 +89,7 @@ final class PenyimpananService
             header('Expires: 0');
             header('Pragma: public');
             header("Content-Disposition: attachment; filename=".$file);
-            file_get_contents($filename);
+            readfile($filename);
             die();
         }
     }

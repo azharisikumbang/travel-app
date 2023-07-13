@@ -47,7 +47,7 @@ $listKategoriPelanggan = app()->getManager()->getService('KategoriPelangganServi
         </div>
         <?php if ($me->getPhotoIdentitas()) : ?>
         <div class="mb-4 w-8/12">
-            <p>Gagal menampilkan preview kartu identitas. silahkan <a class="text-red-400 hover:underline" href="<?= site_url('pelanggan/pengaturan/akun/unduh-photo-identitas') ?>">klik disini</a> untuk melihat.</p>
+            <p>Gagal menampilkan preview kartu identitas. silahkan <a class="text-red-400 hover:underline" href="<?= site_url('api/pelanggan/akun/unduh-photo-identitas') ?>">klik disini</a> untuk melihat.</p>
         </div>
         <?php endif; ?>
     </div>
