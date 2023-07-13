@@ -3,6 +3,7 @@
 require_once __DIR__ . '/BaseRepository.php';
 require_once __DIR__ . '/PemesananDetailRepository.php';
 require_once __DIR__ . '/../entities/Pesanan.php';
+require_once __DIR__ . '/../entities/Akun.php';
 require_once __DIR__ . '/../enums/StatusBuktiPembayaran.php';
 require_once __DIR__ . '/../enums/StatusPemesanan.php';
 
@@ -178,6 +179,43 @@ class PemesananRepository extends BaseRepository
 
         return $pesanan;
     }
+
+    public function findByNomorPesananAndPelanggan(string $nomor, Akun $akun) : ?Pesanan
+    {
+        $query = "SELECT 
+                p.*,
+                pd.id as detail_pemesanan_id,
+                pd.nomor_kursi,
+                pd.harga_tiket
+            FROM pesanan p
+            JOIN pesanan_detail pd on p.id = pd.pesanan_id
+            WHERE nomor_pemesanan = :nomor_pemesanan AND pemesan_id = :pemesan_id";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            'nomor_pemesanan' => $nomor,
+            'pemesan_id' => $akun->getId()
+        ]);
+
+        if($stmt->rowCount() < 1) return null;
+
+        $pesanan = null;
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if(is_null($pesanan)) $pesanan = $this->newEntity($row);
+
+            $pesananDetail = new PesananDetail();
+            $pesananDetail
+                ->setId($row['detail_pemesanan_id'])
+                ->setPesananId($pesanan->getId())
+                ->setNomorKursi($row['nomor_kursi'])
+                ->setHargaTiket($row['harga_tiket']);
+
+            $pesanan->addPesananDetail($pesananDetail);
+        }
+
+        return $pesanan;
+    }
+
 
     public function findByTanggalKeberangkatan(DateTimeInterface $date, int $total = 10, int $from = 0, bool $withRelations = false) : array
     {
@@ -397,18 +435,26 @@ class PemesananRepository extends BaseRepository
         return $this->extracted($stmt);
     }
 
-    public function getBuktiPembayaran(string $nomorPemesanan) : false|string
+    public function getBuktiPembayaran(string $nomorPemesanan, ?Akun $akun) : false|string
     {
+        $where = "";
+        $bind = [
+            'status_bukti_pembayaran' => StatusBuktiPembayaran::PENDING->value,
+            'nomor_pemesanan' => $nomorPemesanan
+        ];
+
+        if ($akun) {
+            $bind['pemesan_id'] = $akun->getId();
+            $where .= " AND pemesan_id = :pemesan_id ";
+        }
+
         $query = "SELECT id, bukti_pembayaran 
             FROM {$this->getTable()} 
             WHERE NOT status_bukti_pembayaran = :status_bukti_pembayaran 
-            AND nomor_pemesanan = :nomor_pemesanan";
+            AND nomor_pemesanan = :nomor_pemesanan {$where}";
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
-        $stmt->execute([
-            'status_bukti_pembayaran' => StatusBuktiPembayaran::PENDING->value,
-            'nomor_pemesanan' => $nomorPemesanan
-        ]);
+        $stmt->execute($bind);
 
         return $stmt->rowCount() ? $stmt->fetch(PDO::FETCH_ASSOC)['bukti_pembayaran'] : false;
     }
@@ -424,19 +470,27 @@ class PemesananRepository extends BaseRepository
         ]);
     }
 
-    public function getFileTiket(string $nomorPemesanan) : false|string
+    public function getFileTiket(string $nomorPemesanan, ?Akun $akun = null) : false|string
     {
+        $where = "";
+        $bind = [
+            'status_bukti_pembayaran' => StatusBuktiPembayaran::VALID->value,
+            'nomor_pemesanan' => $nomorPemesanan
+        ];
+
+        if ($akun) {
+            $bind['pemesan_id'] = $akun->getId();
+            $where .= " AND pemesan_id = :pemesan_id ";
+        }
+
         $query = "SELECT id, file_tiket 
             FROM {$this->getTable()} 
             WHERE status_bukti_pembayaran = :status_bukti_pembayaran 
-            AND nomor_pemesanan = :nomor_pemesanan 
+            AND nomor_pemesanan = :nomor_pemesanan {$where}
             LIMIT 1";
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
-        $stmt->execute([
-            'status_bukti_pembayaran' => StatusBuktiPembayaran::VALID->value,
-            'nomor_pemesanan' => $nomorPemesanan
-        ]);
+        $stmt->execute($bind);
 
         return $stmt->rowCount() ? $stmt->fetch(PDO::FETCH_ASSOC)['file_tiket'] : false;
     }

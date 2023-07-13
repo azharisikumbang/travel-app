@@ -110,6 +110,10 @@ class PemesananService
         return $this->pemesananRepository->findByNomorPesanan($nomor, $detail);
     }
 
+    public function cariPesananBerdasarkanNomorPesananDanPemesan(string $nomor, Akun $akun) : ?Pesanan
+    {
+        return $this->pemesananRepository->findByNomorPesananAndPelanggan($nomor, $akun);
+    }
     public function simpanInformasiPemesan(string $nomorPesanan, string $nama, string $kontak, string $titik_jemput) : false|Pesanan
     {
         $pesanan = $this->pemesananRepository->findByNomorPesanan($nomorPesanan, true);
@@ -374,9 +378,9 @@ class PemesananService
         return $this->pemesananRepository->getDailyPesananByDriver($this->driverRepository, $driver);
     }
 
-    public function unduhBuktiPembayaran(string $nomorPemesanan) : false|string
+    public function unduhBuktiPembayaran(string $nomorPemesanan, ?Akun $akun = null) : false|string
     {
-        $file = $this->pemesananRepository->getBuktiPembayaran($nomorPemesanan);
+        $file = $this->pemesananRepository->getBuktiPembayaran($nomorPemesanan, $akun);
 
         return $file ?? false;
     }
@@ -436,9 +440,9 @@ class PemesananService
         return $pesanan;
     }
 
-    public function unduhTiket(string $nomorPemesanan) : false|string
+    public function unduhTiket(string $nomorPemesanan, ?Akun $akun = null) : false|string
     {
-        return $this->pemesananRepository->getFileTiket($nomorPemesanan);
+        return $this->pemesananRepository->getFileTiket($nomorPemesanan, $akun);
     }
 
     public function cariBerdasarkanPelanggan(Pelanggan $pelanggan): false|array
