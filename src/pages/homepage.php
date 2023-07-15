@@ -16,7 +16,7 @@ html_require_component('navbar');
         <div class="container relative mx-auto">
             <div class="items-center flex flex-wrap">
                 <div class="w-full lg:w-6/12 px-4 ml-auto mr-auto text-center">
-                    <div>
+                    <form action="<?= site_url('pesan') ?>" method="get">
                         <h1 class="text-white font-semibold text-5xl">
                             PT. SOREK WISATA TRANSPORT
                         </h1>
@@ -26,7 +26,7 @@ html_require_component('navbar');
                         <div class="mt-12">
                             <div class="w-full grid grid-cols-3 gap-4">
                                 <div>
-                                    <input type="date" class="cursor-pointer w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm pl-2 pr-4 py-3 rounded-md border-gray-200 focus:border-gray-400 text-center">
+                                    <input type="date" name="tanggal" class="cursor-pointer w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm pl-2 pr-4 py-3 rounded-md border-gray-200 focus:border-gray-400 text-center">
                                 </div>
                                 <select name="asal"
                                         class="cursor-pointer w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm pl-2 pr-4 py-3 rounded-md border-gray-200 focus:border-gray-400 text-center">
@@ -53,7 +53,7 @@ html_require_component('navbar');
                                 Pesan Sekarang
                             </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
