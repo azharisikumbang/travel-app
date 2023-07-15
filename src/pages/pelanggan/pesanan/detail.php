@@ -19,9 +19,9 @@ if ($me->getId() != $pesanan->getPemesanId()) html_not_found();
             </div>
         </div>
     </nav>
-    <div id="content" class="mt-8 w-full overflow-hidden grid grid-cols-2 gap-4">
+    <div id="content" class="mt-8 w-full overflow-hidden grid sm:grid-cols-2 gap-4">
         <div>
-            <div class="rounded-lg border bg-white p-8">
+            <div class="rounded-lg border bg-white p-4 sm:p-8">
                 <h6 class="rounded-tl rounded-tr font-sans text-xl font-semibold text-gray-700 mb-2">Informasi Pemesanan (Tiket)</h6>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Nomor Tiket</label>
@@ -64,7 +64,7 @@ if ($me->getId() != $pesanan->getPemesanId()) html_not_found();
             </div>
         </div>
         <div>
-            <div class="rounded-lg border bg-white p-8 mb-4">
+            <div class="rounded-lg border bg-white p-4 sm:p-8 mb-4">
                 <h6 class="rounded-tl rounded-tr font-sans text-xl font-semibold text-gray-700 mb-2">Informasi Pemesan</h6>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Atas Nama Pemesan</label>

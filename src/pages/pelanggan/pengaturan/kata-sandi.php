@@ -11,7 +11,7 @@ $akun = session()->auth();
         </div>
     </nav>
     <div id="content" class="mt-8 w-full overflow-hidden">
-        <div class="mb-4 w-4/12">
+        <div class="mb-4 w-full sm:w-4/12">
             <?php if(session('temp')): ?>
                 <div class="mb-4 block w-full text-base font-regular px-4 py-4 rounded-lg bg-<?= session('temp')['status'] ? 'green' : 'yellow'  ?>-500 text-white">
                     <?php echo session('temp')['message'] ?>

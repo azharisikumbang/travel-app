@@ -11,17 +11,17 @@ $listPesanan = app()->getManager()->getService('PelangganService')->semuaPesanan
 
 ?>
 <main>
-        <nav class="block w-full max-w-full bg-transparent text-white shadow-none transition-all px-0 py-1 border-b-2">
-            <div class="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
-                <h2 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-relaxed text-gray-900">Semua Pemesanan</h2>
-                <div class="flex items-center gap-4">
-                    <span class="font-sans text-gray-500">Sekarang: <?php echo tanggal(date_create()) ?></span>
-                    <a href="<?= site_url(get_current_route()) ?>" class="underline text-gray-500 hover:text-gray-600 cursor-pointer">Reset Filter</a>
-                </div>
+    <nav class="block w-full max-w-full bg-transparent text-white shadow-none transition-all px-0 py-1 border-b-2">
+        <div class="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
+            <h2 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-relaxed text-gray-900">Semua Pemesanan</h2>
+            <div class="hidden sm:flex sm:items-center gap-4">
+                <span class="font-sans text-gray-500">Sekarang: <?php echo tanggal(date_create()) ?></span>
+                <a href="<?= site_url(get_current_route()) ?>" class="underline text-gray-500 hover:text-gray-600 cursor-pointer">Reset Filter</a>
             </div>
-        </nav>
-        <div id="content" class="mt-8 w-full overflow-hidden">
-        <div class="mb-4 w-full flex justify-between">
+        </div>
+    </nav>
+    <div id="content" class="mt-8 w-full overflow-hidden">
+        <div class="hidden mb-4 w-full sm:flex sm:justify-between">
             <form action="" method="get">
                 <div class="flex justify-start w-full">
                 <div class="p-2">Pencarian: </div>
@@ -98,7 +98,7 @@ $listPesanan = app()->getManager()->getService('PelangganService')->semuaPesanan
                                     </td>
                                     <td class="py-3 px-5 border-b border-gray-200">
                                         <div class="flex gap-2 justify-end">
-                                           <a href="'<?= site_url('admin/pesanan/detail?nomor=') ?>'" class="text-sm text-red-500 cursor-pointer">Lihat Detail</a>
+                                           <a href="<?= site_url('pelanggan/pesanan/detail?nomor=' . $pesanan->getNomorPesanan()) ?>" class="text-sm text-red-500 cursor-pointer">Lihat Detail</a>
                                         </div>
                                     </td>
                             </tr>

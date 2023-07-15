@@ -22,7 +22,7 @@ $listJadwalPerjalananPelanggan = app()->getManager()->getService('PemesananServi
         <div class="mb-8">
             <h3 class="font-sans text-lg text-gray-800 font-medium mb-4">Tanggal Keberangkatan: <?= tanggal(date_create('now')) ?> (Hari ini)</h3>
             <?php if(count($listJadwalPerjalananPelanggan['hari_ini']) > 0): ?>
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid sm:grid-cols-3 gap-4">
             <?php foreach($listJadwalPerjalananPelanggan['hari_ini'] as $pesanan): ?>
                 <div>
                     <div class="border rounded shadow-md bg-white">
@@ -57,7 +57,7 @@ $listJadwalPerjalananPelanggan = app()->getManager()->getService('PemesananServi
         <div class="mb-8">
             <h3 class="font-sans text-lg text-gray-800 font-medium mb-4">Jadwal Keberangkatan: Akan Datang</h3>
             <?php if(count($listJadwalPerjalananPelanggan['lainnya']) > 0): ?>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid sm:grid-cols-3 gap-4">
                     <?php foreach($listJadwalPerjalananPelanggan['lainnya'] as $pesanan): ?>
                         <div>
                             <div class="border rounded shadow-md bg-white">

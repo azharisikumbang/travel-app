@@ -13,8 +13,8 @@ $auth = session()->auth();
 </head>
 <body>
 <?php html_require_component('navbar'); ?>
-<section class="max-w-screen-2xl mx-auto py-20 flex">
-    <aside class='w-3/12'>
+<section class="max-w-screen-2xl mx-auto py-2 sm:py-20 flex flex-wrap sm:flex-col">
+    <aside class='w-full p-2 sm:w-3/12 order-2 sm:order-first'>
         <div class="border rounded-lg p-4 shadow-md">
             <div class="flex border-b-2 pb-4 items-center">
                 <div class="w-20 mr-4">
@@ -41,7 +41,7 @@ $auth = session()->auth();
             </div>
         </div>
     </aside>
-    <main class="px-8 w-full">
+    <main class="w-full order-1 px-2 mb-12 sm:px-8 sm:w-9/12 sm:order-last">
         <?php require_once $content; ?>
     </main>
 </section>

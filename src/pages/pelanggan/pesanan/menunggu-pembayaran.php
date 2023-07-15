@@ -13,7 +13,7 @@ $listPesanan = app()->getManager()->getService('PemesananService')->listPesananM
     <div class="mb-4">
         <div class="mb-8">
             <?php if(count($listPesanan) > 0): ?>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid sm:grid-cols-3 gap-4">
                     <?php foreach($listPesanan as $pesanan): ?>
                         <div>
                             <div class="border rounded shadow-md bg-white">

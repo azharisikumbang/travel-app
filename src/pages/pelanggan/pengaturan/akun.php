@@ -12,8 +12,8 @@ $listKategoriPelanggan = app()->getManager()->getService('KategoriPelangganServi
             <h2 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-relaxed text-gray-900">Pengaturan Akun</h2>
         </div>
     </nav>
-    <div id="content" class="mt-8 w-full overflow-hidden flex gap-8">
-        <div class="mb-4 w-4/12">
+    <div id="content" class="mt-8 w-full overflow-hidden flex flex-col sm:flex-row gap-8">
+        <div class="mb-4 w-full sm:w-4/12">
             <?php if(session('temp')): ?>
                 <div class="mb-4 block w-full text-base font-regular px-4 py-4 rounded-lg bg-<?= session('temp')['status'] ? 'green' : 'yellow'  ?>-500 text-white">
                     <?php echo session('temp')['message'] ?>
@@ -46,7 +46,7 @@ $listKategoriPelanggan = app()->getManager()->getService('KategoriPelangganServi
             </form>
         </div>
         <?php if ($me->getPhotoIdentitas()) : ?>
-        <div class="mb-4 w-8/12">
+        <div class="mb-4 w-full sm:w-8/12">
             <p>Gagal menampilkan preview kartu identitas. silahkan <a class="text-red-400 hover:underline" href="<?= site_url('api/pelanggan/akun/unduh-photo-identitas') ?>">klik disini</a> untuk melihat.</p>
         </div>
         <?php endif; ?>

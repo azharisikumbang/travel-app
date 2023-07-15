@@ -14,16 +14,16 @@ $listPemesanan = $pelangganService->daftarPemesananSaya($pemesananService, $me);
     <div class="w-full border-b pb-1 mb-4">
         <h2 class="antialiased tracking-normal font-sans text-2xl font-semibold leading-relaxed text-gray-900">Dashboard</h2>
     </div>
-    <div class="w-full flex gap-4">
-        <div class="w-8/12">
-            <div class="border-gray-200 border p-4 my-4 ">
+    <div class="w-full flex flex-col sm:flex-row gap-4">
+        <div class="w-full sm:w-8/12">
+            <div class="border-gray-200 border p-4 sm:my-4">
                 Selamat datang, <?= $me->getNama() ?>.
                 <div>
 
                 </div>
             </div>
         </div>
-        <div class="w-4/12">
+        <div class="w-full sm:w-4/12">
             <div class="border-gray-200 border p-4 my-4 ">
                 <h3 class="font-sans text-md font-medium mb-4">Informasi</h3>
                 <ul>
