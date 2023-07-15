@@ -2,9 +2,9 @@
 <!-- follow me on twitter @asad_codes -->
 
 <div class="flex flex-wrap place-items-center">
-    <section class="relative mx-auto">
+    <section class="relative mx-auto w-full">
         <!-- navbar -->
-        <nav class="flex justify-between bg-gray-900 text-white w-screen">
+        <nav class="flex justify-between bg-gray-900 text-white">
             <div class="px-5 xl:px-12 py-6 flex w-full items-center">
                 <a class="text-xl font-bold font-heading" href="<?= site_url() ?>">
                     <!-- <img class="h-9" src="logo.png" alt="logo"> -->
@@ -36,6 +36,9 @@
                             Daftar Akun
                         </a>
                     <?php endif; ?>
+                    <div class="bg-yellow-500 px-2 py-1 rounded text-white ">
+                        Telp: 0812 6828 0330
+                    </div>
                 </div>
             </div>
         </nav>
