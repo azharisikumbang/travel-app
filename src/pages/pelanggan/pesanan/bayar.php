@@ -1,6 +1,19 @@
-<?php html_require_component('navbar'); ?>
+<?php
+
+html_require_component('navbar');
+
+if(request()->notGetRequest() || false === request()->has('nomor')) html_not_found();
+
+/** @var $pesanan Pesanan  */
+$pesanan = app()->getManager()->getService('PemesananService')->cariPesananBerdasarkanNomorPesanan($_GET['nomor']);
+$me = session()->auth();
+
+if(is_null($pesanan)) html_not_found();
+if($me->getId() != $pesanan->getPemesanId()) html_unauthorized();
+
+?>
 <main x-data="container">
-    <div class="max-w-screen-xl mx-auto py-20 px-6">
+    <div class="">
         <?php if(session('temp')):
             html_alert(session('temp')['message'], 'yellow');
         endif; ?>
@@ -13,15 +26,7 @@
             <div class="mb-4">
                 <h2 class="block antialiased tracking-normal font-sans text-xl font-bold leading-relaxed text-gray-900">Informasi Pembayaran</h2>
             </div>
-            <div x-show="properties.data.sesi_pesanan">
-                <div class="mb-4 px-4 py-6 text-green-600 border-green-600 border rounded">
-                    <!-- @TODO: ganti nama dan bank pembayaran -->
-                    <p><span class="font-bold">Perhatian!</span> Pesanan anda telah dicatat, silhakan lakukan pembayaran ke {BANK XXX} atas nama PT. Sorek Wisata Transport paling lambat 2 jam setelah pemesanan.</p>
-                    <p>Minimum pembayaran berupa DP adalah 50 % dari total tagihan.</p>
-                    <p>Anda dapat mengakses kembali detail pesanan di <a href="" class="underline">portal pelanggan</a> untuk melakukan pembayaran di lain waktu.</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-10 justify-stretch gap-4 w-full">
+            <div class="grid sm:grid-cols-10 justify-stretch gap-4 w-full">
                 <div class="col-span-6">
                     <div class="bg-gray-100 rounded p-6">
                         <div class="w-full mb-4">
@@ -41,7 +46,6 @@
                             <input accept="image/*" @change="properties.form.bukti = Object.values($event.target.files)[0]" type="file" class="w-full text-gray-700 font-sans font-normal outline outline-0">
                         </div>
                         <div class="w-full mt-8 flex flex-row gap-4">
-                            <a href="<?= site_url('pelanggan/pesanan/menunggu-pembayaran') ?>" class="w-full text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-4 text-center mr-3 md:mr-0">Bayar Nanti</a>
                             <button type="submit" class="w-full text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-4 text-center mr-3 md:mr-0">Simpan dan Lanjutkan</button>
                         </div>
                     </div>
@@ -102,6 +106,7 @@
                     form.append('bank', this.properties.form.bank);
                     form.append('nominal', this.properties.form.nominal);
                     form.append('bukti', this.properties.form.bukti);
+                    form.append('nomor', '<?= $pesanan->getNomorPesanan() ?>');
 
                     axios
                         .post(this.properties.sites.api_url + '/api/pesanan/info-pembayaran/simpan', form, {
@@ -109,7 +114,7 @@
                                 "Content-Type": "multipart/form-data"
                             }
                         })
-                        .then(response => window.location.href = this.properties.sites.api_url + '/pelanggan')
+                        .then(response => window.location.href = this.properties.sites.api_url + '/pelanggan/jadwal')
                         .catch(err => this.addError('bad_request', err.response.data.errors[0], 'red')); // @TODO: errors should not be access directed
 
                 }
@@ -151,7 +156,7 @@
                         "api_url": "<?= site_url() ?>",
                     },
                     "errors": {},
-                    "data": <?= json_encode(['sesi_pesanan' => session('pesanan')]) ?>,
+                    "data": <?= json_encode(['sesi_pesanan' => $pesanan->toArray()]) ?>,
                     "form": {
                         "nama": "",
                         "bank": "",

@@ -37,7 +37,7 @@ $listPesanan = app()->getManager()->getService('PemesananService')->listPesananM
                                 </div>
                                 <div class="font-medium font-sans border-t p-4 text-sm flex justify-between items-center">
                                     <p>Sisa: Rp. <?= rupiah($pesanan->getTotalTarif() - $pesanan->getTotalDibayarkan()) ?></p>
-                                    <a href="<?= site_url('pelanggan/pesanan/detail?nomor=') . $pesanan->getNomorPesanan() ?>" class="text-sm text-red-400 hover:underline">Bayar</a>
+                                    <a href="<?= site_url('pelanggan/pesanan/bayar?nomor=') . $pesanan->getNomorPesanan() ?>" class="text-sm text-red-400 hover:underline">Bayar</a>
                                 </div>
                             </div>
                         </div>

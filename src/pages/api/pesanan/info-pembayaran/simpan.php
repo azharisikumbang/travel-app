@@ -16,7 +16,9 @@ if($bukti['error']) {
     response()->badRequest("Terjadi kesalaahan pada saat unggah bukti pembayaran. Mohon coba kembali.");
 }
 
-$pesanan = session('nomor_pemesanan');
+if (request()->has('nomor')) $pesanan = $_POST['nomor'];
+else $pesanan = session('nomor_pemesanan');
+
 if(is_null($pesanan)) response()->badRequest("Pesanan tidak diketahui, mohon periksa kembali.");
 
 /** @var $pemesananService PemesananService */

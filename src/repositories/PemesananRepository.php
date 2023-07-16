@@ -586,7 +586,7 @@ class PemesananRepository extends BaseRepository
             FROM pesanan p
             LEFT JOIN pesanan_detail pd on p.id = pd.pesanan_id
             WHERE pemesan_id = :pemesan_id 
-              AND status_bukti_pembayaran = :unconfirmed
+              AND status_bukti_pembayaran IN (:unconfirmed, :pending) 
               AND total_dibayarkan < total_tarif
               AND tanggal_keberangkatan >= CURDATE()
             ORDER BY tanggal_keberangkatan DESC
@@ -595,7 +595,8 @@ class PemesananRepository extends BaseRepository
         $stmt = $this->getDatabaseConnection()->prepare($query);
         $stmt->execute([
             'pemesan_id' => $user->getId(),
-            'unconfirmed' => StatusBuktiPembayaran::UNCONFIRMED->value
+            'unconfirmed' => StatusBuktiPembayaran::UNCONFIRMED->value,
+            'pending' => StatusBuktiPembayaran::PENDING->value
         ]);
 
         if($stmt->rowCount() < 1) return [];
