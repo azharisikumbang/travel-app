@@ -70,7 +70,7 @@ class PelangganService
 
     /** @doc jadwal adalah tiket yang telah dibayar diatas 1/2 total tarif dan/atau menunggu konfirmasi atau valid  */
 
-    public function informasiSaya(Akun $akun): Pelanggan
+    public function informasiSaya(Akun $akun): ?Pelanggan
     {
         return $this->pelangganRepository->getDetailByAkun($akun);
     }
