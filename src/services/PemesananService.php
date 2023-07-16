@@ -71,6 +71,7 @@ class PemesananService
         $nomorPesanan = $this->buatNomorPemesanan($tanggalKeberangkatan);
 
         if (is_int($jamKeberangkatan)) $jamKeberangkatan = $this->jamKeberangkatanRepository->findById($jamKeberangkatan);
+        if (is_int($mobil)) $mobil = $this->mobilRepository->findById($mobil);
 
         $asal = $tiket->getRute()->getAsal();
         $tujuan = $tiket->getRute()->getTujuan();
@@ -93,6 +94,8 @@ class PemesananService
         $pesanan->setStatusBuktiPembayaran(StatusBuktiPembayaran::PENDING);
         $pesanan->setStatusPemesanan(StatusPemesanan::PENDING);
         $pesanan->setPemesanId(session()->auth()->getId());
+        $pesanan->setMobil($mobil->getDisplayName());
+        $pesanan->setDriver($mobil->getDriver()->getNama());
 
         foreach ($kursiDipesan as $kursi) {
             $pesananDetail = new PesananDetail();

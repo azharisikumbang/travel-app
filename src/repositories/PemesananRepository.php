@@ -106,7 +106,8 @@ class PemesananRepository extends BaseRepository
             'total_dibayarkan' => $pesanan->getTotalDibayarkan(),
             'bukti_pembayaran' => $pesanan->getBuktiPembayaran(),
             'pemesan_id' => $pesanan->getPemesanId(),
-            'mobil' => $pesanan->getMobil()
+            'mobil' => $pesanan->getMobil(),
+            'driver' => $pesanan->getDriver()
         ];
 
         $bindKeys = [];
@@ -409,6 +410,7 @@ class PemesananRepository extends BaseRepository
             ->setBankPembayaran($row['bank_pembayaran'])
             ->setPemesanId($row['pemesan_id'])
             ->setFileTiket($row['file_tiket'])
+            ->setDriver($row['driver'])
             ->setMobil($row['mobil']);
     }
 

@@ -46,7 +46,11 @@ $listJadwalPerjalananPelanggan = app()->getManager()->getService('PemesananServi
                             </div>
                         </div>
                         <div class="font-medium font-sans border-t p-4 text-sm flex justify-between items-center">
+                            <?php if($pesanan->getFileTiket()): ?>
                             <a href="<?= site_url('api/pelanggan/pesanan/unduh-tiket?nomor=' . $pesanan->getNomorPesanan()) ?>" class="text-red-500 text-sm block hover:text-red-600 cursor-pointer">Download Tiket</a>
+                            <?php else: ?>
+                            <div></div>
+                            <?php endif ?>
                             <a href="<?= site_url('pelanggan/pesanan/detail?nomor=') . $pesanan->getNomorPesanan() ?>" class="text-sm text-red-400 hover:underline">Detail</a>
                         </div>
                     </div>
