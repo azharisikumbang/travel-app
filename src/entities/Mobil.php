@@ -104,6 +104,11 @@ class Mobil implements EntityInterface
         return $this;
     }
 
+    public function getDisplayName(): string
+    {
+        return sprintf("%s %s", $this->getMerk(), $this->getPlatNomor());
+    }
+
     public function toArray(): array
     {
         return [

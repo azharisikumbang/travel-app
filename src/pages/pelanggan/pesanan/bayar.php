@@ -26,6 +26,9 @@ if($me->getId() != $pesanan->getPemesanId()) html_unauthorized();
             <div class="mb-4">
                 <h2 class="block antialiased tracking-normal font-sans text-xl font-bold leading-relaxed text-gray-900">Informasi Pembayaran</h2>
             </div>
+            <div class="mb-4 px-4 py-2 border rounded bg-blue-600 text-white">
+                Silahkan lakukan pembayaran ke <strong>BANK BRI 2116 0101 0052 505</strong> atas nama <strong>FEBRY SELVY ANDRI</strong>.
+            </div>
             <div class="grid sm:grid-cols-10 justify-stretch gap-4 w-full">
                 <div class="col-span-6">
                     <div class="bg-gray-100 rounded p-6">

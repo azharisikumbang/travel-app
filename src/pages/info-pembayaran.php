@@ -16,7 +16,7 @@
             <div x-show="properties.data.sesi_pesanan">
                 <div class="mb-4 px-4 py-6 text-green-600 border-green-600 border rounded">
                     <!-- @TODO: ganti nama dan bank pembayaran -->
-                    <p><span class="font-bold">Perhatian!</span> Pesanan anda telah dicatat, silhakan lakukan pembayaran ke {BANK XXX} atas nama PT. Sorek Wisata Transport paling lambat 2 jam setelah pemesanan.</p>
+                    <p><span class="font-bold">Perhatian!</span> Pesanan anda telah dicatat, silahkan lakukan pembayaran ke <strong>BANK BRI 2116 0101 0052 505</strong> atas nama <strong>FEBRY SELVY ANDRI</strong> paling lambat 2 jam setelah pemesanan.</p>
                     <p>Minimum pembayaran berupa DP adalah 50 % dari total tagihan.</p>
                     <p>Anda dapat mengakses kembali detail pesanan di <a href="" class="underline">portal pelanggan</a> untuk melakukan pembayaran di lain waktu.</p>
                 </div>
