@@ -31,7 +31,6 @@ class PelangganService
         $this->pemesananRepository = new PemesananRepository();
     }
 
-
     public function buatAkunPelanggan(string $nama, string $kontak, string $username, string $password) : false|Pelanggan
     {
         if ($this->akunService->cekApakahAkunTerdaftar($username)) return false;
@@ -57,8 +56,6 @@ class PelangganService
         $pelanggan->setKategoriPelanggan($kategoriPelanggan);
 
         return $this->pelangganRepository->save($pelanggan);
-
-
     }
 
     public function listPelanggan(int $page = 1, ?string $search = null): false|array
@@ -76,6 +73,15 @@ class PelangganService
     public function informasiSaya(Akun $akun): Pelanggan
     {
         return $this->pelangganRepository->getDetailByAkun($akun);
+    }
+
+    public function konfirmasiKartuIdentitas(int $id): bool
+    {
+        $pelanggan = $this->pelangganRepository->exists($id);
+
+        if(!$pelanggan) return false;
+
+        return $this->pelangganRepository->updateStatusKonfirmasiMahasiswa($id);
     }
 
     public function updateInformasiSaya(string $nama, ?string $kontak = null, int $kategoriPelanggan = -1, mixed $photoIdentitas = null) : false|Pelanggan

@@ -86,17 +86,39 @@ class PelangganRepository extends BaseRepository
             ->setAkun($akun)
             ->setKategoriPelanggan($kategori)
             ->setPhoto($row['photo_id'])
+            ->setTerkonfirmasiMahasiswa(($row['terkonfirmasi_mahasiswa']))
             ->setPhotoIdentitas($row['photo_identitas']);
     }
 
     public function findById(int $id) : ?Pelanggan
     {
-        return $this->basicFindById($id);
+        $row = $this->basicFindById($id);
+
+        return ($row) ? $this->newEntity($row) : null;
+    }
+
+    public function updateStatusKonfirmasiMahasiswa(int|Pelanggan $pelanggan) : bool
+    {
+        $query = "UPDATE {$this->getTable()} SET terkonfirmasi_mahasiswa = :terkonfirmasi_mahasiswa
+             WHERE id = :id";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+
+        return $stmt->execute([
+            'id' => is_int($pelanggan) ? $pelanggan : $pelanggan->getId(),
+            'terkonfirmasi_mahasiswa' => 1,
+        ]);
     }
 
     public function update(Pelanggan $pelanggan) : false|Pelanggan
     {
-        $query = "UPDATE {$this->getTable()} SET nama = :nama, kontak = :kontak, kategori_id = :kategori_id, photo_identitas = :photo_identitas WHERE akun_id = :akun_id";
+        $query = "UPDATE {$this->getTable()} SET 
+                 nama = :nama, 
+                 kontak = :kontak, 
+                 kategori_id = :kategori_id, 
+                 photo_identitas = :photo_identitas,
+                 terkonfirmasi_mahasiswa = :terkonfirmasi_mahasiswa
+             WHERE akun_id = :akun_id";
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
 
@@ -106,6 +128,7 @@ class PelangganRepository extends BaseRepository
             'kategori_id' => $pelanggan->getKategoriPelanggan()->getId(),
             'photo_identitas' => $pelanggan->getPhotoIdentitas(),
             'akun_id' => $pelanggan->getAkun()->getId(),
+            'terkonfirmasi_mahasiswa' => $pelanggan->getTerkonfirmasiMahasiswa(),
         ]) ? $pelanggan : false;
     }
 
