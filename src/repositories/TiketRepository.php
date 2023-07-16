@@ -26,7 +26,7 @@ class TiketRepository extends BaseRepository
                 JOIN m_kategori_pelanggan kp ON kp.id = t.kategori_penumpang_id
                 JOIN m_daerah_operasional mdo1 ON r.asal_id = mdo1.id
                 JOIN m_daerah_operasional mdo2 ON r.tujuan_id = mdo2.id
-                ORDER BY kp_kategori, r_asal_nama_kota, r_tujuan_nama_kota
+                ORDER BY kp_kategori DESC, r_asal_nama_kota, r_tujuan_nama_kota
                 LIMIT {$from}, {$length}
             "
         );

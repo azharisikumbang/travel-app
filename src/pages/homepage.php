@@ -9,19 +9,21 @@ html_require_component('navbar');
 ?>
 <!-- main -->
 <main x-data="listAvailableTiket">
-    <div class="relative pt-16 pb-32 flex content-center items-center justify-center" style="min-height: 75vh">
-        <div class="absolute top-0 w-full h-full bg-center bg-cover" style="background-image: url('https://images.unsplash.com/photo-1638199406429-f0c6cf5de006?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&w=1024&q=80');">
+    <div class="relative pt-32 pb-32 flex content-center items-center justify-center" style="min-height: 90vh">
+        <div class="absolute top-0 w-full h-full bg-center bg-cover" style="background-image: url('<?= site_url('assets/static/wallpaper.jpg') ?>');">
             <span class="w-full h-full absolute opacity-25 bg-black"></span>
         </div>
         <div class="container relative mx-auto">
             <div class="items-center flex flex-wrap">
-                <div class="w-full lg:w-6/12 px-4 ml-auto mr-auto text-center">
+                <div class="w-full lg:w-6/12 px-4 text-left">
                     <form action="<?= site_url('pesan') ?>" method="get">
                         <h1 class="text-white font-semibold text-5xl">
                             PT. SOREK WISATA TRANSPORT
                         </h1>
                         <p class="mt-4 text-lg text-slate-200">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                            Jika Anda memiliki mobilitas tinggi sering bolak balik antara Sorek, Kerinci, Pekanbaru, Padang, Pariaman, Padang Panjang, Bukit Tinggi, Payakumbuh, namun terkendala masalah transportasi maka segera hubungi kami PT. Sorek Wisata Transpot yang merupakan perusahaan bergerak dibidang transportasi travel Antar Jemput sampai ke Alamat Riau dan Sumbar. <br> <br>
+                            Kami menyediakan angkutan  dengan armada Toyota Kijang Innova dan siap menjemput kerumah anda, serta mengatar sampai ke alamat tujuan.
+                            Jam Operasional Keberangkatan 08.00, 17.00, 20.00 .
                         </p>
                         <div class="mt-12">
                             <div class="w-full grid grid-cols-3 gap-4">
@@ -49,7 +51,7 @@ html_require_component('navbar');
                             </div>
                         </div>
                         <div class="mt-8">
-                            <button type="submit" class="block text-white bg-yellow-500 hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-4 text-center mr- mx-auto w-64">
+                            <button type="submit" class="block text-white bg-yellow-500 hover:bg-yellow-600 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-4 text-center mx-auto w-64">
                                 Pesan Sekarang
                             </button>
                         </div>
@@ -94,7 +96,8 @@ html_require_component('navbar');
         <div class="container mx-auto flex justify-between text-slate-600 antialiased font-sans">
             <div>
                 <h3 class="text-3xl font-semibold">PT Sorek Wisata Transport</h3>
-                <p class="text-slate-500 mb-2">Jl. Perinstis Kemerdekaan no. 13 Pekanbaru, Riau 22345</p>
+                <p class="text-slate-500 mb-2">
+                    Jl. Lintas Timur, Depan Pasar Modern, Desa / Kelurahan Sorek I <br>Kec. Pangkalan Kuras, Kab. Pelalawan Provinsi Riau<br>Kode Pos: 28382</p>
                 <p class="text-slate-500">
                     ☎ Pusat : 0812 6828 0330 <br>
                     ☎ Sorek : 0813 9888 5884 / 0813 2342 4200 <br>
@@ -139,7 +142,7 @@ html_require_component('navbar');
                 </div>
             </div>
             <div class="w-3/5">
-                <div class="mapouter"><div class="gmap_canvas"><iframe class="gmap_iframe" width="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?width=600&amp;height=400&amp;hl=en&amp;q=pekanbaru&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe><a href="https://connectionsgame.org/">Connections Game</a></div><style>.mapouter{position:relative;text-align:right;width:100%;height:400px;}.gmap_canvas {overflow:hidden;background:none!important;width:100%;height:400px;}.gmap_iframe {height:400px!important;}</style></div>
+                <div class="mapouter"><div class="gmap_canvas"><iframe class="gmap_iframe" width="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?width=600&amp;height=400&amp;hl=en&amp;q=Jl. Lintas Timur, Depan Pasar Modern, Desa / Kelurahan Sorek I&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe><a href="https://connectionsgame.org/">Connections Game</a></div><style>.mapouter{position:relative;text-align:right;width:100%;height:400px;}.gmap_canvas {overflow:hidden;background:none!important;width:100%;height:400px;}.gmap_iframe {height:400px!important;}</style></div>
             </div>
         </div>
     </div>
