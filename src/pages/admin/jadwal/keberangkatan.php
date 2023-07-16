@@ -113,8 +113,7 @@
                                 </td>
                                 <td class="py-3 px-5 border-b border-gray-200">
                                     <div class="flex gap-2 justify-end">
-                                        <a href="" class="text-sm text-red-500">Konfirmasi Pembayaran</a> |
-                                        <a href="" class="text-sm text-red-500">Lihat Detail</a>
+                                        <a :href="'<?= site_url('admin/pesanan/detail?nomor=') ?>' + pesanan.data.pesanan.nomor" class="text-sm text-red-500">Lihat Detail</a>
                                     </div>
                                 </td>
                             </tr>
