@@ -131,7 +131,7 @@ $listPelanggan = app()->getManager()->getService('PelangganService')->listPelang
         form.append('id', id);
 
         axios.post("<?= site_url('api/admin/pelanggan/konfirmasi-kartu-identitas') ?>", form)
-            .then(response => console.log(response))
+            .then(response => window.location.reload())
             .catch(err => console.error(err))
     }
 </script>

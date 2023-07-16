@@ -18,9 +18,6 @@ $listPemesanan = $pelangganService->daftarPemesananSaya($pemesananService, $me);
         <div class="w-full sm:w-8/12">
             <div class="border-gray-200 border p-4 sm:my-4">
                 Selamat datang, <?= $me->getNama() ?>.
-                <div>
-
-                </div>
             </div>
         </div>
         <div class="w-full sm:w-4/12">
@@ -29,22 +26,22 @@ $listPemesanan = $pelangganService->daftarPemesananSaya($pemesananService, $me);
                 <ul>
                     <?php if(count($listPemesanan['hari_ini']) >= 1): ?>
                     <li class="border-b border-gray-200 py-2">
-                        <a href="" class="hover:text-gray-600 hover:underline">Anda memliki perjalanan hari ini, klik untuk informasi lebih lanjut.</a>
+                        <a href="<?= site_url('pelanggan/jadwal') ?>" class="hover:text-gray-600 hover:underline">Anda memliki perjalanan hari ini, klik untuk informasi lebih lanjut.</a>
                     </li>
                     <?php endif; ?>
                     <?php if(count($listPemesanan['unconfirmed']) >= 1): ?>
                     <li class="border-b border-gray-200 py-2">
-                        <a href="" class="hover:text-gray-600 hover:underline">Anda memliki Tiket yang belum dikonfirmasi oleh admin.</a>
+                        <a href="<?= site_url('pelanggan/pesanan/list') ?>" class="hover:text-gray-600 hover:underline">Anda memliki Tiket yang belum dikonfirmasi oleh admin.</a>
                     </li>
                     <?php endif; ?>
                     <?php if(count($listPemesanan['menunggu_pembayaran'] ) >= 1  || count($listPemesanan['belum_lunas']) >= 1): ?>
                     <li class="border-b border-gray-200 py-2">
-                        <a href="" class="hover:text-gray-600 hover:underline">Anda memliki Tiket yang belum dilunasi, klik untuk melakukan pengecekan.</a>
+                        <a href="<?= site_url('pelanggan/pesanan/menunggu-pembayaran') ?>" class="hover:text-gray-600 hover:underline">Anda memliki Tiket yang belum dilunasi, klik untuk melakukan pengecekan.</a>
                     </li>
                     <?php endif; ?>
                     <?php if(strtolower($me->getKategoriPelanggan()->getKategori()) == 'umum'): ?>
                     <li class="border-b border-gray-200 py-2">
-                        <a href="" class="hover:text-gray-600 hover:underline">Untuk mendapatkan diskon khusus Mahasiswa dan IMAPPEL silahkan atur disini.</a>
+                        <a href="<?= site_url('pelanggan/pengaturan/akun') ?>" class="hover:text-gray-600 hover:underline">Untuk mendapatkan diskon khusus Mahasiswa dan IMAPPEL silahkan atur disini.</a>
                     </li>
                     <?php endif; ?>
                 </ul>
