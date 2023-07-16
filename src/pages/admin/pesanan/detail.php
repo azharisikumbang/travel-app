@@ -99,8 +99,8 @@ if (is_null($pesanan)) html_not_found();
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Bukti Pembayaran</label>
-                    <a x-show="properties.data.pesanan.status_bukti_pembayaran.toLowerCase() == 'valid'" :href="properties.sites.api_url + '/api/admin/pesanan/unduh-bukti-pembayaran?nomor=' + properties.data.pesanan.nomor_pemesanan" class="text-red-500 underline text-sm block hover:text-red-600">Unduh untuk melihat.</a>
-                    <span x-show="properties.data.pesanan.status_bukti_pembayaran.toLowerCase() != 'valid'" class="block">-</span>
+                    <a x-show="properties.data.pesanan.status_bukti_pembayaran.toLowerCase() != 'pending'" :href="properties.sites.api_url + '/api/admin/pesanan/unduh-bukti-pembayaran?nomor=' + properties.data.pesanan.nomor_pemesanan" class="text-red-500 underline text-sm block hover:text-red-600">Unduh untuk melihat.</a>
+                    <span x-show="properties.data.pesanan.status_bukti_pembayaran.toLowerCase() == 'pending'" class="block">-</span>
                 </div>
             </div>
             <template x-if="properties.data.pesanan.status_bukti_pembayaran.toLowerCase() == 'unconfirmed'">

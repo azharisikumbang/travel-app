@@ -38,12 +38,15 @@ $listJadwalPerjalananPelanggan = app()->getManager()->getService('PemesananServi
                                 Jemput: <?= $pesanan->getTitikJemput() ?> <br>
                                 Nomor Kursi: <?= implode(", ", array_map(fn($item) => $item->getNomorKursi(), $pesanan->getListKursi())); ?>
                             </p>
-                            <?php if($pesanan->getTotalDibayarkan() >= ( $pesanan->getTotalTarif() / count($pesanan->getListKursi()))):   ?>
+                            <div class="flex gap-2">
+                                <?php if($pesanan->getTotalDibayarkan() >= ( $pesanan->getTotalTarif() / count($pesanan->getListKursi()))):   ?>
                                 <div class="bg-green-600 text-sm px-2 py-1 font-light rounded text-white inline">Sudah DP 50 %</div>
-                            <?php endif; ?>
+                                <?php endif; ?>
+                                <div class="bg-<?= $pesanan->getStatusBuktiPembayaran()->getColor() ?>-600 text-sm px-2 py-1 font-light rounded text-white">PEMBAYARAN <?= $pesanan->getStatusBuktiPembayaran()->getDisplayName() ?></div>
+                            </div>
                         </div>
                         <div class="font-medium font-sans border-t p-4 text-sm flex justify-between items-center">
-                            <div class="bg-<?= $pesanan->getStatusBuktiPembayaran()->getColor() ?>-600 text-sm px-2 py-1 font-light rounded text-white">PEMBAYARAN <?= $pesanan->getStatusBuktiPembayaran()->getDisplayName() ?></div>
+                            <a href="<?= site_url('api/pelanggan/pesanan/unduh-tiket?nomor=' . $pesanan->getNomorPesanan()) ?>" class="text-red-500 text-sm block hover:text-red-600 cursor-pointer">Download Tiket</a>
                             <a href="<?= site_url('pelanggan/pesanan/detail?nomor=') . $pesanan->getNomorPesanan() ?>" class="text-sm text-red-400 hover:underline">Detail</a>
                         </div>
                     </div>
