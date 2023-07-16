@@ -15,7 +15,7 @@ $listJadwalPerjalananPelanggan = $app->getService('PemesananService')->listPemes
     </div>
     <div class="mb-4">
         <div class="mb-8">
-            <div class="flex flex-wrap gap-2 sm:gap-4 mb-8">
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-8">
                 <div class="bg-red-100 rounded w-full p-2 sm:w-3/12 sm:p-4">
                     <p class="font-medium">Tanggal:</p>
                     <p><?= tanggal(date_create('now')) ?> (Hari ini)</p>
@@ -43,7 +43,8 @@ $listJadwalPerjalananPelanggan = $app->getService('PemesananService')->listPemes
                                         <?= $pesanan->getNamaPemesan() ?> (<?= $pesanan->getKontakPemesan() ?>)
                                     </p>
                                     <p class="font-light mb-2">
-                                        Jemput: <?= $pesanan->getTitikJemput() ?>
+                                        Jemput: <?= $pesanan->getTitikJemput() ?> <br>
+                                        <smal><a class="text-red-500 underline hover:text-red-600 italic" href="http://maps.google.com/?q=<?= $pesanan->getTitikJemput(); ?>" target="_blank">lihat di google map</a></smal>
                                     </p>
                                     <p class="font-light italic">
                                         Nomor Kursi: <?= implode(", ", array_map(fn($item) => $item->getNomorKursi(), $pesanan->getListKursi())); ?>

@@ -71,11 +71,12 @@ if (is_null($pesanan)) html_not_found();
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Kontak Pemesan</label>
-                    <p class="w-full " x-text="properties.data.pesanan.kontak_pemesanan == '' ?? '-'"></p>
+                    <p class="w-full " x-text="properties.data.pesanan.kontak_pemesanan ?? '-'"></p>
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Alamat Jemput</label>
                     <p class="w-full " x-text="properties.data.pesanan.titik_jemput ?? '-'"></p>
+                    <smal><a class="text-red-500 underline hover:text-red-600 italic" href="http://maps.google.com/?q=<?= $pesanan->getTitikJemput(); ?>" target="_blank">lihat di google map</a></smal>
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Informasi Akun Pemesan</label>

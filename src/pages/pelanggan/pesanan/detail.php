@@ -8,6 +8,7 @@ $pesanan = app()->getManager()->getService('PemesananService')->cariPesananBerda
 
 if ($me->getId() != $pesanan->getPemesanId()) html_not_found();
 
+
 ?>
 <main x-data="container">
     <nav class="block w-full max-w-full bg-transparent text-white shadow-none transition-all px-0 py-1 border-b-2">
@@ -77,6 +78,7 @@ if ($me->getId() != $pesanan->getPemesanId()) html_not_found();
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Alamat Jemput</label>
                     <p class="w-full"><?= $pesanan->getTitikJemput() ?></p>
+                    <smal><a class="text-red-500 underline hover:text-red-600 italic" href="http://maps.google.com/?q=<?= $pesanan->getTitikJemput(); ?>" target="_blank">lihat di google map</a></smal>
                 </div>
             </div>
             <div class="rounded-lg border bg-white p-8 mb-4">
