@@ -49,6 +49,20 @@ class PelangganRepository extends BaseRepository
         );
     }
 
+    public function getDetailByAkun(Akun $akun): ?Pelanggan
+    {
+        $query = "SELECT p.*, a.username, k.kategori
+                FROM {$this->getTable()} p 
+                JOIN m_akun a ON a.id = p.akun_id
+                JOIN m_kategori_pelanggan k ON k.id = p.kategori_id
+                WHERE p.akun_id = :akun";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute(['akun' => $akun->getId()]);
+
+        return $stmt->rowCount() ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)): null;
+    }
+
     protected function getTable(): string
     {
         return $this->table;
@@ -72,7 +86,50 @@ class PelangganRepository extends BaseRepository
             ->setAkun($akun)
             ->setKategoriPelanggan($kategori)
             ->setPhoto($row['photo_id'])
+            ->setTerkonfirmasiMahasiswa(($row['terkonfirmasi_mahasiswa']))
             ->setPhotoIdentitas($row['photo_identitas']);
+    }
+
+    public function findById(int $id) : ?Pelanggan
+    {
+        $row = $this->basicFindById($id);
+
+        return ($row) ? $this->newEntity($row) : null;
+    }
+
+    public function updateStatusKonfirmasiMahasiswa(int|Pelanggan $pelanggan) : bool
+    {
+        $query = "UPDATE {$this->getTable()} SET terkonfirmasi_mahasiswa = :terkonfirmasi_mahasiswa
+             WHERE id = :id";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+
+        return $stmt->execute([
+            'id' => is_int($pelanggan) ? $pelanggan : $pelanggan->getId(),
+            'terkonfirmasi_mahasiswa' => 1,
+        ]);
+    }
+
+    public function update(Pelanggan $pelanggan) : false|Pelanggan
+    {
+        $query = "UPDATE {$this->getTable()} SET 
+                 nama = :nama, 
+                 kontak = :kontak, 
+                 kategori_id = :kategori_id, 
+                 photo_identitas = :photo_identitas,
+                 terkonfirmasi_mahasiswa = :terkonfirmasi_mahasiswa
+             WHERE akun_id = :akun_id";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+
+        return $stmt->execute([
+            'nama' => $pelanggan->getNama(),
+            'kontak' => $pelanggan->getKontak(),
+            'kategori_id' => $pelanggan->getKategoriPelanggan()->getId(),
+            'photo_identitas' => $pelanggan->getPhotoIdentitas(),
+            'akun_id' => $pelanggan->getAkun()->getId(),
+            'terkonfirmasi_mahasiswa' => $pelanggan->getTerkonfirmasiMahasiswa(),
+        ]) ? $pelanggan : false;
     }
 
 }

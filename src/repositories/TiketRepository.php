@@ -18,7 +18,9 @@ class TiketRepository extends BaseRepository
                     r.asal_id as r_asal_id,
                     r.tujuan_id as r_tujuan_id,
                     mdo1.nama_kota as r_asal_nama_kota,
-                    mdo2.nama_kota as r_tujuan_nama_kota
+                    mdo1.provinsi as r_asal_provinsi,
+                    mdo2.nama_kota as r_tujuan_nama_kota,
+                    mdo2.provinsi as r_tujuan_provinsi
                 FROM {$this->getTable()} t 
                 JOIN m_rute r ON r.id = t.rute_id
                 JOIN m_kategori_pelanggan kp ON kp.id = t.kategori_penumpang_id
@@ -85,7 +87,9 @@ class TiketRepository extends BaseRepository
                     r.asal_id as r_asal_id,
                     r.tujuan_id as r_tujuan_id,
                     mdo1.nama_kota as r_asal_nama_kota,
-                    mdo2.nama_kota as r_tujuan_nama_kota
+                    mdo1.provinsi as r_asal_provinsi,
+                    mdo2.nama_kota as r_tujuan_nama_kota,
+                    mdo2.provinsi as r_tujuan_provinsi
                 FROM {$this->getTable()} t 
                 JOIN m_rute r ON r.id = t.rute_id
                 JOIN m_kategori_pelanggan kp ON kp.id = t.kategori_penumpang_id
@@ -109,7 +113,9 @@ class TiketRepository extends BaseRepository
                     r.asal_id as r_asal_id,
                     r.tujuan_id as r_tujuan_id,
                     mdo1.nama_kota as r_asal_nama_kota,
-                    mdo2.nama_kota as r_tujuan_nama_kota
+                    mdo1.provinsi as r_asal_provinsi,
+                    mdo2.nama_kota as r_tujuan_nama_kota,
+                    mdo2.provinsi as r_tujuan_provinsi
                 FROM {$this->getTable()} t 
                 JOIN m_rute r ON r.id = t.rute_id
                 JOIN m_kategori_pelanggan kp ON kp.id = t.kategori_penumpang_id
@@ -127,10 +133,12 @@ class TiketRepository extends BaseRepository
         $asal = new DaerahOperasional();
         $asal->setId($row['r_asal_id']);
         $asal->setNamaKota($row['r_asal_nama_kota']);
+        $asal->setProvinsi(Provinsi::fromValue($row['r_asal_provinsi']));
 
         $tujuan = new DaerahOperasional();
         $tujuan->setId($row['r_tujuan_id']);
         $tujuan->setNamaKota($row['r_tujuan_nama_kota']);
+        $tujuan->setProvinsi(Provinsi::fromValue($row['r_tujuan_provinsi']));
 
         $rute = new Rute();
         $rute->setId($row['rute_id']);

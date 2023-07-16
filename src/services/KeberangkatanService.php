@@ -37,27 +37,27 @@ class KeberangkatanService
         /** @var $mobil Mobil */
         /** @var $keberangkatan Keberangkatan */
         foreach ($listMobil as $mobil) {
-            $listRute = [];
+            $lastUpdated = null;
             $jamKeberangkatan = null;
+            $provinsi = null;
             foreach ($listKeberangkatan as $keberangkatan) {
                 if (!is_null($keberangkatan->getMobil())) {
                     $idMobil = is_int($keberangkatan->getMobil()) ? $keberangkatan->getMobil() : $keberangkatan->getMobil()->getId();
 
                     if($idMobil == $mobil->getId()) {
-                        $rute = is_int($keberangkatan->getRute()) ? $keberangkatan->getRute() : $keberangkatan->getRute()->toArray();
+                        $provinsi = $keberangkatan->getProvinsi()->value;
                         $jamKeberangkatan = is_int($keberangkatan->getJamKeberangkatan()) ? $keberangkatan->getJamKeberangkatan() : $keberangkatan->getJamKeberangkatan()->toArray();
                         $lastUpdated = $keberangkatan->getLastUpdated()->format('Y-m-d H:i:s');
 
-                        $listRute[] = $rute;
                     }
                 }
             }
 
             $result[] = [
                 'mobil' => $mobil->toArray(),
-                'rute' => $listRute,
-                'jam_keberangkatan' => $jamKeberangkatan,
-                'last_updated' => $lastUpdated
+                'provinsi' => $provinsi ?? null,
+                'jam_keberangkatan' => $jamKeberangkatan ?? null,
+                'last_updated' => $lastUpdated ?? null
             ];
         }
 
@@ -79,23 +79,23 @@ class KeberangkatanService
         }
     }
 
-    public function simpan(int $mobil, int $jamKeberangkatan, array $listRute) : bool
+    public function simpan(int $mobil, int $jamKeberangkatan, int $provinsi) : bool
     {
+        $provinsi = Provinsi::fromValue($provinsi);
+        if (!$provinsi) return false;
+
         $mobil = $this->mobilRepository->findById($mobil);
         if (!$mobil) return false;
 
         $jamKeberangkatan = $this->jamKeberangkatanRepository->findById($jamKeberangkatan);
         if (!$jamKeberangkatan) return false;
 
-        $existsRute = [];
-        foreach ($listRute as $rute) {
-            $rute = $this->ruteRepository->findById($rute);
-            if (is_null($rute)) return false;
+        $keberangkatan = new Keberangkatan();
+        $keberangkatan->setProvinsi($provinsi);
+        $keberangkatan->setMobil($mobil);
+        $keberangkatan->setJamKeberangkatan($jamKeberangkatan);
 
-            $existsRute[] = $rute;
-        }
-
-        $this->keberangkatanRepository->update($mobil, $jamKeberangkatan, $existsRute);
+        $this->keberangkatanRepository->updateOrCreate($keberangkatan);
 
         return true;
     }

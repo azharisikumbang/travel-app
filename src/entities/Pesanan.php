@@ -256,6 +256,11 @@ class Pesanan implements EntityInterface
         return $this->listKursi;
     }
 
+    public function getListKursiAsString(): string
+    {
+        return implode(', ', array_map(fn ($item) => $item->getNomorKursi(), $this->getListKursi()));
+    }
+
     /**
      * @param string $nomorPesanan
      */

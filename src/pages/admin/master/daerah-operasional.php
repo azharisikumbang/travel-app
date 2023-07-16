@@ -2,7 +2,10 @@
 
 if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
 
-$listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalService')->listDaerahOperasional();?>
+$listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalService')->listDaerahOperasional();
+$listProvinsi = Provinsi::toArray();
+
+?>
 <main x-data="container">
     <nav class="block w-full max-w-full bg-transparent text-white shadow-none transition-all px-0 py-1 border-b-2">
         <div class="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
@@ -48,6 +51,9 @@ $listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalServi
                                 <th class="border-b border-gray-200 py-3 px-6 text-left">
                                     <p class="block antialiased font-sans text-[11px] font-medium uppercase text-gray-400">Nama Kota</p>
                                 </th>
+                                <th class="border-b border-gray-200 py-3 px-6 text-left">
+                                    <p class="block antialiased font-sans text-[11px] font-medium uppercase text-gray-400">Provinsi</p>
+                                </th>
                                 <th class="border-b border-gray-20 py-3 px-6 text-left"></th>
                             </tr>
                             </thead>
@@ -59,6 +65,9 @@ $listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalServi
                                             </td>
                                             <td class="py-3 px-5 border-b border-gray-200">
                                                 <p class="block antialiased font-sans text-xs font-medium text-gray-900 font-bold" x-text="daerah.nama_kota"></p>
+                                            </td>
+                                            <td class="py-3 px-5 border-b border-gray-200">
+                                                <p class="block antialiased font-sans text-xs font-medium text-gray-900 font-bold" x-text="daerah.provinsi.nama"></p>
                                             </td>
                                             <td class="py-3 px-5 border-b border-gray-200 flex justify-end gap-2">
                                                 <button class="bg-orange-400 text-white rounded px-4 py-1 font-sans center" @click="editData(daerah)">Edit</button>
@@ -82,6 +91,15 @@ $listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalServi
                             <label for="" class="font-sans text-base text-gray-500 mb-2 block">Nama Kota <small x-text="properties.sites.query_title"></small></label>
                             <input type="text" x-model="properties.form.nama_kota" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400" autofocus>
                         </div>
+                        <div class="w-full min-w-[200px] mb-4">
+                            <label for="" class="font-sans text-base text-gray-500 mb-2 block">Provinsi</label>
+                            <select x-model="properties.form.provinsi" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
+                                <option value="-1">-- Pilih Provinsi --</option>
+                                <template x-for="(provinsi, index) in properties.data.list_provinsi" :key="index">
+                                    <option :value="index" x-text="provinsi"></option>
+                                </template>
+                            </select>
+                        </div>
                         <div class="w-full min-w-[200px]">
                             <button @click="simpanData" type="submit" class="bg-green-500 w-full text-white rounded py-4 font-sans center" x-text="properties.sites.button_title"></button>
                         </div>
@@ -100,6 +118,7 @@ $listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalServi
             },
             "editData": function (daerah) {
                 this.properties.form.nama_kota = daerah.nama_kota;
+                this.properties.form.provinsi = daerah.provinsi.id;
                 this.properties.form.id = daerah.id;
 
                 this.properties.sites.query_title = `(dipilih: ${daerah.nama_kota})`;
@@ -117,6 +136,7 @@ $listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalServi
                     '/api/admin/daerah-operasional/simpan', 
                     this.createFormData({
                         'nama_kota': this.properties.form.nama_kota,
+                        'provinsi': this.properties.form.provinsi,
                         'id': this.properties.form.id,
                     }),
                     function (response) {
@@ -129,9 +149,14 @@ $listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalServi
                         elem.classList.remove('cursor-not-allowed');
 
                         if (alpineObj.properties.form.id < 0) {
-                            alpineObj.properties.data.list_daerah_operasional.push({'id': response.data.data.id, 'nama_kota': response.data.data.nama_kota});
+                            alpineObj.properties.data.list_daerah_operasional.push({
+                                'id': response.data.data.id,
+                                'nama_kota': response.data.data.nama_kota,
+                                'provinsi': response.data.data.provinsi
+                            });
 
                             alpineObj.properties.form.nama_kota = null;
+                            alpineObj.properties.form.provinsi = null;
                             alpineObj.properties.form.id = -1;
 
                             return;
@@ -139,6 +164,8 @@ $listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalServi
 
                         let index = alpineObj.properties.data.list_daerah_operasional.findIndex(item => item.id == response.data.data.id);
                         alpineObj.properties.data.list_daerah_operasional[index].nama_kota = response.data.data.nama_kota;
+                        alpineObj.properties.data.list_daerah_operasional[index].provinsi.id = response.data.data.provinsi.id;
+                        alpineObj.properties.data.list_daerah_operasional[index].provinsi.nama = response.data.data.provinsi.nama;
 
                         alpineObj.addNormalMessage('form_response', 'Berhasil! Daerah operasional telah disimpan');
                     },
@@ -256,11 +283,13 @@ $listDaerahOperasional = app()->getManager()->getService('DaerahOperasionalServi
                         "normal": []
                     },
                     "data": {
-                        "list_daerah_operasional": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listDaerahOperasional)) ?>')
+                        "list_daerah_operasional": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listDaerahOperasional)) ?>'),
+                        "list_provinsi": JSON.parse('<?= json_encode($listProvinsi) ?>')
                     },
                     "form": {
                         'id' : -1,
                         'nama_kota': null,
+                        'provinsi': null
                     }
                 },
                 "init": function() {}

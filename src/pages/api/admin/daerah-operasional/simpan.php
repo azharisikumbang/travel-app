@@ -7,6 +7,7 @@ $app = app()->getManager();
 $daerah = $app->getEntity('DaerahOperasional');
 $daerah->setId($_POST['id'] ?? -1);
 $daerah->setNamaKota($_POST['nama_kota']);
+$daerah->setProvinsi($_POST['provinsi']);
 
 /** @var $daerahOperasionalService DaerahOperasionalService */
 $daerahOperasionalService = $app->getService('DaerahOperasionalService');

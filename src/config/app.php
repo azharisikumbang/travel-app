@@ -9,7 +9,8 @@ return [
         'base_dir' => __DIR__ . '/../storages/',
         'bukti_pembayaran' => __DIR__ . '/../storages/bukti-pembayaran',
         'tiket' => __DIR__ . '/../storages/tiket',
-        'tiket_templates' => __DIR__ . '/../templates/tiket.php'
+        'tiket_templates' => __DIR__ . '/../templates/tiket.php',
+        'photo_identitas' => realpath(dirname(__DIR__)) . '/storages/photo-identitas',
     ],
     'kontak' => [
         'utama' => '081268280330',

@@ -172,3 +172,11 @@ if(!(function_exists('load_externals'))) {
         $callback(__DIR__ . '/externals/');
     }
 }
+
+if(!(function_exists('dd'))) {
+    function dd(mixed $data) : void
+    {
+        echo "<pre>";
+        var_dump($data); die;
+    }
+}

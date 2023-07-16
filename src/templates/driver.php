@@ -1,7 +1,6 @@
 <?php
 
 if (false === session()->isAuthenticatedAs('driver')) html_unauthorized();
-
 $auth = session()->auth();
 
 ?><!doctype html>
@@ -14,8 +13,8 @@ $auth = session()->auth();
 </head>
 <body>
 <?php html_require_component('navbar'); ?>
-<section class="max-w-screen-2xl mx-auto py-20 flex">
-    <aside class='w-3/12'>
+<section class="max-w-screen-2xl mx-auto py-2 sm:py-20 flex flex-col sm:flex-row">
+    <aside class='w-full p-2 sm:w-3/12 order-2 sm:order-first'>
         <div class="border rounded-lg p-4 shadow-md">
             <div class="flex border-b-2 pb-4 items-center">
                 <div class="w-20 mr-4">
@@ -26,29 +25,12 @@ $auth = session()->auth();
                     <p class="text-sm font-light font-sans"><?= $auth->getRole()->value ?></p>
                 </div>
             </div>
-            <ul class="mb-4 flex flex-col gap-1 mt-2">
-                <li class="mt-4 mb-2">
-                    <p class="block antialiased font-sans text-sm leading-normal font-black uppercase opacity-75">Pemesanan</p>
+            <ul class="flex flex-col gap-1 mt-4">
+                <li class="mb-1">
+                    <a href="<?= site_url('driver/jadwal') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Lihat Jadwal Harian</a>
                 </li>
                 <li class="mb-1">
-                    <a href="<?= site_url('driver/jadwal') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Jadwal Perjalanan (harian)</a>
-                </li>
-                <li class="mb-1">
-                    <a href="<?= site_url('driver/rute') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Daftar Rute Saya</a>
-                </li>
-                <li class="mb-1">
-                    <a href="<?= site_url('driver/pesanan') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Semua Pesanan</a>
-                </li>
-            </ul>
-            <ul class="mb-4 flex flex-col gap-1 mt-2">
-                <li class="mt-4 mb-2">
-                    <p class="block antialiased font-sans text-sm leading-normal font-black uppercase opacity-75">Lainnya</p>
-                </li>
-                <li class="mb-1">
-                    <a href="" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Pengaturan Akun</a>
-                </li>
-                <li class="mb-1">
-                    <a href="" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Ganti Kata Sandi</a>
+                    <a href="<?= site_url('driver/pengaturan/kata-sandi') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Ganti Kata Sandi</a>
                 </li>
                 <li class="mb-1">
                     <a href="<?= site_url('akun/logout') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Akhiri Sesi</a>
@@ -59,7 +41,7 @@ $auth = session()->auth();
             </div>
         </div>
     </aside>
-    <main class="px-8 w-full">
+    <main class="w-full order-1 px-2 mb-12 sm:px-8 sm:w-9/12 sm:order-last">
         <?php require_once $content; ?>
     </main>
 </section>

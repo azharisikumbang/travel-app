@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Penjualan Air</title>
+    <title>Tiket <?= $pesanan->getNomorPesanan() ?> - PT. Sorek Wisata Transport</title>
     <style type="text/css">
         body {
             font-size: 11px;

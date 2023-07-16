@@ -3,12 +3,14 @@
 require_once __DIR__ . '/../repositories/PemesananRepository.php';
 require_once __DIR__ . '/../repositories/JamKeberangkatanRepository.php';
 require_once __DIR__ . '/../repositories/DaerahOperasionalRepository.php';
+require_once __DIR__ . '/../repositories/PelangganRepository.php';
 require_once __DIR__ . '/../repositories/MobilRepository.php';
 require_once __DIR__ . '/../repositories/DriverRepository.php';
 require_once __DIR__ . '/../entities/Object/NomorPesanan.php';
 require_once __DIR__ . '/../enums/StatusPemesanan.php';
 require_once __DIR__ . '/../enums/StatusBuktiPembayaran.php';
 require_once __DIR__ . '/PenyimpananService.php';
+require_once __DIR__ .'/../repositories/KeberangkatanRepository.php';
 require_once __DIR__ . '/PDFService.php';
 
 class PemesananService
@@ -24,6 +26,9 @@ class PemesananService
     private MobilRepository $mobilRepository;
 
     private DriverRepository $driverRepository;
+    private KeberangkatanRepository $keberangkatanRepository;
+
+    private PelangganRepository $pelangganRepository;
 
     public function __construct()
     {
@@ -33,6 +38,8 @@ class PemesananService
         $this->penyimpananService = new PenyimpananService();
         $this->mobilRepository = new MobilRepository();
         $this->driverRepository = new DriverRepository();
+        $this->keberangkatanRepository = new KeberangkatanRepository();
+        $this->pelangganRepository = new PelangganRepository();
     }
 
     public function buatNomorPemesanan(DateTimeInterface $tanggal) : NomorPesanan
@@ -103,6 +110,10 @@ class PemesananService
         return $this->pemesananRepository->findByNomorPesanan($nomor, $detail);
     }
 
+    public function cariPesananBerdasarkanNomorPesananDanPemesan(string $nomor, Akun $akun) : ?Pesanan
+    {
+        return $this->pemesananRepository->findByNomorPesananAndPelanggan($nomor, $akun);
+    }
     public function simpanInformasiPemesan(string $nomorPesanan, string $nama, string $kontak, string $titik_jemput) : false|Pesanan
     {
         $pesanan = $this->pemesananRepository->findByNomorPesanan($nomorPesanan, true);
@@ -119,13 +130,11 @@ class PemesananService
         return $pesanan;
     }
 
-    public function simpanBuktiPembayaran(string $nomorPesanan, string $nama, string $bank, string $nominal, array $bukti) : false|Pesanan
+    public function simpanBuktiPembayaran(string $nomorPesanan, string $nama, string $bank, int|float $nominal, array $bukti) : false|Pesanan
     {
         $pesanan = $this->pemesananRepository->findByNomorPesanan($nomorPesanan, true);
 
-        if(is_null($pesanan)) return false;
-
-        if ($pesanan->getTotalTarif() != $nominal) return false;
+        if (false === $this->validasiNominalBayar($pesanan, $nominal)) return false;
 
         $buktiFileName = $this->penyimpananService->simpanBuktiPembayaran($bukti);
 
@@ -347,6 +356,11 @@ class PemesananService
         return ['hari_ini' => $listPesananHariIni, 'lainnya' => array_values($listPesanan)];
     }
 
+    public function listPesananMenungguPembayaran(Akun $akun): array
+    {
+        return $this->pemesananRepository->getPesananMenungguPembayaran($akun, 10, 0);
+    }
+
     public function validasiTanggalKeberangkatan(DateTimeInterface $tanggal): bool
     {
         $today = date("Y-m-d");
@@ -364,9 +378,9 @@ class PemesananService
         return $this->pemesananRepository->getDailyPesananByDriver($this->driverRepository, $driver);
     }
 
-    public function unduhBuktiPembayaran(string $nomorPemesanan) : false|string
+    public function unduhBuktiPembayaran(string $nomorPemesanan, ?Akun $akun = null) : false|string
     {
-        $file = $this->pemesananRepository->getBuktiPembayaran($nomorPemesanan);
+        $file = $this->pemesananRepository->getBuktiPembayaran($nomorPemesanan, $akun);
 
         return $file ?? false;
     }
@@ -379,19 +393,35 @@ class PemesananService
         return true;
     }
 
-    private function isStatusBuktiPembayaranConfirmable(Pesanan $pesanan): bool
+    public function listMobilDanKursiByDate(string $asal): array
     {
-        return $pesanan->getStatusBuktiPembayaran() == StatusBuktiPembayaran::UNCONFIRMED;
-    }
+        $asal = $this->daerahOperasionalRepository->findById($asal);
+        $listMobil = $this->keberangkatanRepository->getWhere(['provinsi_id' => $asal->getProvinsi()->value]);
+        $listPesanan = $this->pemesananRepository->getListPesananHariIniByAsalKota($asal->getNamaKota());
 
-    private function nomorPesaman(string $tahun, string $bulan, string $nomor): string
-    {
-        return sprintf("SWT/%s/%s/%s", $tahun, $bulan, str_pad($nomor, 6, "0", STR_PAD_LEFT));
-    }
+        $result = [];
+        /** @var $mobil Keberangkatan */
+        foreach ($listMobil as $mobil) {
+            $listKursiDipesan = [];
+            for ($i = 1; $i <= $mobil->getMobil()->getJumlahKursi(); $i++) {
+                $tersedia = ['nomor' => $i, 'tersedia' => true];
 
-    private function createNomorPesananObject(string $nomor, int $iterasi) : NomorPesanan
-    {
-        return new NomorPesanan($nomor, $iterasi);
+                foreach ($listPesanan as $pesanan) {
+                    if(strtolower($mobil->getMobil()->getPlatNomor()) != strtolower($pesanan['mobil'] ?? '')) continue;
+
+                    if (in_array($i, $pesanan['list_kursi_dipesan'])) $tersedia['tersedia'] = false;
+                }
+
+                $listKursiDipesan[] = $tersedia;
+            }
+
+            $result[$mobil->getMobil()->getId()] = [
+                'mobil' => $mobil->getMobil()->toArray(),
+                'list_kursi' => $listKursiDipesan
+            ];
+        }
+
+        return array_values($result);
     }
 
     public function buatFileTiket(Pesanan $pesanan) : null|Pesanan
@@ -410,8 +440,37 @@ class PemesananService
         return $pesanan;
     }
 
-    public function unduhTiket(string $nomorPemesanan) : false|string
+    public function unduhTiket(string $nomorPemesanan, ?Akun $akun = null) : false|string
     {
-        return $this->pemesananRepository->getFileTiket($nomorPemesanan);
+        return $this->pemesananRepository->getFileTiket($nomorPemesanan, $akun);
+    }
+
+    public function cariBerdasarkanPelanggan(Pelanggan $pelanggan): false|array
+    {
+        if(!$this->pelangganRepository->exists($pelanggan)) return false;
+
+        return $this->pemesananRepository->getByPemesan($pelanggan);
+    }
+
+    private function isStatusBuktiPembayaranConfirmable(Pesanan $pesanan): bool
+    {
+        return $pesanan->getStatusBuktiPembayaran() == StatusBuktiPembayaran::UNCONFIRMED;
+    }
+
+    private function nomorPesaman(string $tahun, string $bulan, string $nomor): string
+    {
+        return sprintf("SWT/%s/%s/%s", $tahun, $bulan, str_pad($nomor, 6, "0", STR_PAD_LEFT));
+    }
+
+    private function createNomorPesananObject(string $nomor, int $iterasi) : NomorPesanan
+    {
+        return new NomorPesanan($nomor, $iterasi);
+    }
+
+    private function validasiNominalBayar(Pesanan $pesanan, int|float $bayar) : bool
+    {
+        $minimum = $pesanan->getTotalTarif() / 2;
+
+        return ($bayar >= $minimum) && ($bayar <= $pesanan->getTotalTarif());
     }
 }

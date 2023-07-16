@@ -10,9 +10,12 @@ class DaerahOperasionalRepository extends BaseRepository
 
     public function save(DaerahOperasional $daerah) : bool
     {
-        $query = $this->getDatabaseConnection()->prepare("INSERT INTO {$this->table} (nama_kota) VALUES (:nama_kota)");
+        $query = $this->getDatabaseConnection()->prepare("INSERT INTO {$this->table} (nama_kota, provinsi) VALUES (:nama_kota, :provinsi)");
 
-        return $query->execute(['nama_kota' => $daerah->getNamaKota()]);
+        return $query->execute([
+            'nama_kota' => $daerah->getNamaKota(),
+            'provinsi' => $daerah->getProvinsi()->value
+        ]);
     }
 
     public function updateOrCreate(DaerahOperasional $daerahOpersional): bool
@@ -24,13 +27,14 @@ class DaerahOperasionalRepository extends BaseRepository
 
     public function update(DaerahOperasional $daerahOpersional): bool
     {
-        $query = "UPDATE {$this->getTable()} SET nama_kota = :nama_kota WHERE id = :id";
+        $query = "UPDATE {$this->getTable()} SET nama_kota = :nama_kota, provinsi = :provinsi WHERE id = :id";
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
 
         return $stmt->execute([
             'id' => $daerahOpersional->getId(),
-            'nama_kota' => $daerahOpersional->getNamaKota()
+            'nama_kota' => $daerahOpersional->getNamaKota(),
+            'provinsi' => $daerahOpersional->getProvinsi()->value
         ]);
     }
 
@@ -43,7 +47,7 @@ class DaerahOperasionalRepository extends BaseRepository
 
     public function get(int $length = 10, int $from = 0) : array
     {
-        $listData = $this->getDataFromTable($this->table, $length, $from, 'nama_kota', 'ASC');
+        $listData = $this->getDataFromTable($this->table, $length, $from, 'provinsi', 'ASC');
 
         $result = [];
         while ($row = $listData->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
@@ -69,6 +73,16 @@ class DaerahOperasionalRepository extends BaseRepository
     {
         return (new DaerahOperasional())
             ->setId($data['id'])
-            ->setNamaKota($data['nama_kota']);
+            ->setNamaKota($data['nama_kota'])
+            ->setProvinsi(Provinsi::fromValue($data['provinsi']))
+            ;
+    }
+
+    public function findByNamaKota(string $asal) : ?DaerahOperasional
+    {
+        $query = "SELECT * FROM {$this->getTable()} WHERE nama_kota = :nama_kota";
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+
+        return $stmt->execute(['nama_kota' => $asal]) ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)) : null;
     }
 }

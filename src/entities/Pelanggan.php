@@ -20,6 +20,8 @@ class Pelanggan implements EntityInterface
 
     private Akun $akun;
 
+    private bool|int $terkonfirmasiMahasiswa = 0;
+
     public function __construct(string $nama = "")
     {
         $this->nama = $nama;
@@ -148,6 +150,25 @@ class Pelanggan implements EntityInterface
         return $this;
     }
 
+    /**
+     * @return bool|int
+     */
+    public function getTerkonfirmasiMahasiswa(): bool|int
+    {
+        return (bool) $this->terkonfirmasiMahasiswa;
+    }
+
+    /**
+     * @param bool|int $terkonfirmasiMahasiswa
+     */
+    public function setTerkonfirmasiMahasiswa(bool|int $terkonfirmasiMahasiswa): self
+    {
+        $this->terkonfirmasiMahasiswa = $terkonfirmasiMahasiswa;
+
+        return $this;
+    }
+
+
     public function toArray(): array
     {
         return [
@@ -157,7 +178,8 @@ class Pelanggan implements EntityInterface
             'photo' => $this->getPhoto(),
             'photo_identitias' => $this->getPhotoIdentitas(),
             'kategori_pelanggan' => $this->getKategoriPelanggan()->toArray(),
-            'akun' => $this->getAkun()->toArray()
+            'akun' => $this->getAkun()->toArray(),
+            'terkonfirmasi_mahasiswa' => $this->getTerkonfirmasiMahasiswa()
         ];
     }
 

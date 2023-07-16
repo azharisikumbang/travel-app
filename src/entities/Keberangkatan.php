@@ -6,7 +6,7 @@ class Keberangkatan implements EntityInterface
 {
     private int $id;
 
-    private null|int|Rute $rute;
+    private int|Provinsi $provinsi;
 
     private null|int|Mobil $mobil;
 
@@ -30,22 +30,24 @@ class Keberangkatan implements EntityInterface
     }
 
     /**
-     * @return Rute
+     * @return int|Provinsi
      */
-    public function getRute(): Rute
+    public function getProvinsi(): Provinsi|int
     {
-        return $this->rute;
+        return $this->provinsi;
     }
 
     /**
-     * @param Rute $rute
+     * @param int|Provinsi $provinsi
      */
-    public function setRute(null|int|Rute $rute): self
+    public function setProvinsi(Provinsi|int $provinsi): self
     {
-        $this->rute = $rute;
+        $this->provinsi = $provinsi;
 
         return $this;
     }
+
+
 
     /**
      * @return Mobil
@@ -105,10 +107,13 @@ class Keberangkatan implements EntityInterface
     {
         return [
             'id' => $this->getId(),
-            'rute' => $this->getRute()->toArray(),
             'mobil' => $this->getMobil()?->toArray(),
             'jam_keberangkatan' => $this->getJamKeberangkatan()?->toArray(),
-            'last_updated' => $this->getLastUpdated()?->format('Y-m-d H:i:s')
+            'last_updated' => $this->getLastUpdated()?->format('Y-m-d H:i:s'),
+            'provinsi' => [
+                'id' => $this->getProvinsi()->value,
+                'nama' => $this->getProvinsi()->getDisplayName()
+            ]
         ];
     }
 

@@ -11,7 +11,7 @@ $search = $_GET['search'] ?? null;
 $listPelanggan = app()->getManager()->getService('PelangganService')->listPelanggan($page, $search);
 
 ?>
-<main x-data="container">
+<main>
     <nav class="block w-full max-w-full bg-transparent text-white shadow-none transition-all px-0 py-1 border-b-2">
         <div class="flex flex-col-reverse justify-between gap-6 md:flex-row md:items-center">
             <h2 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-relaxed text-gray-900">Data Pelanggan</h2>
@@ -33,7 +33,6 @@ $listPelanggan = app()->getManager()->getService('PelangganService')->listPelang
         <div>
             <!-- List Data -->
             <div class="mb-8">
-                <h3 class="mb-4 block antialiased tracking-normal font-sans text-xl font-semibold leading-relaxed text-gray-900" x-text="properties.sites.query_title"></h3>
                 <div class="bg-white rounded-lg shadow-md p-6 overflow-x-auto px-0 pt-2 pb-0">
                     <table class="w-full min-w-[640px] table-auto">
                         <thead>
@@ -50,7 +49,9 @@ $listPelanggan = app()->getManager()->getService('PelangganService')->listPelang
                             <th class="border-b border-gray-200 py-3 px-6 text-left text-center">
                                 <p class="block antialiased font-sans text-[11px] font-medium uppercase text-gray-400">Kategori Pelanggan</p>
                             </th>
-                            <th class="border-b border-gray-20 py-3 px-6 text-left"></th>
+                            <th class="border-b border-gray-20 py-3 px-6 text-center">
+                                <p class="block antialiased font-sans text-[11px] font-medium uppercase text-gray-400">Kartu Mahasiswa</p>
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -74,12 +75,37 @@ $listPelanggan = app()->getManager()->getService('PelangganService')->listPelang
                                 <td class="py-3 px-5 border-b border-gray-200 text-center">
                                     <p class="block antialiased font-sans text-xs font-medium text-gray-600"><?= $pelanggan->getKontak(); ?></p>
                                 </td>
+                                <?php if(in_array(strtolower($pelanggan->getKategoriPelanggan()->getKategori()), ['mahasiswa', 'imappel']) ): ?>
                                 <td class="py-3 px-5 border-b border-gray-200 text-center">
-                                    <p class="block antialiased font-sans text-xs font-medium text-gray-600"><?= $pelanggan->getKategoriPelanggan()->getKategori() ?></p>
+                                    <p class="block antialiased font-sans text-xs font-medium text-gray-600">
+                                        <?= $pelanggan->getKategoriPelanggan()->getKategori() ?>
+                                        <?php if($pelanggan->getTerkonfirmasiMahasiswa()) : ?>
+                                            <span class="bg-green-400 text-white px-2 py-1 rounded ">Terkonfirmasi</span>
+                                        <?php else: ?>
+                                            <span class="bg-yellow-400 text-white px-2 py-1 rounded ">Belum Dikonfirmasi</span>
+                                        <?php endif; ?>
+                                    </p>
                                 </td>
-                                <td class="py-3 px-5 border-b border-gray-200 text-center">
-                                    <p class="block antialiased font-sans text-xs font-medium text-gray-600"></p>
+                                <td class="py-3 px-5 border-b border-gray-200 w-96 text-center">
+                                    <?php if($pelanggan->getPhotoIdentitas()): ?>
+                                    <p class="block antialiased font-sans text-xs font-medium text-gray-600">
+                                        <a href="<?= site_url('api/admin/pelanggan/unduh-kartu-identitas?photo=' . $pelanggan->getPhotoIdentitas()) ?>" class="text-red-500 hover:text-red-600 underline">Unduh Kartu Mahasiswa</a>
+                                        <?php if(!$pelanggan->getTerkonfirmasiMahasiswa()) : ?>
+                                        <button onclick="konfirmasiKartuIdentitas(<?= $pelanggan->getId() ?>)" class="text-red-500 hover:text-red-600 underline">Konfirmasi Kartu Mahasiswa</button>
+                                        <?php endif; ?>
+                                    </p>
+                                    <?php else: ?>
+                                        <p class="block antialiased font-sans text-xs font-medium text-gray-600">Tidak ada.</p>
+                                    <?php endif; ?>
                                 </td>
+                                <?php else: ?>
+                                    <td class="py-3 px-5 border-b border-gray-200 w-96 text-center">
+                                        <p class="block antialiased font-sans text-xs font-medium text-gray-600"><?= $pelanggan->getKategoriPelanggan()->getKategori() ?></p>
+                                    </td>
+                                    <td class="py-3 px-5 border-b border-gray-200 w-96 text-center">
+                                        <p class="block antialiased font-sans text-xs font-medium text-gray-600">-</p>
+                                    </td>
+                                <?php endif; ?>
                             </tr>
                         <?php endforeach; endif; ?>
                         </tbody>
@@ -99,3 +125,13 @@ $listPelanggan = app()->getManager()->getService('PelangganService')->listPelang
         </div>
     </div>
 </main>
+<script type="text/javascript">
+    function konfirmasiKartuIdentitas(id) {
+        const form = new FormData();
+        form.append('id', id);
+
+        axios.post("<?= site_url('api/admin/pelanggan/konfirmasi-kartu-identitas') ?>", form)
+            .then(response => window.location.reload())
+            .catch(err => console.error(err))
+    }
+</script>

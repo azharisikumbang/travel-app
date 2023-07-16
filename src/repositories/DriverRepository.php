@@ -83,13 +83,16 @@ class DriverRepository extends BaseRepository
 
     public function listRuteByDriver(int|Driver $driver) : array
     {
-        $query = "SELECT mdo1.nama_kota as asal, mdo2.nama_kota as tujuan, mm.merk as merk, mm.plat_nomor as plat_nomor
+        $query = "SELECT 
+                mdo1.nama_kota as asal, 
+                mdo2.nama_kota as tujuan, 
+                mm.merk as merk, 
+                mm.plat_nomor as plat_nomor
             FROM m_supir ms
             LEFT JOIN m_mobil mm on ms.id = mm.supir_id
             LEFT JOIN m_keberangkatan mk on mm.id = mk.mobil_id
-            LEFT JOIN m_rute mr on mr.id = mk.rute_id
-            LEFT JOIN m_daerah_operasional mdo1 on mr.asal_id = mdo1.id
-            LEFT JOIN m_daerah_operasional mdo2 on mr.tujuan_id = mdo2.id
+            LEFT JOIN m_daerah_operasional mdo1 on mdo1.provinsi = mk.provinsi_id
+            LEFT JOIN m_daerah_operasional mdo2 on mdo2.provinsi = mk.provinsi_id
             WHERE ms.id = :driver";
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
@@ -104,6 +107,28 @@ class DriverRepository extends BaseRepository
 
         return $rute;
     }
+
+    public function listTujuanByDriver(int|Driver $driver): array
+    {
+        $query = "SELECT nama_kota, provinsi
+        FROM m_daerah_operasional
+        WHERE provinsi NOT IN(SELECT mdo.provinsi
+        FROM m_daerah_operasional mdo
+        JOIN m_keberangkatan mk ON mk.provinsi_id = mdo.provinsi
+        JOIN m_mobil mm ON mk.mobil_id = mm.id
+        JOIN m_supir ms ON mm.supir_id = ms.id
+        WHERE supir_id = :supir_id
+        GROUP BY provinsi);";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            'supir_id' => is_int($driver) ? $driver : $driver->getId()
+        ]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 
     protected function getTable(): string
     {
@@ -135,5 +160,32 @@ class DriverRepository extends BaseRepository
         $stmt->execute(['akun' => $akun->getId()]);
 
         return $stmt->rowCount() ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC), false) : null;
+    }
+
+    public function getMobil(Driver $driver) : false|array
+    {
+        $query = "SELECT 
+            d.id, mm.merk, mm.plat_nomor, mk.provinsi_id, mk.jam_keberangkatan_id
+        FROM {$this->getTable()} d
+        JOIN m_mobil mm ON mm.supir_id = d.id
+        JOIN m_keberangkatan mk on mm.id = mk.mobil_id
+        WHERE d.id = :id
+        ";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute([
+            'id' => $driver->getId()
+        ]);
+
+        if ($stmt->rowCount() < 1) return false;
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return [
+            'merk' => $row['merk'],
+            'plat_nomor' => $row['plat_nomor'],
+            'posisi' => $row['provinsi_id'],
+            'jam_keberangkatan' => $row['jam_keberangkatan_id']
+        ];
     }
 }

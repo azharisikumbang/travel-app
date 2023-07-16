@@ -2,18 +2,23 @@
 
 require_once __DIR__ . '/../repositories/AkunRepository.php';
 require_once __DIR__ . '/../repositories/DriverRepository.php';
+require_once __DIR__ . '/../repositories/JamKeberangkatanRepository.php';
 require_once __DIR__ . '/../entities/Akun.php';
 require_once __DIR__ . '/../entities/Driver.php';
+require_once __DIR__ . '/../enums/Provinsi.php';
 
 class DriverService
 {
     private DriverRepository $driverRepository;
     private AkunRepository $akunRepository;
+    private JamKeberangkatanRepository $jamKeberangkatanRepository;
+
 
     public function __construct()
     {
         $this->akunRepository = new AkunRepository();
         $this->driverRepository = new DriverRepository();
+        $this->jamKeberangkatanRepository = new JamKeberangkatanRepository();
     }
 
     public function listDriver(int $length = 10, int $from = 0) : array
@@ -74,7 +79,18 @@ class DriverService
     {
         if ($driver instanceof Akun) $driver = $this->driverRepository->findByAkunId($driver);
 
-        return $this->driverRepository->listRuteByDriver($driver);
+        return $this->driverRepository->listTujuanByDriver($driver);
+    }
+
+    public function getMobilDanRuteSaya(Driver $driver): array
+    {
+        $mobil = $this->driverRepository->getMobil($driver);
+        if (!$mobil) return [];
+
+        $mobil['jam_keberangkatan'] = $this->jamKeberangkatanRepository->findById($mobil['jam_keberangkatan'])->toArray();
+        $mobil['posisi'] = Provinsi::fromValue($mobil['posisi'])->getDisplayName();
+
+        return $mobil;
     }
 
     public function findByAkun(Akun $akun)

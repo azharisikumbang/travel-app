@@ -4,9 +4,8 @@ if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
 
 $manager = app()->getManager();
 $listKeberangkatanHarian = $manager->getService('KeberangkatanService')->listKeberangkatanHarian();
-$listMobil = $manager->getService('MobilService')->listMobil(50);
 $listJamKeberangkatan = $manager->getService('JamKeberangkatanService')->listJamKeberangkatan();
-$listRute = $manager->getService('RuteService')->listRute(50);
+$listProvinsi = Provinsi::toArray();
 
 ?>
 <main x-data="container">
@@ -38,24 +37,7 @@ $listRute = $manager->getService('RuteService')->listRute(50);
         <div class="mb-4 grid grid-cols-1 gap-6">
             <div>
                 <div class="flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
-                    <div class="flex items-center justify-between p-6">
-                        <div class="flex justify-between w-full items-center">
-                            <div>
-                                <h6 class="block antialiased tracking-normal font-sans text-base font-semibold leading-relaxed text-gray-900 mb-1">Menampilkan Keberangkatan Per Merk Mobil</h6>
-                            </div>
-                            <div>
-                                <span>Tampilkan : </span>
-                                <select x-model="properties.form.filter.mobil" class="cursor-pointer text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
-                                    <option value="-1">-- Semua Merk Mobil --</option>
-                                    <template x-for="(entity, index) in properties.data.list_mobil" :key="index">
-                                        <option :value="entity.id" x-text="entity.merk + ' ' + entity.plat_nomor + ' / ' + entity.driver.nama"></option>
-                                    </template>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <template x-if="properties.data.list_rute.length > 0">
+                    <template x-if="properties.data.list_keberangkatan.length > 0">
                         <div class="p-6 px-0 pt-0 pb-0 table-wrp block max-h-screen">
                             <table class="w-full min-w-[640px] table-auto">
                                 <thead class="bg-white border-b sticky top-0">
@@ -64,10 +46,10 @@ $listRute = $manager->getService('RuteService')->listRute(50);
                                         <p class="block antialiased font-sans text-[11px] font-medium uppercase text-gray-400">Mobil</p>
                                     </th>
                                     <th class="border-b border-gray-200 py-3 px-6 text-left">
-                                        <p class="block antialiased font-sans text-[11px] font-medium uppercase text-gray-400">Rute Perjalanan</p>
+                                        <p class="block antialiased font-sans text-[11px] font-medium uppercase text-gray-400">Lokasi Standby Mobil</p>
                                     </th>
                                     <th class="border-b border-gray-200 py-3 px-6">
-                                        <p class="block antialiased font-sans text-[11px] font-medium uppercase text-gray-400">Jam Keberangkatan</p>
+                                        <p class="block antialiased font-sans text-[11px] font-medium uppercase text-gray-400">Jam Berangkat</p>
                                     </th>
                                     <th class="border-b border-gray-200 py-3 px-6">
                                         <p class="block antialiased font-sans text-[11px] font-medium uppercase text-gray-400 text-right">Terakhir Diperbaharui</p>
@@ -77,28 +59,28 @@ $listRute = $manager->getService('RuteService')->listRute(50);
                                 </thead>
                                 <tbody class="h-96 overflow-y-auto scrollbar">
                                 <template x-for="(entity, index) in properties.data.list_keberangkatan" :key="index">
-                                    <tr class="text-center" x-show="isFiltered(entity.mobil.id)">
-                                        <td class="py-3 px-5 border-b border-gray-200 text-left align-top">
+                                    <tr class="text-center">
+                                        <td class="py-3 px-5 border-b border-gray-200 text-left">
                                             <p class="block antialiased font-sans text-xs font-medium text-gray-900 font-bold" x-text="entity.mobil.merk + ' ' + entity.mobil.plat_nomor + ' (driver: ' + entity.mobil.driver.nama + ')'"></p>
                                         </td>
                                         <td class="py-3 px-5 border-b border-gray-200 text-left">
-                                            <template x-for="rute in properties.data.list_rute">
-                                                <div>
-                                                    <input type="checkbox" x-model="properties.form.keberangkatan[index].rute" :value="rute.id" class="cursor-pointer" :checked="isRuteChecked(rute.id, entity.rute)">
-                                                    <span x-text="rute.asal.nama_kota + ' - ' + rute.tujuan.nama_kota"></span>
-                                                </div>
-                                            </template>
+                                            <select x-model="properties.form.keberangkatan[index].provinsi" class="w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
+                                                <option value="-1">-- Pilih Lokasi --</option>
+                                                <template x-for="(provinsi, index) in properties.data.list_rute" :key="index">
+                                                    <option :value="index" x-text="provinsi" :selected="index == entity.provinsi"></option>
+                                                </template>
+                                            </select>
                                         </td>
-                                        <td class="py-3 px-5 border-b border-gray-200 align-top w-64">
+                                        <td class="py-3 px-5 border-b border-gray-200 w-64">
                                             <select x-model="properties.form.keberangkatan[index].jam_keberangkatan" class="cursor-pointer w-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
-                                                <option value="-1">-- Pilih Jam Keberangkatan --</option>
+                                                <option value="-1">-- Pilih Jam --</option>
                                                 <template x-for="jam in properties.data.list_jam_keberangkatan">
                                                     <option :value="jam.id" x-text="jam.jam + ' ( ' + jam.alias + ' )'" :selected="isJamKeberangkatanSelected(jam.id, entity.jam_keberangkatan)"></option>
                                                 </template>
                                             </select>
                                         </td>
-                                        <td class="py-3 px-5 border-b border-gray-200 text-right align-top">
-                                            <p class="block antialiased font-sans text-xs font-medium text-gray-900 font-bold" x-text="tanggalToIndo(entity.last_updated)"></p>
+                                        <td class="py-3 px-5 border-b border-gray-200 text-right">
+                                            <p class="block antialiased font-sans text-xs font-medium text-gray-900 font-bold" x-text="tanggalToIndo(entity.last_updated) ?? '-'"></p>
                                         </td>
                                         <td class="py-3 px-5 border-t border-gray-200 flex justify-end gap-2">
                                             <button class="bg-green-500 text-white rounded px-4 py-1 font-sans center hover:bg-green-600 trigger-edit" @click="editData(entity, index)">Perbaharui</button>
@@ -122,17 +104,6 @@ $listRute = $manager->getService('RuteService')->listRute(50);
             "cari": function () {
                 alert('not-implemented');
             },
-            "isFiltered": function (id) {
-                console.log(id);
-                return id == this.properties.form.filter.mobil || this.properties.form.filter.mobil == -1;
-            },
-            "isRuteChecked": function (search, items) {
-                for (const item of items)
-                    if (item.id == search) return true;
-
-                return false;
-
-            },
             "isJamKeberangkatanSelected": function (search, jamKeberangkatan) {
                 if (jamKeberangkatan == null) return false;
 
@@ -150,7 +121,7 @@ $listRute = $manager->getService('RuteService')->listRute(50);
                 this.postData(
                     '/api/admin/keberangkatan/simpan',
                     this.createFormData({
-                        'rute': this.properties.form.keberangkatan[index].rute,
+                        'provinsi': this.properties.form.keberangkatan[index].provinsi,
                         'jam_keberangkatan': this.properties.form.keberangkatan[index].jam_keberangkatan,
                         'mobil': this.properties.form.keberangkatan[index].mobil,
                     }),
@@ -182,7 +153,7 @@ $listRute = $manager->getService('RuteService')->listRute(50);
                         'mobil': this.properties.form.keberangkatan[index].mobil,
                     }),
                     function (response) {
-                        alpineObj.properties.form.keberangkatan[index].rute = [];
+                        alpineObj.properties.form.keberangkatan[index].provinsi = -1;
                         alpineObj.properties.form.keberangkatan[index].jam_keberangkatan = -1;
 
                         alpineObj.addNormalMessage('form_response', 'Berhasil! Rute mobil telah dihapus telah reset.');
@@ -281,9 +252,8 @@ $listRute = $manager->getService('RuteService')->listRute(50);
                     },
                     "data": {
                         "list_keberangkatan": JSON.parse('<?= json_encode($listKeberangkatanHarian) ?>'),
-                        "list_mobil": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listMobil)) ?>'),
                         "list_jam_keberangkatan": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listJamKeberangkatan)) ?>'),
-                        "list_rute": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listRute)) ?>')
+                        "list_rute": JSON.parse('<?= json_encode($listProvinsi) ?>')
                     },
                     "form": {
                         'keberangkatan': [],
@@ -297,15 +267,15 @@ $listRute = $manager->getService('RuteService')->listRute(50);
                         let initJamKeberangkatan = null;
                         if (item.jam_keberangkatan != null) initJamKeberangkatan = item.jam_keberangkatan.id;
 
-
                         this.properties.form.keberangkatan.push({
-                            'rute': item.rute.map(r => r.id),
+                            'provinsi': item.provinsi,
                             'jam_keberangkatan': initJamKeberangkatan,
                             'mobil': item.mobil.id
                         });
                     });
 
-                    console.log(this.properties.form.keberangkatan);
+
+
                 }
             })
         );
