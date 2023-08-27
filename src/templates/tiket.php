@@ -49,7 +49,7 @@
                         <span style="font-style: italic">Name of Pessenger</span>
                     </td>
                     <td colspan="2">
-                        <p><?= $pesanan->getNamaPemesan() ?></p>
+                        <p><?= $pesanan->getNamaPemesan() ?> (<?= $pesanan->getKategoriPelanggan() ?>)</p>
                     </td>
                 </tr>
                 <tr>

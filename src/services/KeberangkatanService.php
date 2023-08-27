@@ -12,6 +12,8 @@ require_once __DIR__ . '/../entities/JamKeberangkatan.php';
 
 class KeberangkatanService
 {
+    const BATAS_PEMESANAN_SEBELUM_BERANGKAT = 30; // in minutes
+
     private KeberangkatanRepository $keberangkatanRepository;
 
     private MobilRepository $mobilRepository;
@@ -105,5 +107,45 @@ class KeberangkatanService
         if (false === $this->mobilRepository->exists($mobil)) return false;
 
         return $this->keberangkatanRepository->resetByMobil($mobil);
+    }
+
+    public function listKeberangkatanBerdasarkanJamKeberangkatan(DateTimeInterface $tanggal, int|JamKeberangkatan $jam): array
+    {
+        $jamKeberangkatan = $this->jamKeberangkatanRepository->findById($jam);
+        if (is_null($jamKeberangkatan)) return [];
+
+        if (false === $this->apakahJamKeberangkatanLebihDariBatasPemesanan($tanggal, $jamKeberangkatan)) return [];
+
+        return $this->keberangkatanRepository->findByJamKeberangkatan($jamKeberangkatan);
+    }
+
+    private function apakahJamKeberangkatanLebihDariBatasPemesanan(DateTimeInterface $tanggalPemesanan, JamKeberangkatan $keberangkatan)
+    {
+        $tanggalKeberangkatan = DateTimeImmutable::createFromFormat(
+            "Y-m-d H:i",
+            date(sprintf('Y-m-d %s', $keberangkatan->getJam(true)))
+        );
+
+        $diff = $tanggalKeberangkatan->diff($tanggalPemesanan);
+        $today = ($tanggalKeberangkatan->format("Y-m-d") == $tanggalPemesanan->format("Y-m-d"));
+
+        // handler for today
+        // php is sucks
+        if ($today) {
+            $jamTerlewat = !$diff->invert;
+
+            if ($jamTerlewat) return false;
+
+            $minutes = $diff->days * 24 * 60;
+            $minutes += $diff->h * 60;
+            $minutes += $diff->i;
+
+            return ($minutes > self::BATAS_PEMESANAN_SEBELUM_BERANGKAT);
+        }
+
+        // handle yesterday
+        if ($diff->invert) return false;
+
+        return true; // other days
     }
 }

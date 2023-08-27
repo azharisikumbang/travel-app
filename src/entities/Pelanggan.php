@@ -178,8 +178,9 @@ class Pelanggan implements EntityInterface
             'photo' => $this->getPhoto(),
             'photo_identitias' => $this->getPhotoIdentitas(),
             'kategori_pelanggan' => $this->getKategoriPelanggan()->toArray(),
-            'akun' => $this->getAkun()->toArray(),
-            'terkonfirmasi_mahasiswa' => $this->getTerkonfirmasiMahasiswa()
+            'akun' => $this->getAkun()?->toArray(),
+            'terkonfirmasi_mahasiswa' => $this->getTerkonfirmasiMahasiswa(),
+            'mahasiswa' => strtolower($this->getKategoriPelanggan()->getKategori()) != 'umum'
         ];
     }
 

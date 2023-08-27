@@ -381,6 +381,15 @@ class PemesananService
         return $this->pemesananRepository->getDailyPesananByDriver($this->driverRepository, $driver);
     }
 
+    public function listRiwayatPesananByDriver(int|Driver $driver, int $page = 1) : array
+    {
+        $driver = (is_int($driver)) ? $this->driverRepository->findById($driver) : $driver;
+        $total = 10;
+        $start = ($total * $page) - $total;
+
+        return $this->pemesananRepository->getRiwayatPesananByDriver($driver, $total, $start);
+    }
+
     public function unduhBuktiPembayaran(string $nomorPemesanan, ?Akun $akun = null) : false|string
     {
         $file = $this->pemesananRepository->getBuktiPembayaran($nomorPemesanan, $akun);
@@ -410,7 +419,10 @@ class PemesananService
                 $tersedia = ['nomor' => $i, 'tersedia' => true];
 
                 foreach ($listPesanan as $pesanan) {
-                    if(strtolower($mobil->getMobil()->getPlatNomor()) != strtolower($pesanan['mobil'] ?? '')) continue;
+                    $currentMobil = trim(sprintf("%s %s", $mobil->getMobil()->getMerk(), $mobil->getMobil()->getPlatNomor()));
+                    $mobilDipesan = $pesanan['mobil'] ?? '';
+
+                    if(strtolower($currentMobil) != trim(strtolower($mobilDipesan))) continue;
 
                     if (in_array($i, $pesanan['list_kursi_dipesan'])) $tersedia['tersedia'] = false;
                 }
@@ -475,5 +487,81 @@ class PemesananService
         $minimum = $pesanan->getTotalTarif() / 2;
 
         return ($bayar >= $minimum) && ($bayar <= $pesanan->getTotalTarif());
+    }
+
+    public function laporanPenjualanBerdasarkanKategoriPenumpang(int $year, int $month, int $date = 0): array
+    {
+        if ($year > date('Y') || $month > 12 || $date > 31) return [];
+
+        $listBulan = [
+            'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        ];
+
+        $bulan = $listBulan[$month - 1];
+        $tanggal = $bulan . " " . $year;
+        $keterangan = " Pemesan Batal Berangkat";
+
+        if ($date > 0) $tanggal = $date . " " . $tanggal;
+
+        $result = [
+            'imappel' => [
+                'periode' => $tanggal,
+                'kategori' => 'Imappel',
+                'uang_masuk' => 0,
+                'uang_keluar' => 0,
+                'keterangan' => '-'
+            ],
+            'mahasiswa' => [
+                'periode' => $tanggal,
+                'kategori' => 'Mahasiswa',
+                'uang_masuk' => 0,
+                'uang_keluar' => 0,
+                'keterangan' => '-'
+            ],
+            'umum' => [
+                'periode' => $tanggal,
+                'kategori' => 'Umum',
+                'uang_masuk' => 0,
+                'uang_keluar' => 0,
+                'keterangan' => '-'
+            ]
+        ];
+
+        $listData = $this->pemesananRepository->getDataForLaporanPejualanByPeriode($year, $month, $date);
+
+        foreach ($listData as $data) {
+            $expectedKey = strtolower($data['tipe_penumpang']);
+            if (isset($result[$expectedKey])) {
+                $result[$expectedKey]['uang_masuk'] = (float) $data['uang_masuk'];
+                $result[$expectedKey]['uang_keluar'] = (float) $data['uang_keluar'];
+                $result[$expectedKey]['keterangan'] = ($data['jumlah_batal']) ? $data['jumlah_batal'] . $keterangan : '-';
+            }
+        }
+
+        return $result;
+    }
+
+    public function batalkanPesanan(string|Pesanan $nomor): bool
+    {
+        $pesanan = is_string($nomor) ? $this->cariPesananBerdasarkanNomorPesanan($nomor) : $nomor;
+
+        if (false === $pesanan->isConfirmed()) {
+            return false;
+        }
+
+        $pesanan->setStatusPemesanan(StatusPemesanan::BATAL);
+
+        return $this->pemesananRepository->updateStatusPemesananToBatal($pesanan);
     }
 }

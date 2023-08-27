@@ -16,9 +16,28 @@ class KeberangkatanRepository extends BaseRepository
     public function get(bool $withRelations = false) : array
     {
         if ($withRelations) return $this->getWithRelations();
+    }
 
+    public function findByJamKeberangkatan(int|JamKeberangkatan $jam)
+    {
+        $query = "SELECT
+                k.*,
+                mjk.jam as jk_jam,
+                mjk.alias as jk_alias,
+                mm.merk as m_merk,
+                mm.plat_nomor as m_plat_nomor,
+                mm.jumlah_kursi as m_jumlah_kursi,
+                mm.supir_id as m_supir_id,
+                ms.nama as s_nama
+            FROM m_keberangkatan k
+            LEFT JOIN m_jadwal_keberangkatan mjk on k.jam_keberangkatan_id = mjk.id
+            LEFT JOIN m_mobil mm on k.mobil_id = mm.id
+            LEFT JOIN m_supir ms on mm.supir_id = ms.id
+            WHERE jam_keberangkatan_id = :jam_keberangkatan_id
+            ORDER BY s_nama, m_merk, k.provinsi_id
+            ";
 
-
+        return $this->getByQuery($query, ['jam_keberangkatan_id' => is_int($jam) ? $jam : $jam->getId()], true);
     }
 
     public function getWithRelations()

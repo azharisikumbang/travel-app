@@ -62,8 +62,6 @@ $listKategoriPelanggan = app()->getManager()->getService('KategoriPelangganServi
                 if (this.properties.data.list_kategori_pelanggan[this.properties.data.umum_index].id == value)
                     this.properties.show.form_identitas = false;
                 else this.properties.show.form_identitas = true;
-
-
             }
         };
 

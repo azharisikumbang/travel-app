@@ -30,6 +30,9 @@ $auth = session()->auth();
                     <a href="<?= site_url('driver/jadwal') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Lihat Jadwal Harian</a>
                 </li>
                 <li class="mb-1">
+                    <a href="<?= site_url('driver/riwayat') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Riwayat Perjalanan</a>
+                </li>
+                <li class="mb-1">
                     <a href="<?= site_url('driver/pengaturan/kata-sandi') ?>" class="font-sans text-gray-800 hover:text-opacity-75 hover:underline">Ganti Kata Sandi</a>
                 </li>
                 <li class="mb-1">

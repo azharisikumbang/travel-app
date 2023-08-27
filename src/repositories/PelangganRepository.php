@@ -49,7 +49,7 @@ class PelangganRepository extends BaseRepository
         );
     }
 
-    public function getDetailByAkun(Akun $akun): ?Pelanggan
+    public function getDetailByAkun(int|Akun $akun): ?Pelanggan
     {
         $query = "SELECT p.*, a.username, k.kategori
                 FROM {$this->getTable()} p 
@@ -58,7 +58,7 @@ class PelangganRepository extends BaseRepository
                 WHERE p.akun_id = :akun";
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
-        $stmt->execute(['akun' => $akun->getId()]);
+        $stmt->execute(['akun' => (is_int($akun)) ? $akun : $akun->getId()]);
 
         return $stmt->rowCount() ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)): null;
     }

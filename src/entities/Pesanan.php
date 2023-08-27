@@ -563,4 +563,9 @@ class Pesanan implements EntityInterface
             'tiket' => $this->getFileTiket()
         ];
     }
+
+    public function isConfirmed(): bool
+    {
+        return $this->getStatusBuktiPembayaran() == StatusBuktiPembayaran::VALID;
+    }
 }

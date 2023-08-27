@@ -72,8 +72,11 @@ class MobilRepository extends BaseRepository
             WHERE m.id = :id";
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute(['id' => $id]);
 
-        return $stmt->execute(['id' => $id]) ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)) : null;
+        if($stmt->rowCount() < 1) return null;
+
+        return  $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC));
     }
 
     protected function newEntity(array $row, bool $withRelations = false): Mobil

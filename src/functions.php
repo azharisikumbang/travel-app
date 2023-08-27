@@ -180,3 +180,10 @@ if(!(function_exists('dd'))) {
         var_dump($data); die;
     }
 }
+
+if(!(function_exists('require_vendor'))) {
+    function require_vendor() : void
+    {
+        require_once __DIR__ . '/../vendor/autoload.php';
+    }
+}

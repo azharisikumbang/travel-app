@@ -55,5 +55,7 @@ if (false === $pesanan) response()->serverError(
 
 session()->add('nomor_pemesanan', $pesanan->getNomorPesanan());
 
+dd(session()->all());
+
 response()->jsonOk(['nomor_pemesanan' => $pesanan->getNomorPesanan()], 201);
 

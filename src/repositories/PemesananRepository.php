@@ -315,6 +315,19 @@ class PemesananRepository extends BaseRepository
         ]);
     }
 
+    public function updateStatusPemesananToBatal(Pesanan $pesanan): bool
+    {
+        $query = "UPDATE {$this->getTable()} 
+            SET status_pemesanan = :status_pemesanan
+            WHERE nomor_pemesanan = :nomor_pemesanan";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        return $stmt->execute([
+            'status_pemesanan' => $pesanan->getStatusPemesanan()->value,
+            'nomor_pemesanan' => $pesanan->getNomorPesanan()
+        ]);
+    }
+
     public function getJadwalKeberangkatanByPemesanId(Akun $user, int $length = 10, int $from = 0): array
     {
         $query = "SELECT 
@@ -426,7 +439,7 @@ class PemesananRepository extends BaseRepository
                 pd.harga_tiket
             FROM pesanan p
             JOIN pesanan_detail pd on p.id = pd.pesanan_id
-            WHERE tanggal_keberangkatan = CURDATE()
+            WHERE DATE(tanggal_keberangkatan) = CURDATE()
             AND status_bukti_pembayaran = :status
             AND kota_tujuan IN ($tujuan)
             ORDER BY p.kota_asal";
@@ -436,6 +449,42 @@ class PemesananRepository extends BaseRepository
 
         return $this->extracted($stmt);
     }
+
+    public function getRiwayatPesananByDriver(Driver $driver, int $total, int $start): array
+    {
+        $query = "SELECT
+            p.tanggal_keberangkatan,
+            p.jam_keberangkatan,
+            p.mobil,
+            p.kota_asal,
+            p.kota_tujuan,
+            COUNT(pd.id) as jumlah_penumpang
+        FROM pesanan p
+        LEFT JOIN pesanan_detail pd on p.id = pd.pesanan_id
+        WHERE driver = :driver AND status_bukti_pembayaran = :status
+        GROUP BY tanggal_keberangkatan
+        LIMIT {$total} OFFSET {$start}";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute(['status' => StatusBuktiPembayaran::PENDING->value, 'driver' => $driver->getNama()]);
+
+        if ($stmt->rowCount() < 1) return [];
+
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $result[] = [
+                'tanggal_keberangkatan' => $row['tanggal_keberangkatan'],
+                'mobil' => $row['mobil'],
+                'jam_keberangkatan' => $row['jam_keberangkatan'],
+                'kota_asal' => $row['kota_asal'],
+                'kota_tujuan' => $row['kota_tujuan'],
+                'jumlah_penumpang' => $row['jumlah_penumpang']
+            ];
+        }
+
+        return $result;
+    }
+
 
     public function getBuktiPembayaran(string $nomorPemesanan, ?Akun $akun) : false|string
     {
@@ -676,5 +725,72 @@ class PemesananRepository extends BaseRepository
         }
 
         return array_values($listPesanan);
+    }
+
+    public function getDataForLaporanPenjualan(string $kriteria)
+    {
+        $queryTanggalPemesanan = "";
+        $appendQuery = "";
+        $hasWhere = false;
+        switch ($kriteria) {
+            case 'today':
+                $queryTanggalPemesanan = "DATE(p.tanggal_keberangkatan) = CURDATE()";
+                $hasWhere = true;
+                break;
+            case 'month':
+                $hasWhere = true;
+                $queryTanggalPemesanan = "MONTH(p.tanggal_keberangkatan) = MONTH(CURRENT_DATE()) AND YEAR(p.tanggal_keberangkatan) = YEAR(CURRENT_DATE())";
+                break;
+            default:
+                $hasWhere = false;
+                break;
+        }
+
+        if ($hasWhere) {
+            $appendQuery = "WHERE $queryTanggalPemesanan";
+        }
+
+        $query = "SELECT p.*, 
+                pd.id as detail_pemesanan_id,
+                pd.nomor_kursi,
+                pd.harga_tiket
+            FROM pesanan p
+            JOIN pesanan_detail pd on p.id = pd.pesanan_id {$appendQuery}";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute();
+
+        return  $this->extracted($stmt);
+    }
+
+    public function getDataForLaporanPejualanByPeriode(int $year, int $month, int $date = 0): array
+    {
+        $where = $date > 0 ?
+            sprintf("DATE(tanggal_keberangkatan) = '%s-%s-%s'", $year, $month, $date)
+            : sprintf("YEAR(tanggal_keberangkatan) = '%s' AND MONTH(tanggal_keberangkatan) = '%s'", $year, $month);
+
+        $query = "SELECT
+                p.tipe_penumpang,
+                (SELECT SUM(m.total_dibayarkan) FROM pesanan m WHERE status_pemesanan != 'BATAL' AND status_bukti_pembayaran = 'VALID'
+                 AND m.tipe_penumpang = p.tipe_penumpang AND {$where}
+                    ) as uang_masuk,
+                (SELECT SUM(k.total_tarif / 2) FROM pesanan k WHERE status_pemesanan = 'BATAL' AND status_bukti_pembayaran = 'VALID'
+                AND k.tipe_penumpang = p.tipe_penumpang AND {$where}
+                ) as uang_keluar,
+                (SELECT COUNT(*) FROM pesanan b WHERE status_pemesanan = 'BATAL' AND b.tipe_penumpang = p.tipe_penumpang AND {$where}) as jumlah_batal
+            FROM pesanan p
+            group by tipe_penumpang";
+
+        $stmt = $this->getDatabaseConnection()->prepare($query);
+        $stmt->execute();
+
+        if ($stmt->rowCount() < 1) return [];
+
+        $result = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $result[] = $row;
+        }
+
+        return $result;
     }
 }

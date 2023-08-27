@@ -41,7 +41,7 @@ html_require_component('navbar');
                     <div class="bg-gray-100 rounded p-6">
                         <div class="w-full mb-4">
                             <label for="" class="font-sans text-base text-gray-600 mb-2 block">Tanggal Keberangkatan: <small class="text-gray-500">(sekarang: <?= tanggal(date_create()) ?>)</small></label>
-                            <input x-model="properties.form.tanggal_keberangkatan" type="date" class="w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
+                            <input x-model="properties.form.tanggal_keberangkatan" type="date" min="<?= date('Y-m-d') ?>" class="w-full bg-white text-gray-700 font-sans font-normal outline outline-0 border-2 text-sm px-3 py-3 rounded-md border-gray-200 focus:border-gray-400">
                         </div>
                         <div class="w-full mb-4">
                             <label for="" class="font-sans text-base text-gray-600 mb-2 block">Keberangkatan (Asal - Tujuan)</label>
@@ -90,7 +90,7 @@ html_require_component('navbar');
                                     <td class="py-4">
                                         <div class="flex justify-between">
                                             <span>: </span>
-                                            <select x-model="properties.form.jam_keberangkatan" class="cursor-pointer w-full text-gray-700 font-sans font-normal outline outline-0">
+                                            <select @change="cekDaftarMobilTersediaBerdasarkanJam" x-model="properties.form.jam_keberangkatan" class="cursor-pointer w-full text-gray-700 font-sans font-normal outline outline-0">
                                                 <option value="-1" x-text="properties.sites.jam_keberangkatan.length < 1 ? 'Ditentukan segera.' : '-- Pilih Jam --'"></option>
                                                 <template x-for="jam in properties.sites.jam_keberangkatan">
                                                     <option :value="jam.id" x-text="jam.jam + ' WIB ( ' + jam.alias + ' )'"></option>
@@ -107,7 +107,7 @@ html_require_component('navbar');
                                             <select x-model="properties.form.mobil" @change="parseListKursi" class="cursor-pointer w-full text-gray-700 font-sans font-normal outline outline-0">
                                                 <option value="-1" x-text="properties.sites.list_mobil.length < 1 ? 'Diatur di hari keberangkatan.' : '-- Pilih Mobil --'"></option>
                                                 <template x-for="mobil in properties.sites.list_mobil">
-                                                    <option :value="mobil.mobil.id" x-text="mobil.mobil.merk + ' - ' + mobil.mobil.plat_nomor"></option>
+                                                    <option :value="mobil.mobil.id" x-text="mobil.mobil.merk + ' - ' + mobil.mobil.plat_nomor" x-show="displayMobilTersedia(mobil.mobil.id)"></option>
                                                 </template>
                                             </select>
                                         </div>
@@ -247,6 +247,30 @@ html_require_component('navbar');
                                 listKursiTriggerElement.classList.remove('bg-blue-500');
                                 listKursiTriggerElement.classList.remove('text-white');
                             }
+                        },
+                        "cekDaftarMobilTersediaBerdasarkanJam": function () {
+                            const selectedJam = this.$event.target.value;
+                            this.properties.form.mobil = -1;
+
+                            this.clearListKursiDipilih();
+                            let alpineObj = this;
+
+                            this.getApiRequest('/api/list-keberangkatan', {
+                                'jam': selectedJam,
+                                'tanggal': this.properties.form.tanggal_keberangkatan
+                            }, function (response) {
+                                alpineObj.properties.data.list_mobil_tersedia = response.data.data;
+                            }, function (error) {
+                                console.error(error);
+                                alpineObj.addErrorMassage('bad_request', error.response.data.errors.message);
+                            });
+                        },
+                        "displayMobilTersedia": function (id) {
+                            for (const mobil of this.properties.data.list_mobil_tersedia) {
+                                if (mobil.mobil.id == id) return true;
+                            }
+
+                            return false;
                         }
                     };
                     const utils = {
@@ -355,7 +379,8 @@ html_require_component('navbar');
                                 "data": {
                                     "selected_rute": JSON.parse('<?= json_encode($selectedRute) ?>'),
                                     "list_kategori_penumpang": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listKategoriPenumpang)) ?>'),
-                                    "list_daerah_operasional": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listDaerahOperasional)) ?>')
+                                    "list_daerah_operasional": JSON.parse('<?= json_encode(array_map(fn ($item) => $item->toArray(), $listDaerahOperasional)) ?>'),
+                                    "list_mobil_tersedia": []
                                 },
                                 "form": {
                                     "tanggal_keberangkatan": null,

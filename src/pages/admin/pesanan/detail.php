@@ -6,6 +6,9 @@ if (false === session()->isAuthenticatedAs('admin')) html_unauthorized();
 $pesanan = app()->getManager()->getService('PemesananService')->cariPesananBerdasarkanNomorPesanan($_GET['nomor']);
 
 if (is_null($pesanan)) html_not_found();
+/** @var $pelangganService PelangganService */
+$pelangganService = app()->getManager()->getService('PelangganService');
+$pemesan = $pelangganService->informasiSaya($pesanan->getPemesanId());
 
 ?>
 <main x-data="container">
@@ -18,7 +21,15 @@ if (is_null($pesanan)) html_not_found();
             </div>
         </div>
     </nav>
-    <div id="content" class="mt-8 w-full overflow-hidden grid grid-cols-2 gap-4">
+    <template x-if="properties.data.pesanan.status_pemesanan.toLowerCase() == 'batal'">
+        <div class="bg-red-600 text-white p-4 rounded-lg mt-2">
+            <p>
+                <strong>Perhatian: </strong>
+                <span>Pemesanan ini telah dibatalkan oleh admin.</span>
+            </p>
+        </div>
+    </template>
+    <div id="content" class="mt-4 w-full overflow-hidden grid grid-cols-2 gap-4">
         <div>
             <div class="rounded-lg border bg-white p-8">
                 <h6 class="rounded-tl rounded-tr font-sans text-xl font-semibold text-gray-700 mb-2">Informasi Pemesanan (Tiket)</h6>
@@ -80,7 +91,13 @@ if (is_null($pesanan)) html_not_found();
                 </div>
                 <div class="w-full border-b py-2 mb-2">
                     <label class="text-gray-700 font-medium">Informasi Akun Pemesan</label>
-                    <p class="w-full " x-text="'-'"></p>
+                    <p class="w-full">
+                        <span class="inline" x-text="properties.data.pemesan.kategori_pelanggan.kategori ?? '-'"></span>
+                        <span x-show="properties.data.pemesan.mahasiswa">
+                            <a x-show="properties.data.pemesan.photo_identitias != undefined" :href="properties.sites.api_url + '/api/admin/pesanan/unduh-kartu-identitas?file=' + properties.data.pemesan.photo_identitias" class="inline text-red-500 underline text-sm block hover:text-red-600">(unduh kartu)</a>
+                            <small x-show="properties.data.pemesan.photo_identitias == undefined">(belum upload kartu)</small>
+                        </span>
+                    </p>
                 </div>
             </div>
             <div class="rounded-lg border bg-white p-8 mb-4">
@@ -109,6 +126,11 @@ if (is_null($pesanan)) html_not_found();
                     <button @click.prevent="konfirmasiBuktiPembayaran(-1, $event.target)" class="cursor-pointer text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-4 text-center mr-3 md:mr-0">Tolak Bukti Pembayaran</button>
                 </div>
             </template>
+            <template x-if="properties.data.pesanan.status_bukti_pembayaran.toLowerCase() == 'valid' && properties.data.pesanan.status_pemesanan.toLowerCase() == 'pending'">
+                <div class="flex justify-end gap-2 mt-8" >
+                    <button @click.prevent="batalkanPesanan" class="cursor-pointer text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-4 text-center mr-3 md:mr-0">Batalkan Pesanan</button>
+                </div>
+            </template>
         </div>
     </div>
 </main>
@@ -123,6 +145,14 @@ if (is_null($pesanan)) html_not_found();
 
                 axios
                     .post(`${this.properties.sites.api_url}/api/admin/pesanan/status-bukti-pembayaran?nomor=${this.properties.data.pesanan.nomor_pemesanan}&status=${status}`)
+                    .then(res => {
+                        window.location.reload();
+                    })
+                    .catch(err => console.error(err))
+            },
+            "batalkanPesanan": function() {
+                axios
+                    .post(`${this.properties.sites.api_url}/api/admin/pesanan/status-pemesanan/batal?nomor=${this.properties.data.pesanan.nomor_pemesanan}`)
                     .then(res => {
                         window.location.reload();
                     })
@@ -171,7 +201,8 @@ if (is_null($pesanan)) html_not_found();
                     },
                     "errors": {},
                     "data": {
-                        "pesanan": JSON.parse('<?= json_encode($pesanan->toArray()) ?>')
+                        "pesanan": JSON.parse('<?= json_encode($pesanan->toArray()) ?>'),
+                        'pemesan': JSON.parse('<?= json_encode($pemesan->toArray()) ?>')
                     }
                 },
                 "init": function() {
