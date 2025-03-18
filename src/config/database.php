@@ -3,7 +3,7 @@
 return [
     'host' => 'localhost',
     'username' => 'root',
-    'password' => '',
+    'password' => 'root',
     'database' => 'travelapp',
     'port' => '3306'
 ];

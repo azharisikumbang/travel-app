@@ -25,23 +25,23 @@ SET time_zone = "+00:00";
 -- Dumping data untuk tabel `daerah_operasional`
 --
 
-INSERT INTO `daerah_operasional` (`id`, `nama_kota`, `gambar`) VALUES
-(2, 'Padang', NULL),
-(3, 'Pekanbaru', NULL),
-(4, 'Pelalawan', NULL),
-(5, 'Dumai', NULL),
-(6, 'Sorek', NULL),
-(7, 'Kerinci', NULL),
-(8, 'Pariaman', NULL),
-(9, 'Padang Panjang', NULL),
-(10, 'Bukit Tinggi', NULL),
-(11, 'Payakumbuh', NULL);
+INSERT INTO `m_daerah_operasional` (`id`, `nama_kota`, `provinsi`) VALUES
+(2, 'Padang', 1),
+(3, 'Pekanbaru', 2),
+(4, 'Pelalawan', 2),
+(5, 'Dumai', 2),
+(6, 'Sorek', 2),
+(7, 'Kerinci', 2),
+(8, 'Pariaman', 1),
+(9, 'Padang Panjang', 1),
+(10, 'Bukit Tinggi', 1),
+(11, 'Payakumbuh', 1);
 
 --
 -- Dumping data untuk tabel `jadwal_keberangkatan`
 --
 
-INSERT INTO `jadwal_keberangkatan` (`id`, `jam`, `alias`) VALUES
+INSERT INTO `m_jadwal_keberangkatan` (`id`, `jam`, `alias`) VALUES
 (1, '08:00', 'PAGI'),
 (2, '16:00', 'SORE'),
 (3, '20:00', 'MALAM');
@@ -50,7 +50,7 @@ INSERT INTO `jadwal_keberangkatan` (`id`, `jam`, `alias`) VALUES
 -- Dumping data untuk tabel `mobil`
 --
 
-INSERT INTO m_mobil (`id`, `merk`, `jumlah_kursi`, `plat_nomor`, `gambar`) VALUES
+INSERT INTO m_mobil (`id`, `merk`, `jumlah_kursi`, `plat_nomor`, `gambar_id`) VALUES
 (1, 'Avanza', 8, 'BA 1234 QQ', NULL),
 (2, 'Mobil B', 8, 'BA 9892 QO', NULL),
 (3, 'Mobil C', 8, 'BA 9922 QE', NULL);
@@ -59,7 +59,7 @@ INSERT INTO m_mobil (`id`, `merk`, `jumlah_kursi`, `plat_nomor`, `gambar`) VALUE
 -- Dumping data untuk tabel `tiket`
 --
 
-INSERT INTO `tarif` (`id`, `kota_asal`, `kota_tujuan`, `tipe_penumpang`, `tarif`) VALUES
+INSERT INTO `m_tarif` (`id`, `kota_asal`, `kota_tujuan`, `tipe_penumpang`, `tarif`) VALUES
 (1, 6, 2, 3, 200000.00),
 (2, 6, 8, 3, 180000.00),
 (3, 6, 9, 3, 170000.00),
@@ -76,7 +76,7 @@ INSERT INTO `tarif` (`id`, `kota_asal`, `kota_tujuan`, `tipe_penumpang`, `tarif`
 -- Dumping data untuk tabel `tipe_penumpang`
 --
 
-INSERT INTO `tipe_penumpang` (`id`, `tipe_penumpang`) VALUES
+INSERT INTO `m_kategori_pelanggan` (`id`, `kategori`) VALUES
 (1, 'Mahasiswa Umum'),
 (2, 'Umum'),
 (3, 'IMAPPEL');
