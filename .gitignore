@@ -4,3 +4,5 @@ src/storages/tiket/
 src/storages/photo-identitas/
 /vendor/
 /node_modules/
+.htaccess
+/src/config/database.php
