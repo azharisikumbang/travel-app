@@ -27,8 +27,7 @@ class PemesananRepository extends BaseRepository
     public function cekKursiTersedia(
         DateTimeInterface $tanggal,
         DaerahOperasional $asal
-    ) : array
-    {
+    ): array {
         $query = "SELECT 
             p.id,
             p.tanggal_keberangkatan,
@@ -56,35 +55,39 @@ class PemesananRepository extends BaseRepository
         ]);
 
         $result = [];
-        if($stmt->rowCount() < 1) return $result;
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
+        if ($stmt->rowCount() < 1)
+            return $result;
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+            $result[] = $this->newEntity($row);
 
         return $result;
     }
 
-    public function get(int $length = 10, int $from = 0, string $order = 'id', string $by = 'desc') : array
+    public function get(int $length = 10, int $from = 0, string $order = 'id', string $by = 'desc'): array
     {
         $listData = $this->getDataFromTable($this->table, $length, $from, $order, $by);
 
         $result = [];
-        while ($row = $listData->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
+        while ($row = $listData->fetch(PDO::FETCH_ASSOC))
+            $result[] = $this->newEntity($row);
 
         return $result;
     }
 
-    public function getLatest() : ?Pesanan
+    public function getLatest(): ?Pesanan
     {
         $query = "SELECT * from {$this->getTable()} ORDER BY id DESC";
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
         $stmt->execute();
 
-        if($stmt->rowCount() < 1) return null;
+        if ($stmt->rowCount() < 1)
+            return null;
 
         return $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC));
     }
 
-    public function save(Pesanan $pesanan) : false|Pesanan
+    public function save(Pesanan $pesanan): false|Pesanan
     {
         $dbh = $this->getDatabaseConnection();
 
@@ -121,7 +124,8 @@ class PemesananRepository extends BaseRepository
 
         $query = $dbh->prepare("INSERT INTO {$this->getTable()} ($valueKeys) VALUES({$bindKeys})");
 
-        try {
+        try
+        {
 
             $dbh->beginTransaction();
             $query->execute($bind);
@@ -132,7 +136,8 @@ class PemesananRepository extends BaseRepository
             $this->pemesananDetailRepository->saveMany($pesanan);
 
             $dbh->commit();
-        } catch (\Exception $e) {
+        } catch (\Exception $e)
+        {
             $dbh->rollBack();
 
             die($e->getMessage());
@@ -143,11 +148,12 @@ class PemesananRepository extends BaseRepository
         return $pesanan;
     }
 
-    public function findByNomorPesanan(string $nomor, bool $detail = false) : ?Pesanan
+    public function findByNomorPesanan(string $nomor, bool $detail = false): ?Pesanan
     {
         $query = "SELECT * FROM pesanan WHERE nomor_pemesanan = :nomor_pemesanan";
 
-        if ($detail) {
+        if ($detail)
+        {
             $query = "SELECT 
                 p.*,
                 pd.id as detail_pemesanan_id,
@@ -161,12 +167,16 @@ class PemesananRepository extends BaseRepository
         $stmt = $this->getDatabaseConnection()->prepare($query);
         $stmt->execute(['nomor_pemesanan' => $nomor]);
 
-        if($stmt->rowCount() < 1) return null;
-        if (!$detail) return $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC));
+        if ($stmt->rowCount() < 1)
+            return null;
+        if (!$detail)
+            return $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC));
 
         $pesanan = null;
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if(is_null($pesanan)) $pesanan = $this->newEntity($row);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        {
+            if (is_null($pesanan))
+                $pesanan = $this->newEntity($row);
 
             $pesananDetail = new PesananDetail();
             $pesananDetail
@@ -181,7 +191,7 @@ class PemesananRepository extends BaseRepository
         return $pesanan;
     }
 
-    public function findByNomorPesananAndPelanggan(string $nomor, Akun $akun) : ?Pesanan
+    public function findByNomorPesananAndPelanggan(string $nomor, Akun $akun): ?Pesanan
     {
         $query = "SELECT 
                 p.*,
@@ -198,11 +208,14 @@ class PemesananRepository extends BaseRepository
             'pemesan_id' => $akun->getId()
         ]);
 
-        if($stmt->rowCount() < 1) return null;
+        if ($stmt->rowCount() < 1)
+            return null;
 
         $pesanan = null;
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if(is_null($pesanan)) $pesanan = $this->newEntity($row);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        {
+            if (is_null($pesanan))
+                $pesanan = $this->newEntity($row);
 
             $pesananDetail = new PesananDetail();
             $pesananDetail
@@ -218,7 +231,7 @@ class PemesananRepository extends BaseRepository
     }
 
 
-    public function findByTanggalKeberangkatan(DateTimeInterface $date, int $total = 10, int $from = 0, bool $withRelations = false) : array
+    public function findByTanggalKeberangkatan(DateTimeInterface $date, int $total = 10, int $from = 0, bool $withRelations = false): array
     {
         $query = "SELECT * from {$this->getTable()} WHERE tanggal_keberangkatan LIKE :tanggal_keberangkatan ORDER BY tanggal_keberangkatan DESC LIMIT {$from}, {$total}";
 
@@ -227,10 +240,12 @@ class PemesananRepository extends BaseRepository
             "tanggal_keberangkatan" => sprintf("%s%s", $date->format('Y-m-d'), "%")
         ]);
 
-        if($stmt->rowCount() < 1) return [];
+        if ($stmt->rowCount() < 1)
+            return [];
 
         $result = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+            $result[] = $this->newEntity($row);
 
         return $result;
     }
@@ -240,22 +255,29 @@ class PemesananRepository extends BaseRepository
         $where = [];
         $whereString = "";
 
-        if ($date) $where['tanggal_keberangkatan'] = sprintf("%s%s", $date->format('Y-m-d'), "%");
-        if ($asal) $where['kota_asal'] = $asal->getNamaKota();
-        if ($tujuan) $where['kota_tujuan'] = $tujuan->getNamaKota();
+        if ($date)
+            $where['tanggal_keberangkatan'] = sprintf("%s%s", $date->format('Y-m-d'), "%");
+        if ($asal)
+            $where['kota_asal'] = $asal->getNamaKota();
+        if ($tujuan)
+            $where['kota_tujuan'] = $tujuan->getNamaKota();
 
-        if ($where) $whereString .= "WHERE";
-        foreach ($where as $key => $value) $whereString .= sprintf(" %s = :%s AND", $key, $key);
+        if ($where)
+            $whereString .= "WHERE";
+        foreach ($where as $key => $value)
+            $whereString .= sprintf(" %s = :%s AND", $key, $key);
 
         $query = sprintf("SELECT * from {$this->getTable()} %s ORDER BY tanggal_keberangkatan DESC LIMIT {$from}, {$total}", rtrim($whereString, "AND"));
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
         $stmt->execute($where);
 
-        if($stmt->rowCount() < 1) return [];
+        if ($stmt->rowCount() < 1)
+            return [];
 
         $result = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+            $result[] = $this->newEntity($row);
 
         return $result;
     }
@@ -265,27 +287,34 @@ class PemesananRepository extends BaseRepository
         $where = ['status_bukti_pembayaran' => StatusBuktiPembayaran::VALID->value];
         $whereString = "";
 
-        if ($date) $where['tanggal_keberangkatan'] = sprintf("%s%s", $date->format('Y-m-d'), "%");
-        if ($asal) $where['kota_asal'] = $asal->getNamaKota();
-        if ($tujuan) $where['kota_tujuan'] = $tujuan->getNamaKota();
+        if ($date)
+            $where['tanggal_keberangkatan'] = sprintf("%s%s", $date->format('Y-m-d'), "%");
+        if ($asal)
+            $where['kota_asal'] = $asal->getNamaKota();
+        if ($tujuan)
+            $where['kota_tujuan'] = $tujuan->getNamaKota();
 
-        if ($where) $whereString .= "WHERE";
-        foreach ($where as $key => $value) $whereString .= sprintf(" %s = :%s AND", $key, $key);
+        if ($where)
+            $whereString .= "WHERE";
+        foreach ($where as $key => $value)
+            $whereString .= sprintf(" %s = :%s AND", $key, $key);
 
         $query = sprintf("SELECT * from {$this->getTable()} %s ORDER BY tanggal_keberangkatan DESC LIMIT {$from}, {$total}", rtrim($whereString, "AND"));
 
         $stmt = $this->getDatabaseConnection()->prepare($query);
         $stmt->execute($where);
 
-        if($stmt->rowCount() < 1) return [];
+        if ($stmt->rowCount() < 1)
+            return [];
 
         $result = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) $result[] = $this->newEntity($row);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+            $result[] = $this->newEntity($row);
 
         return $result;
     }
 
-    public function updateInformasiPemesanan(Pesanan $pesanan) : void
+    public function updateInformasiPemesanan(Pesanan $pesanan): void
     {
         $query = "UPDATE {$this->getTable()} 
             SET nama_pemesan = :nama_pemesan,
@@ -351,12 +380,14 @@ class PemesananRepository extends BaseRepository
             'valid' => StatusBuktiPembayaran::VALID->value
         ]);
 
-        if($stmt->rowCount() < 1) return [];
+        if ($stmt->rowCount() < 1)
+            return [];
 
         $listPesanan = [];
         $pesanan = null;
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $pesanan = ($pesanan?->getId() == $row['id']) ?  $pesanan : $this->newEntity($row);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        {
+            $pesanan = ($pesanan?->getId() == $row['id']) ? $pesanan : $this->newEntity($row);
 
             $pesananDetail = new PesananDetail();
             $pesananDetail
@@ -398,7 +429,7 @@ class PemesananRepository extends BaseRepository
 
     }
 
-    protected function newEntity(array $row, bool $withRelations = false) : Pesanan
+    protected function newEntity(array $row, bool $withRelations = false): Pesanan
     {
         return (new Pesanan())
             ->setId($row['id'])
@@ -422,16 +453,16 @@ class PemesananRepository extends BaseRepository
             ->setNamaPembayaran($row['nama_pembayaran'])
             ->setBankPembayaran($row['bank_pembayaran'])
             ->setPemesanId($row['pemesan_id'])
-            ->setFileTiket($row['file_tiket'])
+            ->setFileTiket($row['file_tiket'] ?? null)
             ->setDriver($row['driver'])
             ->setMobil($row['mobil']);
     }
 
-    public function getDailyPesananByDriver(DriverRepository $driverRepository, Driver $driver) : array
+    public function getDailyPesananByDriver(DriverRepository $driverRepository, Driver $driver): array
     {
         $listRute = $driverRepository->listTujuanByDriver($driver);
 
-        $tujuan = implode(', ', array_map(fn ($item) => "'" . $item['nama_kota'] . "'", $listRute));
+        $tujuan = implode(', ', array_map(fn($item) => "'" . $item['nama_kota'] . "'", $listRute));
 
         $query = "SELECT p.*, 
                 pd.id as detail_pemesanan_id,
@@ -468,10 +499,12 @@ class PemesananRepository extends BaseRepository
         $stmt = $this->getDatabaseConnection()->prepare($query);
         $stmt->execute(['status' => StatusBuktiPembayaran::PENDING->value, 'driver' => $driver->getNama()]);
 
-        if ($stmt->rowCount() < 1) return [];
+        if ($stmt->rowCount() < 1)
+            return [];
 
         $result = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        {
             $result[] = [
                 'tanggal_keberangkatan' => $row['tanggal_keberangkatan'],
                 'mobil' => $row['mobil'],
@@ -486,7 +519,7 @@ class PemesananRepository extends BaseRepository
     }
 
 
-    public function getBuktiPembayaran(string $nomorPemesanan, ?Akun $akun) : false|string
+    public function getBuktiPembayaran(string $nomorPemesanan, ?Akun $akun): false|string
     {
         $where = "";
         $bind = [
@@ -494,7 +527,8 @@ class PemesananRepository extends BaseRepository
             'nomor_pemesanan' => $nomorPemesanan
         ];
 
-        if ($akun) {
+        if ($akun)
+        {
             $bind['pemesan_id'] = $akun->getId();
             $where .= " AND pemesan_id = :pemesan_id ";
         }
@@ -510,7 +544,7 @@ class PemesananRepository extends BaseRepository
         return $stmt->rowCount() ? $stmt->fetch(PDO::FETCH_ASSOC)['bukti_pembayaran'] : false;
     }
 
-    public function updateInformasiFileTiket(Pesanan $pesanan) : void
+    public function updateInformasiFileTiket(Pesanan $pesanan): void
     {
         $query = "UPDATE {$this->getTable()} SET file_tiket = :file_tiket WHERE nomor_pemesanan = :nomor_pemesanan";
 
@@ -521,7 +555,7 @@ class PemesananRepository extends BaseRepository
         ]);
     }
 
-    public function getFileTiket(string $nomorPemesanan, ?Akun $akun = null) : false|string
+    public function getFileTiket(string $nomorPemesanan, ?Akun $akun = null): false|string
     {
         $where = "";
         $bind = [
@@ -529,7 +563,8 @@ class PemesananRepository extends BaseRepository
             'nomor_pemesanan' => $nomorPemesanan
         ];
 
-        if ($akun) {
+        if ($akun)
+        {
             $bind['pemesan_id'] = $akun->getId();
             $where .= " AND pemesan_id = :pemesan_id ";
         }
@@ -546,7 +581,7 @@ class PemesananRepository extends BaseRepository
         return $stmt->rowCount() ? $stmt->fetch(PDO::FETCH_ASSOC)['file_tiket'] : false;
     }
 
-    public function getListPesananHariIniByAsalKota(string $asal) : array
+    public function getListPesananHariIniByAsalKota(string $asal): array
     {
         $query = "SELECt p.tanggal_keberangkatan, p.mobil,
                 p.id, 
@@ -560,18 +595,21 @@ class PemesananRepository extends BaseRepository
         $stmt = $this->getDatabaseConnection()->prepare($query);
         $stmt->execute(['batal' => StatusPemesanan::BATAL->value]);
 
-        if ($stmt->rowCount() < 1) return [];
+        if ($stmt->rowCount() < 1)
+            return [];
 
         $result = [];
 
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if (!isset($result[$row['id']])) $result[$row['id']] = [
-                'id' => $row['id'],
-                'mobil' => $row['mobil'],
-                'tanggal_keberangkatan' => $row['tanggal_keberangkatan'],
-                'asal' => $row['kota_asal'],
-                'list_kursi_dipesan' => []
-            ];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        {
+            if (!isset($result[$row['id']]))
+                $result[$row['id']] = [
+                    'id' => $row['id'],
+                    'mobil' => $row['mobil'],
+                    'tanggal_keberangkatan' => $row['tanggal_keberangkatan'],
+                    'asal' => $row['kota_asal'],
+                    'list_kursi_dipesan' => []
+                ];
 
             $result[$row['id']]['list_kursi_dipesan'][] = $row['pd_nomor_kursi'];
         }
@@ -579,7 +617,7 @@ class PemesananRepository extends BaseRepository
         return $result;
     }
 
-    public function getByPemesan(Pelanggan|Akun $pelanggan) : array
+    public function getByPemesan(Pelanggan|Akun $pelanggan): array
     {
         $id = ($pelanggan instanceof Pelanggan) ? $pelanggan->getAkun()->getId() : $pelanggan->getId();
 
@@ -606,11 +644,13 @@ class PemesananRepository extends BaseRepository
      */
     public function extracted(false|PDOStatement $stmt): array
     {
-        if ($stmt->rowCount() < 1) return [];
+        if ($stmt->rowCount() < 1)
+            return [];
 
         $listPesanan = [];
         $pesanan = null;
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        {
             $pesanan = ($pesanan?->getId() == $row['id']) ? $pesanan : $this->newEntity($row);
 
             $pesananDetail = new PesananDetail();
@@ -650,12 +690,14 @@ class PemesananRepository extends BaseRepository
             'pending' => StatusBuktiPembayaran::PENDING->value
         ]);
 
-        if($stmt->rowCount() < 1) return [];
+        if ($stmt->rowCount() < 1)
+            return [];
 
         $listPesanan = [];
         $pesanan = null;
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $pesanan = ($pesanan?->getId() == $row['id']) ?  $pesanan : $this->newEntity($row);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        {
+            $pesanan = ($pesanan?->getId() == $row['id']) ? $pesanan : $this->newEntity($row);
 
             $pesananDetail = new PesananDetail();
             $pesananDetail
@@ -671,7 +713,7 @@ class PemesananRepository extends BaseRepository
         return array_values($listPesanan);
     }
 
-    public function getPesananPelangganByFilter(Akun $auth, array $filter) : array
+    public function getPesananPelangganByFilter(Akun $auth, array $filter): array
     {
         $from = $filter['pagination']['offset'] ?? 0;
         $total = $filter['pagination']['total'] ?? 10;
@@ -679,11 +721,14 @@ class PemesananRepository extends BaseRepository
         $tanggal = $filter['tanggal_keberangkatan'] ? $filter['tanggal_keberangkatan']->format('Y-m-d') . '%' : null;
 
         $where = [];
-        if ($tanggal) $where['tanggal_keberangkatan'] = $tanggal;
-        if ($search) $where['nomor_pemesanan'] = $search;
+        if ($tanggal)
+            $where['tanggal_keberangkatan'] = $tanggal;
+        if ($search)
+            $where['nomor_pemesanan'] = $search;
 
         $whereQuery = "";
-        foreach ($where as $colomn => $value) {
+        foreach ($where as $colomn => $value)
+        {
             $whereQuery .= " AND $colomn LIKE :$colomn";
         }
 
@@ -706,12 +751,14 @@ class PemesananRepository extends BaseRepository
             ...$where
         ]);
 
-        if($stmt->rowCount() < 1) return [];
+        if ($stmt->rowCount() < 1)
+            return [];
 
         $listPesanan = [];
         $pesanan = null;
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $pesanan = ($pesanan?->getId() == $row['id']) ?  $pesanan : $this->newEntity($row);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        {
+            $pesanan = ($pesanan?->getId() == $row['id']) ? $pesanan : $this->newEntity($row);
 
             $pesananDetail = new PesananDetail();
             $pesananDetail
@@ -732,7 +779,8 @@ class PemesananRepository extends BaseRepository
         $queryTanggalPemesanan = "";
         $appendQuery = "";
         $hasWhere = false;
-        switch ($kriteria) {
+        switch ($kriteria)
+        {
             case 'today':
                 $queryTanggalPemesanan = "DATE(p.tanggal_keberangkatan) = CURDATE()";
                 $hasWhere = true;
@@ -746,7 +794,8 @@ class PemesananRepository extends BaseRepository
                 break;
         }
 
-        if ($hasWhere) {
+        if ($hasWhere)
+        {
             $appendQuery = "WHERE $queryTanggalPemesanan";
         }
 
@@ -760,7 +809,7 @@ class PemesananRepository extends BaseRepository
         $stmt = $this->getDatabaseConnection()->prepare($query);
         $stmt->execute();
 
-        return  $this->extracted($stmt);
+        return $this->extracted($stmt);
     }
 
     public function getDataForLaporanPejualanByPeriode(int $year, int $month, int $date = 0): array
@@ -784,10 +833,12 @@ class PemesananRepository extends BaseRepository
         $stmt = $this->getDatabaseConnection()->prepare($query);
         $stmt->execute();
 
-        if ($stmt->rowCount() < 1) return [];
+        if ($stmt->rowCount() < 1)
+            return [];
 
         $result = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
+        {
             $result[] = $row;
         }
 
