@@ -9,7 +9,7 @@ class PelangganRepository extends BaseRepository
 {
     protected string $table = 'm_pelanggan';
 
-    public function save(Pelanggan $pelanggan) : false|Pelanggan
+    public function save(Pelanggan $pelanggan): false|Pelanggan
     {
         $saved = $this->basicSave([
             'nama' => $pelanggan->getNama(),
@@ -23,7 +23,7 @@ class PelangganRepository extends BaseRepository
         return $saved ? $pelanggan->setId($saved) : false;
     }
 
-    public function findByNamaPelanggan(string $search) : array
+    public function findByNamaPelanggan(string $search): array
     {
         return $this->getByQuery(
             "SELECT p.*, a.username, k.kategori
@@ -31,12 +31,12 @@ class PelangganRepository extends BaseRepository
                 JOIN m_akun a ON a.id = p.akun_id
                 JOIN m_kategori_pelanggan k ON k.id = p.kategori_id
                 WHERE p.nama LIKE :nama",
-            ['nama' => "%". $search . "%"],
+            ['nama' => "%" . $search . "%"],
             true
         );
     }
 
-    public function get(int $total, int $offset) : array
+    public function get(int $total, int $offset): array
     {
         return $this->getByQuery(
             "SELECT p.*, a.username, k.kategori
@@ -60,7 +60,7 @@ class PelangganRepository extends BaseRepository
         $stmt = $this->getDatabaseConnection()->prepare($query);
         $stmt->execute(['akun' => (is_int($akun)) ? $akun : $akun->getId()]);
 
-        return $stmt->rowCount() ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)): null;
+        return $stmt->rowCount() ? $this->newEntity($stmt->fetch(PDO::FETCH_ASSOC)) : null;
     }
 
     protected function getTable(): string
@@ -86,18 +86,18 @@ class PelangganRepository extends BaseRepository
             ->setAkun($akun)
             ->setKategoriPelanggan($kategori)
             ->setPhoto($row['photo_id'])
-            ->setTerkonfirmasiMahasiswa(($row['terkonfirmasi_mahasiswa']))
+            ->setTerkonfirmasiMahasiswa(($row['terkonfirmasi_mahasiswa']) ?? false)
             ->setPhotoIdentitas($row['photo_identitas']);
     }
 
-    public function findById(int $id) : ?Pelanggan
+    public function findById(int $id): ?Pelanggan
     {
         $row = $this->basicFindById($id);
 
         return ($row) ? $this->newEntity($row) : null;
     }
 
-    public function updateStatusKonfirmasiMahasiswa(int|Pelanggan $pelanggan) : bool
+    public function updateStatusKonfirmasiMahasiswa(int|Pelanggan $pelanggan): bool
     {
         $query = "UPDATE {$this->getTable()} SET terkonfirmasi_mahasiswa = :terkonfirmasi_mahasiswa
              WHERE id = :id";
@@ -110,7 +110,7 @@ class PelangganRepository extends BaseRepository
         ]);
     }
 
-    public function update(Pelanggan $pelanggan) : false|Pelanggan
+    public function update(Pelanggan $pelanggan): false|Pelanggan
     {
         $query = "UPDATE {$this->getTable()} SET 
                  nama = :nama, 
